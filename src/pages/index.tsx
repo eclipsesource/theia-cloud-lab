@@ -14,8 +14,6 @@ export default function Home() {
           href='/favicon.ico'
         />
       </Head>
-
-      <main>main</main>
     </>
   );
 }
