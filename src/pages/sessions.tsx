@@ -1,32 +1,46 @@
-import { V1PodList, V1StatusDetails } from '@kubernetes/client-node';
+import { useEffect, useState } from 'react';
 import TableContainer from '../components/TableContainer';
+import { SessionData } from './api/sessions';
 
 const Sessions = () => {
-  const getApiRes = async () => {
-    const namespace = 'theiacloud';
-    const results = await fetch(`/api/sessions/${namespace}`);
-    const res = await results.json();
-    console.log(getPodData(res));
-    console.log(res);
-  };
+  const [data, setData] = useState<[] | null>(null);
+  const [metrics, setMetrics] = useState(null);
+  const [isLoading, setLoading] = useState(false);
 
-  const getPodData = (res: V1PodList) => {
-    const regex = /^ws-.*-session/g;
-    const dataArr: any[] = [];
-    res.items.forEach((each) => {
-      const labels = each.metadata?.labels;
-      const sessionString = labels?.app;
-      if (sessionString?.match(regex)) {
-        const { hostIP, phase, podIP, qosClass, startTime }: any = each.status;
-        const obj = { app: sessionString, hostIP, phase, podIP, qosClass, startTime };
-        dataArr.push(obj);
-      }
-    });
-    return dataArr;
-  };
+  useEffect(() => {
+    setLoading(true);
+    fetch('/api/sessions')
+      .then((res) => res.json())
+      .then((data) => {
+        setData(data);
+        setLoading(false);
+      });
+  }, []);
 
-  getApiRes();
-  return <TableContainer header='Running sessions'>Here insert table</TableContainer>;
+  useEffect(() => {
+    if (data && data.length > 0) {
+      console.log('fetch metrics');
+      fetch('/api/metrics')
+        .then((res) => {
+          console.log('res', res);
+          return res.json();
+        })
+        .then((metrics) => {
+          console.log('metrics', metrics);
+          setMetrics(metrics);
+        });
+    }
+  }, [data]);
+
+  if (isLoading) return <p>Loading...</p>;
+  if (!data) return <p>No profile data</p>;
+  return (
+    <TableContainer header='Running sessions'>
+      {data.map((item: SessionData) => {
+        return <div key={item.app}>{item.app}</div>;
+      })}
+    </TableContainer>
+  );
 };
 
 export default Sessions;
