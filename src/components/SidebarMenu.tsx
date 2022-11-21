@@ -17,7 +17,9 @@ const SidebarMenu = () => {
         <li className={`${adminClassStyle} text-sm text-gray-800 mb-1 ml-5`}>
           <Link href='/sessions'>see running sessions</Link>
         </li>
-        <li className={`${adminClassStyle} text-sm text-gray-800 mb-1 ml-5`}>see workspaces</li>
+        <li className={`${adminClassStyle} text-sm text-gray-800 mb-1 ml-5`}>
+          <Link href='/workspaces'>see workspaces</Link>
+        </li>
         <li className={`${adminClassStyle} text-sm text-gray-800 mb-1 ml-5`}>see app definitions</li>
       </>
     );

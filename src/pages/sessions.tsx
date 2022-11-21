@@ -1,49 +1,59 @@
-import { PodMetric } from '@kubernetes/client-node';
 import { useEffect, useState } from 'react';
-import TableContainer from '../components/TableContainer';
-import { SessionData } from './api/sessions';
 import { DataGrid, GridColDef, GridValueGetterParams, GridRenderCellParams, DataGridProps } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
 import RefreshIcon from '../components/icons/RefreshIcon';
+import { ISessionCRData } from './api/sessionCRs';
+import { IPodMetric } from './api/metrics';
 
 export type ItemData = {
-  sessionData: SessionData;
-  podMetricData: PodMetric;
+  sessionData: ISessionCRData;
+  podMetricData: IPodMetric;
 };
 
 type Row = {
   id: string;
-  app: string;
-  phase: string;
-  startTime: string;
-  podName: string;
-  workspaceVolumeClaimName: string;
+  creationTimestamp: string;
+  name: string;
+  namespace: string;
+  resourceVersion: string;
+  uid: string;
+  appDefinition: string;
+  url: string;
+  user: string;
+  workspace: string;
   cpuUsage: string;
   memoryUsage: string;
 };
 
+const XLCol = 250;
+const MCol = 80;
+
 const Sessions = () => {
-  const [sessions, setSessions] = useState<SessionData[]>([]);
-  const [metrics, setMetrics] = useState<PodMetric[]>([]);
+  const [sessions, setSessions] = useState<ISessionCRData[]>([]);
+  const [metrics, setMetrics] = useState<IPodMetric[]>([]);
   const [items, setItems] = useState<ItemData[]>([]);
   const [rows, setRows] = useState<Row[]>([]);
   const [isLoading, setLoading] = useState(true);
   const [isFetching, setIsFetching] = useState(false);
 
-  const setTableData = (sessionsData: SessionData[], metrics: PodMetric[]) => {
+  const setTableData = (sessionsData: ISessionCRData[], metrics: IPodMetric[]) => {
     const rows: Row[] = [];
     for (const session of sessionsData) {
       let isMatched = false;
       for (const podMetric of metrics) {
-        if (session.podName === podMetric.metadata.name) {
+        if (podMetric.metadata?.labels && session.name === podMetric.metadata?.labels.app) {
           isMatched = true;
           const row: Row = {
-            id: session.app,
-            app: session.app,
-            phase: session?.phase ?? '',
-            startTime: session?.startTime ? dayjs(session.startTime).toString() : '',
-            podName: session.podName,
-            workspaceVolumeClaimName: session?.workspaceVolumes?.[0]?.persistentVolumeClaim?.claimName ?? '',
+            id: session.name,
+            creationTimestamp: dayjs(session.creationTimestamp).toString(),
+            name: session.name,
+            namespace: session.namespace,
+            resourceVersion: session.resourceVersion,
+            uid: session.uid,
+            appDefinition: session.appDefinition,
+            url: session.url,
+            user: session.user,
+            workspace: session.workspace,
             cpuUsage: podMetric.containers[0].usage.cpu,
             memoryUsage: podMetric.containers[0].usage.memory,
           };
@@ -53,12 +63,16 @@ const Sessions = () => {
       }
       if (!isMatched) {
         const row: Row = {
-          id: session.app,
-          app: session.app,
-          phase: session?.phase ?? '',
-          startTime: session?.startTime ? dayjs(session.startTime).toString() : '',
-          podName: session.podName ?? '',
-          workspaceVolumeClaimName: session?.workspaceVolumes?.[0]?.persistentVolumeClaim?.claimName ?? '',
+          id: session.name,
+          creationTimestamp: dayjs(session.creationTimestamp).toString(),
+          name: session.name,
+          namespace: session.namespace,
+          resourceVersion: session.resourceVersion,
+          uid: session.uid,
+          appDefinition: session.appDefinition,
+          url: session.url,
+          user: session.user,
+          workspace: session.workspace,
           cpuUsage: '',
           memoryUsage: '',
         };
@@ -70,11 +84,11 @@ const Sessions = () => {
 
   const fetchData = () => {
     setIsFetching(true);
-    fetch('/api/sessions')
+    fetch('/api/sessionCRs')
       .then((res) => res.json())
       .then((data) => {
         setSessions(data);
-        console.log('SessionData[]', data);
+        console.log('sessionsCRs[]', data);
       })
       .then(() => {
         fetch('/api/metrics')
@@ -106,19 +120,14 @@ const Sessions = () => {
   }, [sessions, metrics]);
 
   const columns: GridColDef[] = [
-    { field: 'app', headerName: 'Session Name', width: 250 },
-    { field: 'phase', headerName: 'Status', width: 70 },
-    { field: 'startTime', headerName: 'Start Time', width: 130 },
-    {
-      field: 'podName',
-      headerName: 'Pod Name',
-      width: 250,
-    },
-    {
-      field: 'workspaceVolumeClaimName',
-      headerName: 'Workspace Volume Claim Name',
-      width: 250,
-    },
+    { field: 'name', headerName: 'Session Name', width: XLCol },
+    { field: 'creationTimestamp', headerName: 'Creation Timestamp', width: XLCol },
+    { field: 'resourceVersion', headerName: 'Resource Version', width: 130 },
+    { field: 'uid', headerName: 'UID', width: XLCol },
+    { field: 'appDefinition', headerName: 'App Definition', width: 120 },
+    { field: 'url', headerName: 'URL', width: XLCol },
+    { field: 'user', headerName: 'User', width: XLCol },
+    { field: 'workspace', headerName: 'Workspace', width: XLCol },
     /* {
       field: 'cpuUsage',
       headerName: 'CPU Usage',
