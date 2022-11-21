@@ -44,7 +44,6 @@ const Workspaces = () => {
       .then((res) => res.json())
       .then((data) => {
         setWorkspaces(data);
-        console.log('workspaceCRs', data);
       })
       .catch((error) => {
         console.log('Error occured fetching data: ', error);

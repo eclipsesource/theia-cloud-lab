@@ -88,13 +88,11 @@ const Sessions = () => {
       .then((res) => res.json())
       .then((data) => {
         setSessions(data);
-        console.log('sessionsCRs[]', data);
       })
       .then(() => {
         fetch('/api/metrics')
           .then((res) => res.json())
           .then((data) => {
-            console.log('PodMetric[]', data);
             setMetrics(data);
           });
       })
