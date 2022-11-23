@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
-import { DataGrid, GridColDef, GridValueGetterParams, GridRenderCellParams, DataGridProps } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRowId } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
 import RefreshIcon from '../components/icons/RefreshIcon';
 import { ISessionCRData } from './api/sessionCRs';
 import { IPodMetric } from './api/metrics';
+import DeleteIcon from '../components/icons/DeleteIcon';
 
 export type ItemData = {
   sessionData: ISessionCRData;
@@ -35,6 +36,8 @@ const Sessions = () => {
   const [rows, setRows] = useState<Row[]>([]);
   const [isLoading, setLoading] = useState(true);
   const [isFetching, setIsFetching] = useState(false);
+  const [selectedRows, setSelectedRows] = useState<GridRowId[]>([]);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const setTableData = (sessionsData: ISessionCRData[], metrics: IPodMetric[]) => {
     const rows: Row[] = [];
@@ -82,6 +85,24 @@ const Sessions = () => {
     setRows(rows);
   };
 
+  const deleteSessions = () => {
+    setIsFetching(true);
+    console.log('here', selectedRows);
+    fetch(`/api/deleteSessionCRs/${selectedRows}`)
+      .then((res) => {
+        if (res.status === 200) {
+          fetchData();
+        }
+        setIsDeleting(true);
+      })
+      .catch((error) => {
+        console.log('Error occured fetching data: ', error);
+      })
+      .finally(() => {
+        setIsFetching(false);
+      });
+  };
+
   const fetchData = () => {
     setIsFetching(true);
     fetch('/api/sessionCRs')
@@ -112,10 +133,13 @@ const Sessions = () => {
     if (sessions && sessions.length > 0 && metrics && metrics.length > 0) {
       setTableData(sessions, metrics);
       setLoading(false);
+    } else if (isDeleting) {
+      setTableData(sessions, metrics);
+      setLoading(false);
     } else {
       setLoading(true);
     }
-  }, [sessions, metrics]);
+  }, [sessions, metrics, isDeleting]);
 
   const columns: GridColDef[] = [
     { field: 'name', headerName: 'Session Name', width: XLCol },
@@ -161,12 +185,21 @@ const Sessions = () => {
     return (
       <div className='flex justify-between py-4 px-4 '>
         <span className='text-lg text-gray-600 hover:text-gray-800 hover:underline'>Sessions</span>
-        <button
-          onClick={fetchData}
-          className={`${isFetching ? 'animate-spin' : ''}`}
-        >
-          <RefreshIcon />
-        </button>
+        <div>
+          <button
+            onClick={deleteSessions}
+            className={`${isFetching ? 'animate-spin' : ''} mr-5`}
+          >
+            <DeleteIcon />
+          </button>
+
+          <button
+            onClick={fetchData}
+            className={`${isFetching ? 'animate-spin' : ''}`}
+          >
+            <RefreshIcon />
+          </button>
+        </div>
       </div>
     );
   };
@@ -185,6 +218,7 @@ const Sessions = () => {
           Toolbar: SessionsTableHeader,
         }}
         getRowHeight={() => 'auto'}
+        onSelectionModelChange={(e: GridRowId[]) => setSelectedRows(e)}
       />
     </>
   );
