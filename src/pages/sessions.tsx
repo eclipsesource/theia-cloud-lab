@@ -5,6 +5,9 @@ import RefreshIcon from '../components/icons/RefreshIcon';
 import { ISessionCRData } from './api/sessionCRs';
 import { IPodMetric } from './api/metrics';
 import DeleteIcon from '../components/icons/DeleteIcon';
+import TheiaButton from '../components/TheiaButton';
+import { Modal } from '@mui/material';
+import PlusIcon from '../components/icons/PlusIcon';
 
 export type ItemData = {
   sessionData: ISessionCRData;
@@ -34,10 +37,12 @@ const Sessions = () => {
   const [metrics, setMetrics] = useState<IPodMetric[]>([]);
   const [items, setItems] = useState<ItemData[]>([]);
   const [rows, setRows] = useState<Row[]>([]);
-  const [isLoading, setLoading] = useState(true);
-  const [isFetching, setIsFetching] = useState(false);
+  const [isLoading, setLoading] = useState<boolean>(true);
+  const [isFetching, setIsFetching] = useState<boolean>(false);
   const [selectedRows, setSelectedRows] = useState<GridRowId[]>([]);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [isDeleted, setIsDeleted] = useState<boolean>(false);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const setTableData = (sessionsData: ISessionCRData[], metrics: IPodMetric[]) => {
     const rows: Row[] = [];
@@ -86,20 +91,20 @@ const Sessions = () => {
   };
 
   const deleteSessions = () => {
-    setIsFetching(true);
+    setIsDeleting(true);
     console.log('here', selectedRows);
     fetch(`/api/deleteSessionCRs/${selectedRows}`)
       .then((res) => {
         if (res.status === 200) {
           fetchData();
+          setIsDeleted(true);
         }
-        setIsDeleting(true);
       })
       .catch((error) => {
         console.log('Error occured fetching data: ', error);
       })
       .finally(() => {
-        setIsFetching(false);
+        setIsDeleting(false);
       });
   };
 
@@ -133,13 +138,29 @@ const Sessions = () => {
     if (sessions && sessions.length > 0 && metrics && metrics.length > 0) {
       setTableData(sessions, metrics);
       setLoading(false);
-    } else if (isDeleting) {
+    } else if (isDeleted) {
       setTableData(sessions, metrics);
       setLoading(false);
     } else {
       setLoading(true);
     }
-  }, [sessions, metrics, isDeleting]);
+  }, [sessions, metrics, isDeleted]);
+
+  const createNewSession = () => {
+    setIsFetching(true);
+    fetch('/api/createSessionCRs')
+      .then((res) => {
+        if (res.status === 200) {
+          fetchData();
+        }
+      })
+      .catch((error) => {
+        console.log('Error occured fetching data: ', error);
+      })
+      .finally(() => {
+        setIsFetching(false);
+      });
+  };
 
   const columns: GridColDef[] = [
     { field: 'name', headerName: 'Session Name', width: XLCol },
@@ -186,19 +207,39 @@ const Sessions = () => {
       <div className='flex justify-between py-4 px-4 '>
         <span className='text-lg text-gray-600 hover:text-gray-800 hover:underline'>Sessions</span>
         <div>
-          <button
-            onClick={deleteSessions}
-            className={`${isFetching ? 'animate-spin' : ''} mr-5`}
-          >
-            <DeleteIcon />
-          </button>
+          <TheiaButton
+            text='Create Sessions'
+            icon={
+              <button className='hover:animate-pulse'>
+                <PlusIcon />
+              </button>
+            }
+            className='mr-2'
+            onClick={() => createNewSession()}
+          />
 
-          <button
+          {sessions.length > 0 && (
+            <TheiaButton
+              text='Delete Sessions'
+              icon={
+                <button className={`${isDeleting ? 'animate-bounce' : ''} hover:animate-pulse`}>
+                  <DeleteIcon />
+                </button>
+              }
+              className='mr-2'
+              onClick={deleteSessions}
+            />
+          )}
+
+          <TheiaButton
+            text='Refresh'
+            icon={
+              <button className={`${isFetching ? 'animate-spin' : ''} hover:animate-pulse`}>
+                <RefreshIcon />
+              </button>
+            }
             onClick={fetchData}
-            className={`${isFetching ? 'animate-spin' : ''}`}
-          >
-            <RefreshIcon />
-          </button>
+          />
         </div>
       </div>
     );
@@ -220,6 +261,17 @@ const Sessions = () => {
         getRowHeight={() => 'auto'}
         onSelectionModelChange={(e: GridRowId[]) => setSelectedRows(e)}
       />
+
+      <Modal
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        aria-labelledby='modal-modal-title'
+        aria-describedby='modal-modal-description'
+      >
+        <div className='absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-1/2 p-6	bg-slate-100 shadow'>
+          <span>Create a new session</span>
+        </div>
+      </Modal>
     </>
   );
 };

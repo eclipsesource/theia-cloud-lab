@@ -1,5 +1,6 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { KubeConfig, CustomObjectsApi } from '@kubernetes/client-node';
+import dayjs from 'dayjs';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 export interface ISessionCRData {
@@ -47,7 +48,6 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<ISessi
         };
         sessionCRDataArr.push(obj);
       });
-
     res.send(sessionCRDataArr);
   });
 }
