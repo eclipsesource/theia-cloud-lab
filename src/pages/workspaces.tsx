@@ -2,10 +2,20 @@ import { PodMetric } from '@kubernetes/client-node';
 import { useEffect, useState } from 'react';
 import TableContainer from '../components/TableContainer';
 import { SessionData } from './api/sessions';
-import { DataGrid, GridColDef, GridValueGetterParams, GridRenderCellParams, DataGridProps } from '@mui/x-data-grid';
+import TheiaButton from '../components/TheiaButton';
+import DeleteIcon from '../components/icons/DeleteIcon';
+import {
+  GridRowId,
+  DataGrid,
+  GridColDef,
+  GridValueGetterParams,
+  GridRenderCellParams,
+  DataGridProps,
+} from '@mui/x-data-grid';
 import dayjs from 'dayjs';
 import RefreshIcon from '../components/icons/RefreshIcon';
-import { WorkspaceCRData } from './api/workspaceCRs';
+import PlusIcon from '../components/icons/PlusIcon';
+import { WorkspaceCRData } from './api/workspaces/cr';
 
 type Row = WorkspaceCRData & {
   id: string;
@@ -19,6 +29,9 @@ const Workspaces = () => {
   const [workspaces, setWorkspaces] = useState<WorkspaceCRData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isFetching, setIsFetching] = useState(false);
+  const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  const [isDeleted, setIsDeleted] = useState<boolean>(false);
+  const [selectedRows, setSelectedRows] = useState<GridRowId[]>([]);
 
   const setTableData = (workspaces: WorkspaceCRData[]) => {
     const rows: Row[] = [];
@@ -38,9 +51,55 @@ const Workspaces = () => {
     setRows(rows);
   };
 
+  const deleteWorkspaces = () => {
+    setIsDeleting(true);
+    console.log('here', selectedRows);
+    fetch('/api/workspaces/cr', {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'DELETE',
+      body: JSON.stringify({ toBeDeletedWorkspaces: selectedRows }),
+    })
+      .then((res) => {
+        if (res.status === 200) {
+          fetchData();
+          setIsDeleted(true);
+        }
+      })
+      .catch((error) => {
+        console.log('Error occured fetching data: ', error);
+      })
+      .finally(() => {
+        setIsDeleting(false);
+      });
+  };
+
+  const createNewWorkplace = () => {
+    setIsFetching(true);
+    fetch('/api/workspaces/cr', {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
+      body: JSON.stringify({ toBeCreatedWorkspace: `${Date.now()}` }),
+    })
+      .then((res) => {
+        if (res.status === 200) {
+          fetchData();
+        }
+      })
+      .catch((error) => {
+        console.log('Error occured fetching data: ', error);
+      })
+      .finally(() => {
+        setIsFetching(false);
+      });
+  };
+
   const fetchData = () => {
     setIsFetching(true);
-    fetch('/api/workspaceCRs')
+    fetch('/api/workspaces/cr')
       .then((res) => res.json())
       .then((data) => {
         setWorkspaces(data);
@@ -61,10 +120,13 @@ const Workspaces = () => {
     if (workspaces && workspaces.length > 0) {
       setTableData(workspaces);
       setIsLoading(false);
+    } else if (isDeleted) {
+      setTableData(workspaces);
+      setIsLoading(false);
     } else {
       setIsLoading(true);
     }
-  }, [workspaces]);
+  }, [workspaces, isDeleted]);
 
   const columns: GridColDef[] = [
     { field: 'name', headerName: 'Workspace Name', width: XLCol },
@@ -76,16 +138,45 @@ const Workspaces = () => {
     { field: 'uid', headerName: 'UID', width: XLCol },
   ];
 
-  const SessionsTableHeader = () => {
+  const WorkspacesTableHeader = () => {
     return (
       <div className='flex justify-between py-4 px-4 '>
-        <span className='text-lg text-gray-600 hover:text-gray-800 hover:underline'>Workspaces</span>
-        <button
-          onClick={fetchData}
-          className={`${isFetching ? 'animate-spin' : ''}`}
-        >
-          <RefreshIcon />
-        </button>
+        <span className='text-lg text-gray-600 hover:text-gray-800 hover:underline'>Workplaces</span>
+        <div>
+          <TheiaButton
+            text='Create Workspace'
+            icon={
+              <button className='hover:animate-pulse'>
+                <PlusIcon />
+              </button>
+            }
+            className='mr-2'
+            onClick={() => createNewWorkplace()}
+          />
+
+          {workspaces.length > 0 && (
+            <TheiaButton
+              text='Delete Workspaces'
+              icon={
+                <button className={`${isDeleting ? 'animate-bounce' : ''} hover:animate-pulse`}>
+                  <DeleteIcon />
+                </button>
+              }
+              className='mr-2'
+              onClick={deleteWorkspaces}
+            />
+          )}
+
+          <TheiaButton
+            text='Refresh'
+            icon={
+              <button className={`${isFetching ? 'animate-spin' : ''} hover:animate-pulse`}>
+                <RefreshIcon />
+              </button>
+            }
+            onClick={fetchData}
+          />
+        </div>
       </div>
     );
   };
@@ -102,9 +193,10 @@ const Workspaces = () => {
         getRowClassName={() => 'text-xs'}
         loading={isLoading}
         components={{
-          Toolbar: SessionsTableHeader,
+          Toolbar: WorkspacesTableHeader,
         }}
         getRowHeight={() => 'auto'}
+        onSelectionModelChange={(e: GridRowId[]) => setSelectedRows(e)}
       />
     </>
   );
