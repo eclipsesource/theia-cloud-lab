@@ -17,5 +17,6 @@
   "vueIndentScriptAndStyle": false,
   "endOfLine": "lf",
   "embeddedLanguageFormatting": "auto",
-  "singleAttributePerLine": true
+  "singleAttributePerLine": true,
+  "formatOnSave": true
 }
