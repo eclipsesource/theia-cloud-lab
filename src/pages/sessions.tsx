@@ -92,10 +92,15 @@ const Sessions = () => {
 
   const deleteSessions = () => {
     setIsDeleting(true);
-    console.log('here', selectedRows);
-    fetch(`/api/deleteSessionCRs/${selectedRows}`)
+    fetch('/api/sessions/cr', {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'DELETE',
+      body: JSON.stringify({ toBeDeletedSessions: selectedRows }),
+    })
       .then((res) => {
-        if (res.status === 200) {
+        if (res.status === 204) {
           fetchData();
           setIsDeleted(true);
         }
@@ -110,7 +115,7 @@ const Sessions = () => {
 
   const fetchData = () => {
     setIsFetching(true);
-    fetch('/api/sessionCRs')
+    fetch('/api/sessions/cr')
       .then((res) => res.json())
       .then((data) => {
         setSessions(data);
@@ -148,9 +153,14 @@ const Sessions = () => {
 
   const createNewSession = () => {
     setIsFetching(true);
-    fetch('/api/createSessionCRs')
+    fetch('/api/sessions/cr', {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
+    })
       .then((res) => {
-        if (res.status === 200) {
+        if (res.status === 201) {
           fetchData();
         }
       })

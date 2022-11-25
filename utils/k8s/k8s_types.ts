@@ -4,6 +4,7 @@ export type CustomResourceObj = {
     metadata: {
         name: string;
         namespace: string;
+        workspace?: string;
     }
     spec: object;
 }
