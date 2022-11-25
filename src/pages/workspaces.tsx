@@ -62,7 +62,7 @@ const Workspaces = () => {
       body: JSON.stringify({ toBeDeletedWorkspaces: selectedRows }),
     })
       .then((res) => {
-        if (res.status === 200) {
+        if (res.status === 204) {
           fetchData();
           setIsDeleted(true);
         }
@@ -85,7 +85,7 @@ const Workspaces = () => {
       body: JSON.stringify({ toBeCreatedWorkspace: `${Date.now()}` }),
     })
       .then((res) => {
-        if (res.status === 200) {
+        if (res.status === 201) {
           fetchData();
         }
       })
