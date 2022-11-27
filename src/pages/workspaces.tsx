@@ -1,17 +1,7 @@
-import { PodMetric } from '@kubernetes/client-node';
 import { useEffect, useState } from 'react';
-import TableContainer from '../components/TableContainer';
-import { SessionData } from './api/sessions';
 import TheiaButton from '../components/TheiaButton';
 import DeleteIcon from '../components/icons/DeleteIcon';
-import {
-  GridRowId,
-  DataGrid,
-  GridColDef,
-  GridValueGetterParams,
-  GridRenderCellParams,
-  DataGridProps,
-} from '@mui/x-data-grid';
+import { GridRowId, DataGrid, GridColDef } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
 import RefreshIcon from '../components/icons/RefreshIcon';
 import PlusIcon from '../components/icons/PlusIcon';

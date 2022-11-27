@@ -2,12 +2,12 @@ import { useEffect, useState } from 'react';
 import { DataGrid, GridColDef, GridRowId } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
 import RefreshIcon from '../components/icons/RefreshIcon';
-import { ISessionCRData } from './api/sessionCRs';
 import { IPodMetric } from './api/metrics';
 import DeleteIcon from '../components/icons/DeleteIcon';
 import TheiaButton from '../components/TheiaButton';
 import { Modal } from '@mui/material';
 import PlusIcon from '../components/icons/PlusIcon';
+import { ISessionCRData } from './api/sessions/cr';
 
 export type ItemData = {
   sessionData: ISessionCRData;
@@ -35,13 +35,13 @@ const MCol = 80;
 const Sessions = () => {
   const [sessions, setSessions] = useState<ISessionCRData[]>([]);
   const [metrics, setMetrics] = useState<IPodMetric[]>([]);
-  const [items, setItems] = useState<ItemData[]>([]);
   const [rows, setRows] = useState<Row[]>([]);
   const [isLoading, setLoading] = useState<boolean>(true);
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const [selectedRows, setSelectedRows] = useState<GridRowId[]>([]);
   const [isDeleted, setIsDeleted] = useState<boolean>(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
+  const [isCreated, setIsCreated] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
 
   const setTableData = (sessionsData: ISessionCRData[], metrics: IPodMetric[]) => {
@@ -146,10 +146,13 @@ const Sessions = () => {
     } else if (isDeleted) {
       setTableData(sessions, metrics);
       setLoading(false);
+    } else if (isCreated) {
+      setTableData(sessions, metrics);
+      setLoading(false);
     } else {
       setLoading(true);
     }
-  }, [sessions, metrics, isDeleted]);
+  }, [sessions, metrics, isDeleted, isCreated]);
 
   const createNewSession = () => {
     setIsFetching(true);
@@ -162,6 +165,7 @@ const Sessions = () => {
       .then((res) => {
         if (res.status === 201) {
           fetchData();
+          setIsCreated(true);
         }
       })
       .catch((error) => {
