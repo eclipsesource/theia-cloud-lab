@@ -1,6 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { KubeConfig, CustomObjectsApi } from '@kubernetes/client-node';
 import { randomUUID } from 'crypto';
+const randomId = randomUUID();
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<any>) {
