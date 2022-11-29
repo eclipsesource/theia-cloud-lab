@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { DataGrid, GridColDef, GridRowId } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
 import RefreshIcon from '../components/icons/RefreshIcon';
@@ -8,6 +8,7 @@ import TheiaButton from '../components/TheiaButton';
 import { Modal } from '@mui/material';
 import PlusIcon from '../components/icons/PlusIcon';
 import { ISessionCRData } from './api/sessions/cr';
+import { LoginContext } from '../context/LoginContext';
 
 export type ItemData = {
   sessionData: ISessionCRData;
@@ -43,6 +44,7 @@ const Sessions = () => {
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [isCreated, setIsCreated] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
+  const { token } = useContext(LoginContext);
 
   const setTableData = (sessionsData: ISessionCRData[], metrics: IPodMetric[]) => {
     const rows: Row[] = [];
@@ -95,6 +97,7 @@ const Sessions = () => {
     fetch('/api/sessions/cr', {
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
       },
       method: 'DELETE',
       body: JSON.stringify({ toBeDeletedSessions: selectedRows }),
@@ -115,7 +118,11 @@ const Sessions = () => {
 
   const fetchData = () => {
     setIsFetching(true);
-    fetch('/api/sessions/cr')
+    fetch('/api/sessions/cr', {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    })
       .then((res) => res.json())
       .then((data) => {
         setSessions(data);
@@ -137,8 +144,10 @@ const Sessions = () => {
 
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  //TODO fix this logic
   useEffect(() => {
     if (sessions && sessions.length > 0 && metrics && metrics.length > 0) {
       setTableData(sessions, metrics);
@@ -159,6 +168,7 @@ const Sessions = () => {
     fetch('/api/sessions/cr', {
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
       },
       method: 'POST',
     })

@@ -52,7 +52,7 @@ export default function Login() {
           const accessToken: any = jwt_decode(res.access_token);
           const accessType = accessToken.resource_access['theia-client'].roles[0];
           setUserType(accessType);
-          // console.log(accessType);
+          console.log(accessToken);
         } catch (err) {
           console.error(err);
           setIsAlertOpen(true);

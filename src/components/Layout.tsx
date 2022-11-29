@@ -1,28 +1,21 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import SidebarMenu from '../components/SidebarMenu';
-import { useLogin } from '../context/LoginContext';
-import Login from '../pages/login';
+import { LoginContext } from '../context/LoginContext';
 
 export default function Layout({ children }: any) {
-  const { userType } = useLogin();
-
   return (
     <div className='flex'>
-      {userType === '' ? (
-        <Login />
-      ) : (
-        <>
-          <SidebarMenu />
-          <div className='w-[calc(100vw-15rem)] h-screen'>
-            <main
-              role='main'
-              className='h-full'
-            >
-              {children}
-            </main>
-          </div>
-        </>
-      )}
+      <>
+        <SidebarMenu />
+        <div className='w-[calc(100vw-15rem)] h-screen'>
+          <main
+            role='main'
+            className='h-full'
+          >
+            {children}
+          </main>
+        </div>
+      </>
     </div>
   );
 }

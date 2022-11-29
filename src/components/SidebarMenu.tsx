@@ -1,12 +1,11 @@
 import Link from 'next/link';
 import { useState } from 'react';
-import { useLogin } from '../context/LoginContext';
 import TheiaSvg from './icons/TheiaSvg';
 
 const SidebarMenu = () => {
   const [isAdminSelected, setIsAdminSelected] = useState<boolean>(false);
   const [isUserSelected, setIsUserSelected] = useState<boolean>(false);
-  const { userType } = useLogin();
+  const userType = 'admin';
   const dashboardName = userType.slice(0, 1).toUpperCase() + userType.slice(1);
   const adminClassStyle =
     'flex relative items-center px-6 h-12 overflow-hidden text-ellipsis whitespace-nowrap rounded hover:text-gray-900 hover:bg-gray-100 transition duration-300 ease-in-out cursor-pointer';

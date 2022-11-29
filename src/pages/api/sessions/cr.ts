@@ -1,6 +1,7 @@
 import { KubernetesClient } from '../../../../utils/k8s/k8s_client';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { randomUUID } from 'crypto';
+import authenticationCheck from '../../../../middlewares/authentication';
 const randomId = randomUUID();
 export interface ISessionCRData {
   creationTimestamp: string;
@@ -16,6 +17,13 @@ export interface ISessionCRData {
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<any>) {
   const k8s = new KubernetesClient();
+  const token: string = req.headers.authorization?.replace('Bearer ', '') || '';
+  const authCheck: boolean = await authenticationCheck(token);
+
+  if (!authCheck) {
+    return res.status(400).send([]);
+  }
+
   // Handle get request
   if (req.method === 'GET') {
     const data = await k8s.getSessionList();
