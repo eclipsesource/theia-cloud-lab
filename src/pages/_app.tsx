@@ -1,21 +1,17 @@
 import '../styles/globals.css';
 import type { AppProps } from 'next/app';
 import Layout from '../components/Layout';
-import { LoginProvider } from '../context/LoginContext';
+import { LoginContext } from '../context/LoginContext';
+import { useState } from 'react';
 
 export default function App({ Component, pageProps }: AppProps) {
-  const userType = {
-    userType: 'user',
-    setUserType: () => {},
-  };
+  const [userType, setUserType] = useState<string>('user');
 
   return (
-    <>
-      <LoginProvider>
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
-      </LoginProvider>
-    </>
+    <LoginContext.Provider value={{ userType, setUserType }}>
+      <Layout>
+        <Component {...pageProps} />
+      </Layout>
+    </LoginContext.Provider>
   );
 }

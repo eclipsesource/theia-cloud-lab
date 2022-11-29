@@ -1,7 +1,7 @@
 import TextField from '@mui/material/TextField';
 import { ChangeEvent, useContext, useState } from 'react';
 import TheiaButton from '../components/TheiaButton';
-import { useLogin } from '../context/LoginContext';
+import { LoginContext } from '../context/LoginContext';
 import jwt_decode from 'jwt-decode';
 import Alert from '@mui/material/Alert';
 import Fade from '@mui/material/Fade';
@@ -9,14 +9,14 @@ import Fade from '@mui/material/Fade';
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 export default function Login() {
-  const ip = '192.168.64.7'; //TODO: replace it with minikube ip
+  const ip = '172.19.102.244'; //TODO: replace it with minikube ip
   const realmName = 'TheiaCloud';
   const clientId = 'theia-client';
   const grantType = 'password';
   const clientSecret = 'LtgLkXnbzXEMoR9q3BW3bTg95KcYpOyl';
   const url = `https://keycloak.${ip}.nip.io/auth/realms/${realmName}/protocol/openid-connect/token`;
 
-  const { setUserType } = useLogin();
+  const { setUserType } = useContext(LoginContext);
   const [username, setUsername] = useState<string>('');
   const [password, setPassword] = useState<string>('');
   const [isAlertOpen, setIsAlertOpen] = useState<boolean>(false);
