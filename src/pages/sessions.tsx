@@ -7,7 +7,7 @@ import DeleteIcon from '../components/icons/DeleteIcon';
 import TheiaButton from '../components/TheiaButton';
 import { Modal } from '@mui/material';
 import PlusIcon from '../components/icons/PlusIcon';
-import { ISessionCRData } from './api/sessions/cr';
+import { ISessionCRData } from '../../types/ISessionCRData';
 import { LoginContext } from '../context/LoginContext';
 
 export type ItemData = {

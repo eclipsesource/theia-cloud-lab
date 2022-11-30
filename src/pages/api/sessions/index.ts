@@ -1,29 +1,13 @@
-import { V1PodList, V1PodStatus, V1Volume } from '@kubernetes/client-node';
+import { V1PodList, V1PodStatus } from '@kubernetes/client-node';
 import { KubernetesClient } from '../../../../utils/k8s/k8s_client';
+import { SessionData } from '../../../../types/SessionData';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import authenticationCheck from '../../../../middlewares/authentication';
-
-export type SessionData = {
-  app: string;
-  hostIP: string | undefined;
-  phase: string | undefined;
-  podIP: string | undefined;
-  qosClass: string | undefined;
-  startTime: Date | undefined;
-  podName: string | undefined;
-  workspaceVolumes: Array<V1Volume> | undefined;
-};
 
 const sessionRegex = /^ws-.*-session/g;
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<SessionData[]>) {
   const k8s = new KubernetesClient();
   const sessionArr: SessionData[] = [];
-  //   const authCheck: boolean = await authenticationCheck();
-
-  //   if (!authCheck) {
-  //     return res.status(400).send([]);
-  //   }
 
   const data = await k8s.getNamespacedPodList();
 

@@ -1,7 +1,7 @@
 import { PodMetric } from '@kubernetes/client-node';
 import { useEffect, useState } from 'react';
 import TableContainer from '../components/TableContainer';
-import { SessionData } from './api/sessions';
+import { SessionData } from '../../types/SessionData';
 import { DataGrid, GridColDef, GridValueGetterParams, GridRenderCellParams, DataGridProps } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
 import RefreshIcon from '../components/icons/RefreshIcon';
