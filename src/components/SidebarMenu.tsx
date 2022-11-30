@@ -44,7 +44,7 @@ const SidebarMenu = () => {
 
       <div className='mt-2'>
         <ul className='relative'>
-          {userType === 'admin' && (
+          {userType === 'admin' ? (
             <>
               <li
                 className={`${adminClassStyle} text-m text-gray-700`}
@@ -54,8 +54,7 @@ const SidebarMenu = () => {
               </li>
               {isAdminSelected && showAdminMenu()}
             </>
-          )}
-          {userType === 'user' && (
+          ) : (
             <>
               <li
                 className={`${adminClassStyle} text-m text-gray-700`}
