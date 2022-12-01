@@ -1,6 +1,8 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { KubernetesClient } from '../../../../utils/k8s/k8s_client';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { randomUUID } from 'crypto';
+const randomId = randomUUID();
 
 export type WorkspaceCRData = {
   name: string;
@@ -49,7 +51,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(204).send({})
     // Handle post request
   } else if (req.method === 'POST') {
-    const wsName = req.body.toBeCreatedWorkspace
+    const randomId = randomUUID();
+    const wsName = randomId;//req.body.toBeCreatedWorkspace
     const data = await k8s.createWorkspaceAndPersistentVolume(wsName)
     return res.status(201).send(data)
   }
