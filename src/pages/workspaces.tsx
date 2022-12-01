@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import TheiaButton from '../components/TheiaButton';
 import DeleteIcon from '../components/icons/DeleteIcon';
 import { GridRowId, DataGrid, GridColDef } from '@mui/x-data-grid';
@@ -6,6 +6,7 @@ import dayjs from 'dayjs';
 import RefreshIcon from '../components/icons/RefreshIcon';
 import PlusIcon from '../components/icons/PlusIcon';
 import { WorkspaceCRData } from './api/workspaces/cr';
+import { LoginContext } from '../context/LoginContext';
 
 type Row = WorkspaceCRData & {
   id: string;
@@ -22,6 +23,7 @@ const Workspaces = () => {
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [isDeleted, setIsDeleted] = useState<boolean>(false);
   const [selectedRows, setSelectedRows] = useState<GridRowId[]>([]);
+  const { token } = useContext(LoginContext);
 
   const setTableData = (workspaces: WorkspaceCRData[]) => {
     const rows: Row[] = [];
@@ -47,6 +49,7 @@ const Workspaces = () => {
     fetch('/api/workspaces/cr', {
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
       },
       method: 'DELETE',
       body: JSON.stringify({ toBeDeletedWorkspaces: selectedRows }),
@@ -70,6 +73,7 @@ const Workspaces = () => {
     fetch('/api/workspaces/cr', {
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
       },
       method: 'POST',
       body: JSON.stringify({ toBeCreatedWorkspace: `${Date.now()}` }),
@@ -89,7 +93,13 @@ const Workspaces = () => {
 
   const fetchData = () => {
     setIsFetching(true);
-    fetch('/api/workspaces/cr')
+    fetch('/api/workspaces/cr', {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      method: 'GET',
+    })
       .then((res) => res.json())
       .then((data) => {
         setWorkspaces(data);
