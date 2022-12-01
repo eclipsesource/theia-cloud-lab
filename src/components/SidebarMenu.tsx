@@ -5,9 +5,8 @@ import TheiaSvg from './icons/TheiaSvg';
 const SidebarMenu = () => {
   const [isAdminSelected, setIsAdminSelected] = useState<boolean>(false);
   const [isUserSelected, setIsUserSelected] = useState<boolean>(false);
-
-  const userType = 'Admin';
-
+  const userType = 'admin';
+  const dashboardName = userType.slice(0, 1).toUpperCase() + userType.slice(1);
   const adminClassStyle =
     'flex relative items-center px-6 h-12 overflow-hidden text-ellipsis whitespace-nowrap rounded hover:text-gray-900 hover:bg-gray-100 transition duration-300 ease-in-out cursor-pointer';
 
@@ -40,12 +39,12 @@ const SidebarMenu = () => {
         <div className='flex items-center w-20'>
           <TheiaSvg />
         </div>
-        <span className='py-2 px-3 text-m text-gray-700'>{`${userType} Dashboard`}</span>
+        <span className='py-2 px-3 text-m text-gray-700'>{`${dashboardName} Dashboard`}</span>
       </div>
 
       <div className='mt-2'>
         <ul className='relative'>
-          {userType === 'Admin' && (
+          {userType === 'admin' ? (
             <>
               <li
                 className={`${adminClassStyle} text-m text-gray-700`}
@@ -55,8 +54,7 @@ const SidebarMenu = () => {
               </li>
               {isAdminSelected && showAdminMenu()}
             </>
-          )}
-          {userType && 'User' && (
+          ) : (
             <>
               <li
                 className={`${adminClassStyle} text-m text-gray-700`}
