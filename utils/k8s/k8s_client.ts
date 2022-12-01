@@ -80,6 +80,17 @@ export class KubernetesClient {
     return await coreV1Api.listNamespacedPod(this.namespace);
   }
 
+  async getNamespacedWorkspace(name: string): Promise<any> {
+    const customObjectsApi = this.createCustomObjectsApiClient();
+    return await customObjectsApi.getNamespacedCustomObject(
+      this.group,
+      this.apiBetaVersion,
+      this.namespace,
+      this.pluralWS,
+      name
+    )
+  }
+
   async getCustomResourceDefinitionList(): Promise<{
     response: http.IncomingMessage;
     body: V1CustomResourceDefinitionList;
@@ -139,14 +150,27 @@ export class KubernetesClient {
   }
 
   async deleteWorkspace(name: string): Promise<any> {
+    // retrieve the obj to get information for PVC
+    const toBeDeletedWS = await this.getNamespacedWorkspace(name);
+
+    // Actually delete the WS obj
     const customObjectsApi = this.createCustomObjectsApiClient();
-    return await customObjectsApi.deleteNamespacedCustomObject(
+    const coreV1Api = this.createCoreV1ApiClient();
+
+    const a = await customObjectsApi.deleteNamespacedCustomObject(
       this.group,
       this.apiBetaVersion,
       this.namespace,
       this.pluralWS,
       name
     );
+
+    // delete the PVC binded to the workspace
+    return await coreV1Api.deleteNamespacedPersistentVolumeClaim(
+      toBeDeletedWS.body.spec.storage,
+      this.namespace,
+    );
+
   }
 
   async createSession(sessionName: string, workspaceName: string): Promise<any> {
