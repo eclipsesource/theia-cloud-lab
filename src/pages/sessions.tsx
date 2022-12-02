@@ -122,13 +122,20 @@ const Sessions = () => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
+      method: 'GET',
     })
       .then((res) => res.json())
       .then((data) => {
         setSessions(data);
       })
       .then(() => {
-        fetch('/api/metrics')
+        fetch('/api/metrics', {
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          method: 'GET',
+        })
           .then((res) => res.json())
           .then((data) => {
             setMetrics(data);

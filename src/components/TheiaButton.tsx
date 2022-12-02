@@ -12,7 +12,7 @@ function TheiaButton({ text, icon, className, ...props }: IButtonProps) {
       {...props}
     >
       {icon && icon}
-      <span className='ml-2'>{text}</span>
+      <span>{text}</span>
     </button>
   );
 }

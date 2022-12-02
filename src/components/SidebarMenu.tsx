@@ -1,11 +1,15 @@
 import Link from 'next/link';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import TheiaSvg from './icons/TheiaSvg';
+import Keycloak from 'keycloak-js';
+import { KeycloackContext } from '../context/KeycloakContext';
+import TheiaButton from './TheiaButton';
 
 const SidebarMenu = () => {
   const [isAdminSelected, setIsAdminSelected] = useState<boolean>(false);
   const [isUserSelected, setIsUserSelected] = useState<boolean>(false);
-  const userType = 'admin';
+  const { keycloakValue, keycloakLogout }: any = useContext(KeycloackContext);
+  const userType = keycloakValue.resourceAccess['theia-cloud'].roles[0];
   const dashboardName = userType.slice(0, 1).toUpperCase() + userType.slice(1);
   const adminClassStyle =
     'flex relative items-center px-6 h-12 overflow-hidden text-ellipsis whitespace-nowrap rounded hover:text-gray-900 hover:bg-gray-100 transition duration-300 ease-in-out cursor-pointer';
@@ -66,6 +70,12 @@ const SidebarMenu = () => {
             </>
           )}
         </ul>
+      </div>
+      <div className='absolute bottom-3 py-2 px-4'>
+        <TheiaButton
+          text='Logout'
+          onClick={() => keycloakLogout()}
+        />
       </div>
     </div>
   );
