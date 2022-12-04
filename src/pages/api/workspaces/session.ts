@@ -14,16 +14,15 @@ export type WorkspaceCRData = {
 };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const k8s = new KubernetesClient()
-  const workspaceCRDataArray: WorkspaceCRData[] = [];
+  const k8s = new KubernetesClient();
+
   if (req.method === 'POST') {
-    const toBeRestartedSessionNameArr = req.body.toBeRestartedSessions
-    await Promise.all(toBeRestartedSessionNameArr.map(async (name: string) => {
-        await k8s.createSession(`ns-${name}`,name)
-    }))
-        return res.status(201).send({})
-  
-
-
+    const toBeRestartedSessionNameArr = req.body.toBeRestartedSessions;
+    await Promise.all(
+      toBeRestartedSessionNameArr.map(async (name: string) => {
+        await k8s.createSession(`ns-${name}`, name);
+      })
+    );
+    return res.status(201).send({});
   }
 }

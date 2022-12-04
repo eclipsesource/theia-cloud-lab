@@ -74,20 +74,21 @@ const Workspaces = () => {
   const restartWorkspaces = () => {
     setIsRestarting(true);
     console.log('here', selectedRows);
-    fetch('/api/workspaces/cr2',{
+    fetch('/api/workspaces/session', {
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${keycloak.token}`,
       },
       method: 'POST',
-      body: JSON.stringify({ toBeRestartedWorkspaces: selectedRows }),
+      body: JSON.stringify({ toBeRestartedSessions: selectedRows }),
     })
       .then((res) => {
-        if (res.status === 201 ) {
+        if (res.status === 201) {
           fetchData();
           setIsRestarted(true);
         }
       })
-      .catch((error)=> {
+      .catch((error) => {
         console.log('Error occured fetching data: ', error);
       })
       .finally(() => {
@@ -141,6 +142,7 @@ const Workspaces = () => {
 
   useEffect(() => {
     fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
