@@ -1,6 +1,5 @@
-import React, { useContext, useEffect } from 'react';
+import React from 'react';
 import SidebarMenu from '../components/SidebarMenu';
-import { LoginContext } from '../context/LoginContext';
 
 export default function Layout({ children }: any) {
   return (

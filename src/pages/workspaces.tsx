@@ -6,7 +6,7 @@ import dayjs from 'dayjs';
 import RefreshIcon from '../components/icons/RefreshIcon';
 import PlusIcon from '../components/icons/PlusIcon';
 import { WorkspaceCRData } from './api/workspaces/cr';
-import { LoginContext } from '../context/LoginContext';
+import { KeycloakContext } from '../context/KeycloakContext';
 
 type Row = WorkspaceCRData & {
   id: string;
@@ -23,7 +23,7 @@ const Workspaces = () => {
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [isDeleted, setIsDeleted] = useState<boolean>(false);
   const [selectedRows, setSelectedRows] = useState<GridRowId[]>([]);
-  const { token } = useContext(LoginContext);
+  const { keycloak } = useContext(KeycloakContext);
 
   const setTableData = (workspaces: WorkspaceCRData[]) => {
     const rows: Row[] = [];
@@ -49,7 +49,7 @@ const Workspaces = () => {
     fetch('/api/workspaces/cr', {
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${keycloak.token}`,
       },
       method: 'DELETE',
       body: JSON.stringify({ toBeDeletedWorkspaces: selectedRows }),
@@ -73,7 +73,7 @@ const Workspaces = () => {
     fetch('/api/workspaces/cr', {
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${keycloak.token}`,
       },
       method: 'POST',
       body: JSON.stringify({ toBeCreatedWorkspace: `${Date.now()}` }),
@@ -96,7 +96,7 @@ const Workspaces = () => {
     fetch('/api/workspaces/cr', {
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${keycloak.token}`,
       },
       method: 'GET',
     })

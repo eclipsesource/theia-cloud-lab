@@ -8,7 +8,7 @@ import TheiaButton from '../components/TheiaButton';
 import { Modal } from '@mui/material';
 import PlusIcon from '../components/icons/PlusIcon';
 import { ISessionCRData } from '../../types/ISessionCRData';
-import { LoginContext } from '../context/LoginContext';
+import { KeycloakContext } from '../context/KeycloakContext';
 
 export type ItemData = {
   sessionData: ISessionCRData;
@@ -37,14 +37,10 @@ const Sessions = () => {
   const [sessions, setSessions] = useState<ISessionCRData[]>([]);
   const [metrics, setMetrics] = useState<IPodMetric[]>([]);
   const [rows, setRows] = useState<Row[]>([]);
-  const [isLoading, setLoading] = useState<boolean>(true);
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const [selectedRows, setSelectedRows] = useState<GridRowId[]>([]);
-  const [isDeleted, setIsDeleted] = useState<boolean>(false);
-  const [isDeleting, setIsDeleting] = useState<boolean>(false);
-  const [isCreated, setIsCreated] = useState<boolean>(false);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const { token } = useContext(LoginContext);
+  const { keycloak } = useContext(KeycloakContext);
 
   const setTableData = (sessionsData: ISessionCRData[], metrics: IPodMetric[]) => {
     const rows: Row[] = [];
@@ -93,11 +89,10 @@ const Sessions = () => {
   };
 
   const deleteSessions = () => {
-    setIsDeleting(true);
     fetch('/api/sessions/cr', {
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${keycloak.token}`,
       },
       method: 'DELETE',
       body: JSON.stringify({ toBeDeletedSessions: selectedRows }),
@@ -105,14 +100,10 @@ const Sessions = () => {
       .then((res) => {
         if (res.status === 204) {
           fetchData();
-          setIsDeleted(true);
         }
       })
       .catch((error) => {
-        console.log('Error occured fetching data: ', error);
-      })
-      .finally(() => {
-        setIsDeleting(false);
+        console.log('Error occurred fetching data: ', error);
       });
   };
 
@@ -120,7 +111,7 @@ const Sessions = () => {
     setIsFetching(true);
     fetch('/api/sessions/cr', {
       headers: {
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${keycloak.token}`,
       },
       method: 'GET',
     })
@@ -132,17 +123,20 @@ const Sessions = () => {
         fetch('/api/metrics', {
           headers: {
             'Content-Type': 'application/json',
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer ${keycloak.token}`,
           },
           method: 'GET',
         })
           .then((res) => res.json())
           .then((data) => {
             setMetrics(data);
+          })
+          .catch((error) => {
+            console.log('Error occurred fetching metrics: ', error);
           });
       })
       .catch((error) => {
-        console.log('Error occured fetching data: ', error);
+        console.log('Error occurred fetching sessions: ', error);
       })
       .finally(() => {
         setIsFetching(false);
@@ -156,40 +150,26 @@ const Sessions = () => {
 
   //TODO fix this logic
   useEffect(() => {
-    if (sessions && sessions.length > 0 && metrics && metrics.length > 0) {
+    if (sessions && sessions.length > 0) {
       setTableData(sessions, metrics);
-      setLoading(false);
-    } else if (isDeleted) {
-      setTableData(sessions, metrics);
-      setLoading(false);
-    } else if (isCreated) {
-      setTableData(sessions, metrics);
-      setLoading(false);
-    } else {
-      setLoading(true);
     }
-  }, [sessions, metrics, isDeleted, isCreated]);
+  }, [sessions, metrics]);
 
   const createNewSession = () => {
-    setIsFetching(true);
     fetch('/api/sessions/cr', {
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${keycloak.token}`,
       },
       method: 'POST',
     })
       .then((res) => {
         if (res.status === 201) {
           fetchData();
-          setIsCreated(true);
         }
       })
       .catch((error) => {
-        console.log('Error occured fetching data: ', error);
-      })
-      .finally(() => {
-        setIsFetching(false);
+        console.log('Error occurred fetching data: ', error);
       });
   };
 
@@ -253,7 +233,7 @@ const Sessions = () => {
             <TheiaButton
               text='Delete Sessions'
               icon={
-                <button className={`${isDeleting ? 'animate-bounce' : ''} hover:animate-pulse`}>
+                <button className={'hover:animate-pulse'}>
                   <DeleteIcon />
                 </button>
               }
@@ -285,7 +265,7 @@ const Sessions = () => {
         disableSelectionOnClick
         experimentalFeatures={{ newEditingApi: true }}
         getRowClassName={() => 'text-xs'}
-        loading={isLoading}
+        loading={isFetching}
         components={{
           Toolbar: SessionsTableHeader,
         }}
