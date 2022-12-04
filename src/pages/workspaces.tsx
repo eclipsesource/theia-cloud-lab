@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import TheiaButton from '../components/TheiaButton';
 import DeleteIcon from '../components/icons/DeleteIcon';
+import RestartIcon from '../components/icons/RestartIcon';
 import { GridRowId, DataGrid, GridColDef } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
 import RefreshIcon from '../components/icons/RefreshIcon';
@@ -21,6 +22,8 @@ const Workspaces = () => {
   const [isFetching, setIsFetching] = useState(false);
   const [isDeleting, setIsDeleting] = useState<boolean>(false);
   const [isDeleted, setIsDeleted] = useState<boolean>(false);
+  const [isRestarting, setIsRestarting] = useState<boolean>(false);
+  const [isRestarted, setIsRestarted] = useState<boolean>(false);
   const [selectedRows, setSelectedRows] = useState<GridRowId[]>([]);
 
   const setTableData = (workspaces: WorkspaceCRData[]) => {
@@ -58,6 +61,30 @@ const Workspaces = () => {
         }
       })
       .catch((error) => {
+        console.log('Error occured fetching data: ', error);
+      })
+      .finally(() => {
+        setIsDeleting(false);
+      });
+  };
+
+  const restartWorkspaces = () => {
+    setIsRestarting(true);
+    console.log('here', selectedRows);
+    fetch('/api/workspaces/cr2',{
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
+      body: JSON.stringify({ toBeRestartedWorkspaces: selectedRows }),
+    })
+      .then((res) => {
+        if (res.status === 201 ) {
+          fetchData();
+          setIsRestarted(true);
+        }
+      })
+      .catch((error)=> {
         console.log('Error occured fetching data: ', error);
       })
       .finally(() => {
@@ -154,6 +181,19 @@ const Workspaces = () => {
               }
               className='mr-2'
               onClick={deleteWorkspaces}
+            />
+          )}
+
+          {workspaces.length > 0 && (
+            <TheiaButton
+              text='Restart Sessions'
+              icon={
+                <button className={`${isRestarting ? 'animate-bounce' : ''} hover:animate-pulse`}>
+                  <RestartIcon />
+                </button>
+              }
+              className='mr-2'
+              onClick={restartWorkspaces}
             />
           )}
 
