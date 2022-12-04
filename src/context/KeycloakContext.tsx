@@ -1,9 +1,8 @@
 'use client';
 
-import Keycloak from 'keycloak-js';
 import { createContext } from 'react';
+import Keycloak from 'keycloak-js';
 
-export const KeycloackContext = createContext({
-  keycloakValue: {},
-  keycloakLogout: () => {},
+export const KeycloakContext = createContext({
+  keycloak: {} as Keycloak,
 });
