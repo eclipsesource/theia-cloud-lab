@@ -54,7 +54,7 @@ const Workspaces = () => {
 
   const fetchData = () => {
     setIsFetching(true);
-    fetch('/api/sessions/cr', {
+    fetch('/api/admin/sessions/cr', {
       headers: {
         Authorization: `Bearer ${keycloak.token}`,
       },
@@ -65,7 +65,7 @@ const Workspaces = () => {
         setSessions(data);
       })
       .then(() => {
-        fetch('/api/metrics', {
+        fetch('/api/admin/metrics', {
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${keycloak.token}`,
