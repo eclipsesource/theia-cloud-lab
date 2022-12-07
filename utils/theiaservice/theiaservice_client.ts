@@ -11,105 +11,105 @@ import axios from 'axios';
 */
 
 export class TheiaServiceClient {
-    group: string;
-    namespace: string;
-    requestBase: AxiosHeaderObj;
+  group: string;
+  namespace: string;
+  requestBase: AxiosHeaderObj;
 
-    constructor(authToken: any) {
-        this.group = 'theia.cloud';
-        this.namespace = 'theiacloud';
-        this.requestBase = {
-            headers: {
-                'Authorization': `Bearer ${authToken}`
-            },
-            url: `${apiConfig.apiUrl}`
-        };
-    }
+  constructor(authToken: any) {
+    this.group = 'theia.cloud';
+    this.namespace = 'theiacloud';
+    this.requestBase = {
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+      url: `${apiConfig.apiUrl}`,
+    };
+  }
 
-    // Replies if the service is available.
-    async checkIfServiceAliveWithAppId(appId: string): Promise<any> {
-        this.requestBase.url = this.requestBase.url + '/service/' + appId;
-        this.requestBase.method = 'get';
-        console.log(this.requestBase.url);
-        const response = await axios(this.requestBase);
-        return response.data;
-    }
+  // Replies if the service is available.
+  async checkIfServiceAliveWithAppId(appId: string): Promise<any> {
+    this.requestBase.url = this.requestBase.url + '/service/' + appId;
+    this.requestBase.method = 'get';
+    const response = await axios(this.requestBase);
+    return response.data;
+  }
 
-    // Replies if the service is available.
-    async getUserWorkspaceList(appId: string, user: string): Promise<any> {
-        this.requestBase.url = this.requestBase.url + '/service/workspace/' + appId + '/' + user;
-        this.requestBase.method = 'get';
-        console.log(this.requestBase.url);
-        const response = await axios(this.requestBase);
-        return response.data;
-    }
+  // Replies if the service is available.
+  async getUserWorkspaceList(appId: string, user: string): Promise<any> {
+    this.requestBase.url = this.requestBase.url + '/service/workspace/' + appId + '/' + user;
+    this.requestBase.method = 'get';
+    const response = await axios(this.requestBase);
+    return response.data;
+  }
 
-    // Request to create a new workspace.
-    async createUserWorkspace(appId: string, user: string): Promise<any> { // appDefinition can be added
-        this.requestBase.url = this.requestBase.url + '/service/workspace';
-        this.requestBase.method = 'post';
-        this.requestBase.data = JSON.stringify(
-            {
-                "appId": appId,
-                "user": user
-            });
-        const response = await axios(this.requestBase);
-        return response.data;
-    }
+  // Request to create a new workspace.
+  async createUserWorkspace(appId: string, user: string): Promise<any> {
+    // appDefinition can be added
+    this.requestBase.url = this.requestBase.url + '/service/workspace';
+    this.requestBase.method = 'post';
+    this.requestBase.data = JSON.stringify({
+      appId: appId,
+      user: user,
+    });
+    const response = await axios(this.requestBase);
+    return response.data;
+  }
 
-    // Delete workspace
-    async deleteUserWorkspace(appId: string, user: string, workspaceName: string): Promise<any> { // appDefinition can be added
-        this.requestBase.url = this.requestBase.url + '/service/workspace';
-        this.requestBase.method = 'delete';
-        this.requestBase.data = JSON.stringify(
-            {
-                "appId": appId,
-                "user": user,
-                "workspaceName": workspaceName
-            });
-        const response = await axios(this.requestBase);
-        return response.data;
-    }
+  // Delete workspace
+  async deleteUserWorkspace(appId: string, user: string, workspaceName: string): Promise<any> {
+    // appDefinition can be added
+    this.requestBase.url = this.requestBase.url + '/service/workspace';
+    this.requestBase.method = 'delete';
+    this.requestBase.data = JSON.stringify({
+      appId: appId,
+      user: user,
+      workspaceName: workspaceName,
+    });
+    const response = await axios(this.requestBase);
+    return response.data;
+  }
 
-    // Launches a session and creates a workspace if required. Responds with the URL of the launched session.
-    async createSessionWithNewWorkspace(appId: string, user: string): Promise<any> {
-        this.requestBase.url = this.requestBase.url + '/service';
-        this.requestBase.method = 'post';
-        this.requestBase.data = JSON.stringify(
-            {
-                "appId": appId,
-                "user": user
-            });
-        const response = await axios(this.requestBase);
-        return response.data;
-    }
+  // Launches a session and creates a workspace if required. Responds with the URL of the launched session.
+  async createSessionWithNewWorkspace(appId: string, user: string): Promise<any> {
+    this.requestBase.url = this.requestBase.url + '/service';
+    this.requestBase.method = 'post';
+    this.requestBase.data = JSON.stringify({
+      appId: appId,
+      user: user,
+    });
+    const response = await axios(this.requestBase);
+    return response.data;
+  }
 
-    // Starts a new session for an existing workspace and responds with the URL of the started session.
-    async createSessionWithExistingWorkspace(appId: string, user: string, workspaceName: string, appDefinition: string): Promise<any> {
-        this.requestBase.url = this.requestBase.url + '/service/session';
-        this.requestBase.method = 'post';
-        this.requestBase.data = JSON.stringify(
-            {
-                "appId": appId,
-                "user": user,
-                "workspaceName": workspaceName,
-                "appDefinition": appDefinition
-            });
-        const response = await axios(this.requestBase);
-        return response.data;
-    }
+  // Starts a new session for an existing workspace and responds with the URL of the started session.
+  async createSessionWithExistingWorkspace(
+    appId: string,
+    user: string,
+    workspaceName: string,
+    appDefinition: string
+  ): Promise<any> {
+    this.requestBase.url = this.requestBase.url + '/service/session';
+    this.requestBase.method = 'post';
+    this.requestBase.data = JSON.stringify({
+      appId: appId,
+      user: user,
+      workspaceName: workspaceName,
+      appDefinition: appDefinition,
+    });
+    const response = await axios(this.requestBase);
+    return response.data;
+  }
 
-    // Stops a session.
-    async deleteSession(appId: string, user: string, sessionName: string): Promise<any> {
-        this.requestBase.url = this.requestBase.url + '/service/session';
-        this.requestBase.method = 'delete';
-        this.requestBase.data = JSON.stringify(
-            {
-                "appId": appId,
-                "user": user,
-                "sessionName": sessionName
-            });
-        const response = await axios(this.requestBase);
-        return response.data;
-    }
+  // Stops a session.
+  async deleteSession(appId: string, user: string, sessionName: string): Promise<any> {
+    this.requestBase.url = this.requestBase.url + '/service/session';
+    this.requestBase.method = 'delete';
+    this.requestBase.data = JSON.stringify({
+      appId: appId,
+      user: user,
+      sessionName: sessionName,
+    });
+    const response = await axios(this.requestBase);
+    return response.data;
+  }
 }

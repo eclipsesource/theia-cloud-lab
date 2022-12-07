@@ -26,7 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     );
     return res.status(201).send({});
   } else if (req.method === 'GET') {
-    console.log('im here')
+    console.log('im here');
     const result = await tsc.checkIfServiceAliveWithAppId('asdfghjkl');
     return res.status(200).send(result);
   }

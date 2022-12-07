@@ -16,6 +16,7 @@ export function middleware(req: NextRequest, res: NextResponse) {
   const token = authHeader.replace('Bearer ', '') || '';
   const accessType = parseTokenForUserType(token);
   requestHeaders.set('x-access-type', accessType);
+  requestHeaders.set('x-access-token', token);
   // if the user is not admin, block
   if (accessType !== userTypes.admin) {
     if (req.nextUrl.pathname.includes('/admin')) {
