@@ -1,6 +1,4 @@
 const serviceAPIConfig = {
-    apiUrl: 'https://service.192.168.64.5.nip.io'
-  };
-  
-  export default serviceAPIConfig;
-  
+  apiUrl: `https://service.${process.env.NEXT_PUBLIC_MINIKUBE_IP}.nip.io`,
+};
+export default serviceAPIConfig;
