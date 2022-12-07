@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { IPodMetric } from './api/metrics';
+import { IPodMetric } from './api/admin/metrics';
 import RefreshIcon from '../components/icons/RefreshIcon';
 import TheiaButton from '../components/TheiaButton';
 import WorkspaceCard, { WorkspaceCardProps } from '../components/WorkspaceCard';
@@ -7,7 +7,7 @@ import { KeycloakContext } from '../context/KeycloakContext';
 import dayjs from 'dayjs';
 import CircularProgress from '@mui/material/CircularProgress';
 import { WorkspaceCRData } from './api/workspaces/cr';
-import { SessionCRData } from './api/sessions/cr';
+import { SessionCRData } from './api/admin/sessions/cr';
 
 const Workspaces = () => {
   const [isFetching, setIsFetching] = useState(false);
