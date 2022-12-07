@@ -2,7 +2,6 @@
 import { KubernetesClient } from '../../../../utils/k8s/k8s_client';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { randomUUID } from 'crypto';
-const randomId = randomUUID();
 
 export type WorkspaceCRData = {
   name: string;
@@ -15,11 +14,11 @@ export type WorkspaceCRData = {
 };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const k8s = new KubernetesClient()
+  const k8s = new KubernetesClient();
   const workspaceCRDataArray: WorkspaceCRData[] = [];
   // Handle get request
   if (req.method === 'GET') {
-    const data = await k8s.getWorkspaceList()
+    const data = await k8s.getWorkspaceList();
     data.body.items &&
       data.body.items.forEach((each: any) => {
         const name = each.metadata?.name;
@@ -44,16 +43,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(200).send(workspaceCRDataArray);
     // Handle delete request
   } else if (req.method === 'DELETE') {
-    const toBeDeletedWorkspaceNamesArr = req.body.toBeDeletedWorkspaces
-    await Promise.all(toBeDeletedWorkspaceNamesArr.map(async (name: string) => {
-      await k8s.deleteWorkspace(name)
-    }))
-    return res.status(204).send({})
+    const toBeDeletedWorkspaceNamesArr = req.body.toBeDeletedWorkspaces;
+    await Promise.all(
+      toBeDeletedWorkspaceNamesArr.map(async (name: string) => {
+        await k8s.deleteWorkspace(name);
+      })
+    );
+    return res.status(204).send({});
     // Handle post request
   } else if (req.method === 'POST') {
     const randomId = randomUUID();
-    const wsName = randomId;//req.body.toBeCreatedWorkspace
-    const data = await k8s.createWorkspaceAndPersistentVolume(wsName)
-    return res.status(201).send(data)
+    const wsName = randomId; //req.body.toBeCreatedWorkspace
+    const data = await k8s.createWorkspaceAndPersistentVolume(wsName);
+    return res.status(201).send(data);
   }
 }

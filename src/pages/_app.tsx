@@ -5,14 +5,17 @@ import { useEffect, useState } from 'react';
 import Keycloak from 'keycloak-js';
 import keycloakConfig from '../../configs/keycloak_config';
 import { KeycloakContext } from '../context/KeycloakContext';
+import { useRouter } from 'next/router';
 
 export default function App({ Component, pageProps }: AppProps) {
   const [shouldRenderLayout, setShouldRenderLayout] = useState(false);
   const [keycloak, setKeycloak] = useState({} as Keycloak);
-  const [isMounted, SetIsMounted] = useState(false);
+  const [userType, setUserType] = useState('');
+  const [isMounted, setIsMounted] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
-    SetIsMounted(true);
+    setIsMounted(true);
   }, []);
 
   useEffect(() => {
@@ -26,7 +29,6 @@ export default function App({ Component, pageProps }: AppProps) {
       keycloakObj
         .init({
           onLoad: 'login-required',
-          redirectUri: 'http://localhost:3000',
           checkLoginIframe: false,
         })
         .then((auth) => {
@@ -38,6 +40,7 @@ export default function App({ Component, pageProps }: AppProps) {
               console.log('keycloakObj', keycloakObj);
               setKeycloak(keycloakObj);
               setShouldRenderLayout(true);
+              keycloak && keycloak.resourceAccess && setUserType(keycloak.resourceAccess['theia-cloud'].roles[0]);
             }
           }
         })
@@ -46,6 +49,12 @@ export default function App({ Component, pageProps }: AppProps) {
         });
     }
   }, [isMounted]);
+
+  useEffect(() => {
+    if (userType === 'admin') {
+      router.replace('/admin');
+    }
+  }, [userType, router]);
 
   return (
     <>

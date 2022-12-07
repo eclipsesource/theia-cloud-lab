@@ -7,7 +7,11 @@ module.exports = {
     './src/**/*.{js,ts,jsx,tsx}',
   ],
   theme: {
-    extend: {},
+    extend: {
+      animation: {
+        'additional-options': '2000ms cubic-bezier(0.33, 1, 0.68, 1) 0s 1 normal none running overlay-appear',
+      },
+    },
   },
   plugins: [],
 };

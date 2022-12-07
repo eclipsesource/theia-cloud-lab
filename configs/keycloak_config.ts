@@ -1,5 +1,5 @@
 const keycloakConfig = {
-  keycloakAuthUrl: 'https://keycloak.192.168.64.7.nip.io/auth/',
+  keycloakAuthUrl: 'https://keycloak.172.19.102.244.nip.io/auth/',
   keycloakRealm: 'TheiaCloud',
   keycloakClientId: 'theia-cloud',
 };

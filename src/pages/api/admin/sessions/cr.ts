@@ -1,9 +1,18 @@
-import { KubernetesClient } from '../../../../../utils/k8s/k8s_client';
-import { ISessionCRData } from '../../../../../types/ISessionCRData';
+import { KubernetesClient } from '../../../../utils/k8s/k8s_client';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { randomUUID } from 'crypto';
-const randomId = randomUUID();
 
+export type SessionCRData = {
+  creationTimestamp: string;
+  name: string;
+  namespace: string;
+  resourceVersion: string;
+  uid: string;
+  appDefinition: string;
+  url: string;
+  user: string;
+  workspace: string;
+};
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<any>) {
   const k8s = new KubernetesClient();
@@ -12,7 +21,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   // Handle get request
   if (req.method === 'GET') {
     const data = await k8s.getSessionList();
-    const sessionCRDataArr: ISessionCRData[] = [];
+    const sessionCRDataArr: SessionCRData[] = [];
     data.body.items &&
       data.body.items.forEach((each: any) => {
         const creationTimestamp = each.metadata?.creationTimestamp;
@@ -25,7 +34,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         const user = each.spec?.user;
         const workspace = each.spec?.workspace;
 
-        const obj: ISessionCRData = {
+        const obj: SessionCRData = {
           creationTimestamp,
           name,
           namespace,
