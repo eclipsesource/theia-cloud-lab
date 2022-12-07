@@ -1,5 +1,5 @@
-import { KubernetesClient } from '../../../../utils/k8s/k8s_client';
-import { ISessionCRData } from '../../../../types/ISessionCRData';
+import { KubernetesClient } from '../../../../../utils/k8s/k8s_client';
+import { ISessionCRData } from '../../../../../types/ISessionCRData';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { randomUUID } from 'crypto';
 const randomId = randomUUID();

@@ -11,7 +11,7 @@ const Sessions = () => {
 
   const fetchData = () => {
     setIsFetching(true);
-    fetch('/api/sessions/cr')
+    fetch('/api/admin/sessions/cr')
       .then((res) => res.json())
       .then((data) => {
         console.log('crs', data);

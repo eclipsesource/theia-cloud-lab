@@ -1,6 +1,6 @@
 import { V1PodList, V1PodStatus } from '@kubernetes/client-node';
-import { KubernetesClient } from '../../../../utils/k8s/k8s_client';
-import { SessionData } from '../../../../types/SessionData';
+import { KubernetesClient } from '../../../../../utils/k8s/k8s_client';
+import { SessionData } from '../../../../../types/SessionData';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 const sessionRegex = /^ws-.*-session/g;

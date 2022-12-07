@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from 'react';
 import { DataGrid, GridColDef, GridRowId } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
 import RefreshIcon from '../components/icons/RefreshIcon';
-import { IPodMetric } from './api/metrics';
+import { IPodMetric } from './api/admin/metrics';
 import DeleteIcon from '../components/icons/DeleteIcon';
 import TheiaButton from '../components/TheiaButton';
 import { Modal } from '@mui/material';
@@ -89,7 +89,7 @@ const Sessions = () => {
   };
 
   const deleteSessions = () => {
-    fetch('/api/sessions/cr', {
+    fetch('/api/admin/sessions/cr', {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${keycloak.token}`,
@@ -109,7 +109,7 @@ const Sessions = () => {
 
   const fetchData = () => {
     setIsFetching(true);
-    fetch('/api/sessions/cr', {
+    fetch('/api/admin/sessions/cr', {
       headers: {
         Authorization: `Bearer ${keycloak.token}`,
       },
@@ -120,7 +120,7 @@ const Sessions = () => {
         setSessions(data);
       })
       .then(() => {
-        fetch('/api/metrics', {
+        fetch('/api/admin/metrics', {
           headers: {
             'Content-Type': 'application/json',
             Authorization: `Bearer ${keycloak.token}`,
@@ -156,7 +156,7 @@ const Sessions = () => {
   }, [sessions, metrics]);
 
   const createNewSession = () => {
-    fetch('/api/sessions/cr', {
+    fetch('/api/admin/sessions/cr', {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${keycloak.token}`,
