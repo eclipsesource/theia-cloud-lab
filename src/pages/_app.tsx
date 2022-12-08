@@ -48,6 +48,7 @@ export default function App({ Component, pageProps }: AppProps) {
           console.error('Authentication Failed');
         });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMounted]);
 
   useEffect(() => {
