@@ -8,7 +8,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const theiaService = new TheiaServiceClient(req.headers['x-access-token']);
   const userId = req.headers['x-access-token'];
   if (req.method === 'GET') {
-    const userWorkspaceList = await theiaService.getUserWorkspaceList(req.body.appId, userId);
+    const userWorkspaceList = await theiaService.getUserWorkspaceList(req.query.appId, userId);
     return res.status(200).send(userWorkspaceList);
     // Handle delete request
   } else if (req.method === 'DELETE') {

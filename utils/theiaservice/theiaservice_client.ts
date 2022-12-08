@@ -35,7 +35,7 @@ export class TheiaServiceClient {
   }
 
   // Replies if the service is available.
-  async getUserWorkspaceList(appId: string, user: any): Promise<any> {
+  async getUserWorkspaceList(appId: any, user: any): Promise<any> {
     this.requestBase.url = this.requestBase.url + '/service/workspace/' + appId + '/' + user;
     this.requestBase.method = 'get';
     const response = await axios(this.requestBase);
