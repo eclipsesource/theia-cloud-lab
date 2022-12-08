@@ -1,18 +1,10 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import { KubernetesClient } from '../../../../utils/k8s/k8s_client';
+import { WorkspaceCRData } from '../../../../types/WorkspaceCRData';
 import { TheiaServiceClient } from '../../../../utils/theiaservice/theiaservice_client';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { randomUUID } from 'crypto';
 
-export type WorkspaceCRData = {
-  name: string;
-  creationTimestamp: string;
-  uid: string;
-  appDefinition: string;
-  label: string;
-  storage: string;
-  user: string;
-};
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const k8s = new KubernetesClient();
@@ -41,11 +33,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         };
         workspaceCRDataArray.push(workspaceCRData);
       });
-    // ADDED
-    const tsc = new TheiaServiceClient(req.headers['x-access-token']);
-    console.log('im here');
-    const result = await tsc.checkIfServiceAliveWithAppId('asdfghjkl');
-    console.log(result);
     return res.status(200).send(workspaceCRDataArray);
     // Handle delete request
   } else if (req.method === 'DELETE') {

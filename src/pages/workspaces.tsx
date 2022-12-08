@@ -6,7 +6,7 @@ import WorkspaceCard, { WorkspaceCardProps } from '../components/WorkspaceCard';
 import { KeycloakContext } from '../context/KeycloakContext';
 import dayjs from 'dayjs';
 import CircularProgress from '@mui/material/CircularProgress';
-import { WorkspaceCRData } from './api/workspaces/cr';
+import { WorkspaceCRData } from '../../types/WorkspaceCRData';
 import { SessionCRData } from './api/admin/sessions/cr';
 
 const Workspaces = () => {

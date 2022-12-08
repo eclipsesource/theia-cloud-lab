@@ -35,7 +35,7 @@ export class TheiaServiceClient {
   }
 
   // Replies if the service is available.
-  async getUserWorkspaceList(appId: string, user: string): Promise<any> {
+  async getUserWorkspaceList(appId: string, user: any): Promise<any> {
     this.requestBase.url = this.requestBase.url + '/service/workspace/' + appId + '/' + user;
     this.requestBase.method = 'get';
     const response = await axios(this.requestBase);
@@ -43,7 +43,7 @@ export class TheiaServiceClient {
   }
 
   // Request to create a new workspace.
-  async createUserWorkspace(appId: string, user: string): Promise<any> {
+  async createUserWorkspace(appId: string, user: any): Promise<any> {
     // appDefinition can be added
     this.requestBase.url = this.requestBase.url + '/service/workspace';
     this.requestBase.method = 'post';
@@ -56,7 +56,7 @@ export class TheiaServiceClient {
   }
 
   // Delete workspace
-  async deleteUserWorkspace(appId: string, user: string, workspaceName: string): Promise<any> {
+  async deleteUserWorkspace(appId: string, user: any, workspaceName: string): Promise<any> {
     // appDefinition can be added
     this.requestBase.url = this.requestBase.url + '/service/workspace';
     this.requestBase.method = 'delete';
@@ -70,7 +70,7 @@ export class TheiaServiceClient {
   }
 
   // Launches a session and creates a workspace if required. Responds with the URL of the launched session.
-  async createSessionWithNewWorkspace(appId: string, user: string): Promise<any> {
+  async createSessionWithNewWorkspace(appId: string, user: any): Promise<any> {
     this.requestBase.url = this.requestBase.url + '/service';
     this.requestBase.method = 'post';
     this.requestBase.data = JSON.stringify({
@@ -84,7 +84,7 @@ export class TheiaServiceClient {
   // Starts a new session for an existing workspace and responds with the URL of the started session.
   async createSessionWithExistingWorkspace(
     appId: string,
-    user: string,
+    user: any,
     workspaceName: string,
     appDefinition: string
   ): Promise<any> {
@@ -101,7 +101,7 @@ export class TheiaServiceClient {
   }
 
   // Stops a session.
-  async deleteSession(appId: string, user: string, sessionName: string): Promise<any> {
+  async deleteSession(appId: string, user: any, sessionName: string): Promise<any> {
     this.requestBase.url = this.requestBase.url + '/service/session';
     this.requestBase.method = 'delete';
     this.requestBase.data = JSON.stringify({

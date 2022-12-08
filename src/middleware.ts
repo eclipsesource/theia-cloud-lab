@@ -14,9 +14,13 @@ export function middleware(req: NextRequest, res: NextResponse) {
   }
   // Get the user type information
   const token = authHeader.replace('Bearer ', '') || '';
-  const accessType = parseTokenForUserType(token);
+  const decodedToken = parseToken(token);
+  const accessType = getUserType(decodedToken);
+  const userMail = getUserMail(decodedToken);
+  // Set necessary information to the header
   requestHeaders.set('x-access-type', accessType);
   requestHeaders.set('x-access-token', token);
+  requestHeaders.set('x-user-mail', userMail);
   // if the user is not admin, block
   if (accessType !== userTypes.admin) {
     if (req.nextUrl.pathname.includes('/admin')) {
@@ -39,9 +43,20 @@ export const config = {
   matcher: ['/api/:function*'],
 };
 
-// Decode and parse the token for admin information
-function parseTokenForUserType(token: string) {
+// Decode the token
+function parseToken(token: string) {
   const decoded: any = jwt_decode(token);
-  const accessType = decoded.resource_access['theia-cloud'].roles[0];
+  return decoded;
+}
+
+// parse the token for admin information
+function getUserType(decodedToken: any) {
+  const accessType = decodedToken.resource_access['theia-cloud'].roles[0];
   return accessType;
+}
+
+// parse the token for email
+function getUserMail(decodedToken: any) {
+  const email = decodedToken.email;
+  return email;
 }
