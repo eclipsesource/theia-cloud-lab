@@ -70,7 +70,7 @@ export class TheiaServiceClient {
   }
 
   // Launches a session and creates a workspace if required. Responds with the URL of the launched session.
-  async createSessionWithNewWorkspace(appId: string, user: any): Promise<any> {
+  async createSessionWithNewWorkspace(appId: string, user: any, appDefinition:string): Promise<any> {
     const requestBase = getRequestBase(
       `${this.apiUrl}/service`,
       this.authToken,
@@ -78,6 +78,7 @@ export class TheiaServiceClient {
       JSON.stringify({
         appId: appId,
         user: user,
+        appDefinition: appDefinition
       })
     );
     const response = await axios(requestBase);
