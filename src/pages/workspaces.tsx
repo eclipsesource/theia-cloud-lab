@@ -99,6 +99,7 @@ const Workspaces = () => {
         Authorization: `Bearer ${keycloak.token}`,
       },
       method: 'POST',
+      body: JSON.stringify({ appDefinition: 'theia-cloud-demo' }),
     })
       .then((res) => res.json())
       .then((data) => {
