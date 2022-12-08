@@ -5,7 +5,6 @@ import { TheiaServiceClient } from '../../../../utils/theiaservice/theiaservice_
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { randomUUID } from 'crypto';
 
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const k8s = new KubernetesClient();
   const workspaceCRDataArray: WorkspaceCRData[] = [];

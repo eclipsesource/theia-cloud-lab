@@ -2,6 +2,7 @@
 import { TheiaServiceClient } from '../../../../../utils/theiaservice/theiaservice_client';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   // Theia Service Client
   const theiaService = new TheiaServiceClient(req.headers['x-access-token']);
