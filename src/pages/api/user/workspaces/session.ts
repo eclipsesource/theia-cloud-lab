@@ -24,5 +24,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   } else if (req.method === 'DELETE') {
     await theiaService.deleteSession(req.body.appId, userId, req.body.sessionName);
     return res.status(204).send({});
+    // Handle get request
+  } else if (req.method === 'GET') {
+    const userSessionsList = await theiaService.getSessionsList('asdfghjkl', userId);
+    return res.status(200).send(userSessionsList);
   }
 }
