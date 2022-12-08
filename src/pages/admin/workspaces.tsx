@@ -6,7 +6,7 @@ import { GridRowId, DataGrid, GridColDef } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
 import RefreshIcon from '../../components/icons/RefreshIcon';
 import PlusIcon from '../../components/icons/PlusIcon';
-import { WorkspaceCRData } from '../api/workspaces/cr';
+import { WorkspaceCRData } from '../../../types/WorkspaceCRData';
 import { KeycloakContext } from '../../context/KeycloakContext';
 
 type Row = WorkspaceCRData & {
