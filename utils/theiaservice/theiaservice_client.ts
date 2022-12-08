@@ -20,6 +20,8 @@ export class TheiaServiceClient {
     this.namespace = 'theiacloud';
     this.requestBase = {
       headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
         Authorization: `Bearer ${authToken}`,
       },
       url: `${apiConfig.apiUrl}`,
@@ -37,6 +39,7 @@ export class TheiaServiceClient {
   // Replies if the service is available.
   async getUserWorkspaceList(appId: any, user: any): Promise<any> {
     this.requestBase.url = this.requestBase.url + '/service/workspace/' + appId + '/' + user;
+    console.log('this.requestBase.url', this.requestBase.url);
     this.requestBase.method = 'get';
     const response = await axios(this.requestBase);
     return response.data;
@@ -47,9 +50,6 @@ export class TheiaServiceClient {
     // appDefinition can be added
     this.requestBase.url = this.requestBase.url + '/service/workspace';
     this.requestBase.method = 'post';
-    this.requestBase.headers = {
-      'Content-Type': 'application/x-www-form-urlencoded'
-    };
     this.requestBase.data = JSON.stringify({
       appId: appId,
       user: user,

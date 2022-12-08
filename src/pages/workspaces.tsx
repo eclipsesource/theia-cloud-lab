@@ -6,55 +6,35 @@ import WorkspaceCard, { WorkspaceCardProps } from '../components/WorkspaceCard';
 import { KeycloakContext } from '../context/KeycloakContext';
 import dayjs from 'dayjs';
 import CircularProgress from '@mui/material/CircularProgress';
-import { WorkspaceCRData } from '../../types/WorkspaceCRData';
 import { SessionCRData } from './api/admin/sessions/cr';
+import { UserWorkspaceCRData } from '../../types/UserWorkspaceCRData';
 
 const Workspaces = () => {
   const [isFetching, setIsFetching] = useState(false);
-  const [sessions, setSessions] = useState<SessionCRData[]>([]);
-  const [metrics, setMetrics] = useState<IPodMetric[]>([]);
-  const [workspaces, setWorkspaces] = useState<WorkspaceCRData[]>([]);
+  const [workspaces, setWorkspaces] = useState<UserWorkspaceCRData[]>([]);
   const [workspaceCardsData, setWorkspaceCardsData] = useState<WorkspaceCardProps[]>([]);
   const { keycloak } = useContext(KeycloakContext);
   const [isMounted, SetIsMounted] = useState(false);
 
-  const setCardsData = (sessions: SessionCRData[], metrics: IPodMetric[], workspaces: WorkspaceCRData[]) => {
+  const setCardsData = (workspaces: UserWorkspaceCRData[]) => {
     const cardsData: WorkspaceCardProps[] = [];
-    for (const session of sessions) {
-      let isMatched = false;
-      for (const podMetric of metrics) {
-        if (podMetric.metadata?.labels && session.name === podMetric.metadata?.labels.app) {
-          isMatched = true;
-          const cardData: WorkspaceCardProps = {
-            name: session.name,
-            creationTimestamp: dayjs(session.creationTimestamp).toString(),
-            appDefinition: session.appDefinition,
-            url: session.url,
-            cpuUsage: podMetric.containers[0].usage.cpu,
-            memoryUsage: podMetric.containers[0].usage.memory,
-          };
-          cardsData.push(cardData);
-          break;
-        }
-      }
-      if (!isMatched) {
-        const cardData: WorkspaceCardProps = {
-          name: session.name,
-          creationTimestamp: dayjs(session.creationTimestamp).toString(),
-          appDefinition: session.appDefinition,
-          url: session.url,
-          cpuUsage: '...',
-          memoryUsage: '...',
-        };
-        cardsData.push(cardData);
-      }
+    for (const workspace of workspaces) {
+      const cardData: WorkspaceCardProps = {
+        name: workspace.name,
+        creationTimestamp: 'CREATION TIMESTAMP',
+        appDefinition: workspace.appDefinition,
+        url: 'URL',
+        cpuUsage: 'CPU',
+        memoryUsage: 'MEMORY',
+      };
+      cardsData.push(cardData);
     }
     setWorkspaceCardsData(cardsData);
   };
 
   const fetchData = () => {
     setIsFetching(true);
-    fetch('/api/admin/sessions/cr', {
+    fetch('/api/user/workspaces', {
       headers: {
         Authorization: `Bearer ${keycloak.token}`,
       },
@@ -62,42 +42,11 @@ const Workspaces = () => {
     })
       .then((res) => res.json())
       .then((data) => {
-        setSessions(data);
-      })
-      .then(() => {
-        fetch('/api/admin/metrics', {
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${keycloak.token}`,
-          },
-          method: 'GET',
-        })
-          .then((res) => res.json())
-          .then((data) => {
-            setMetrics(data);
-          })
-          .then(() =>
-            fetch('/api/workspaces/cr', {
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${keycloak.token}`,
-              },
-              method: 'GET',
-            })
-              .then((res) => res.json())
-              .then((data) => {
-                setWorkspaces(data);
-              })
-              .catch((error) => {
-                console.log('Error occurred fetching workspaces: ', error);
-              })
-          )
-          .catch((error) => {
-            console.log('Error occurred fetching metrics: ', error);
-          });
+        console.log('data', data);
+        setWorkspaces(data);
       })
       .catch((error) => {
-        console.log('Error occurred fetching sessions: ', error);
+        console.log('Error occurred fetching workspaces: ', error);
       })
       .finally(() => {
         setIsFetching(false);
@@ -110,14 +59,14 @@ const Workspaces = () => {
 
   useEffect(() => {
     fetchData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMounted]);
 
   useEffect(() => {
-    if (sessions) {
-      setCardsData(sessions, metrics, workspaces);
+    if (workspaces) {
+      setCardsData(workspaces);
     }
-  }, [sessions, metrics, workspaces]);
+  }, [workspaces]);
 
   return (
     <div className='w-full h-full'>
