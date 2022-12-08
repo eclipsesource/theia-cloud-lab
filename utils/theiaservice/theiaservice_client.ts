@@ -123,4 +123,12 @@ export class TheiaServiceClient {
     const response = await axios(this.requestBase);
     return response.data;
   }
+
+  // Returns the current CPU and memory usage of the session's pod.
+  async getSessionMetricsList(appId: string, sessionName: any): Promise<any> {
+    this.requestBase.url = this.requestBase.url + '/service/session/performance/' + appId + '/' + sessionName;
+    this.requestBase.method = 'get';
+    const response = await axios(this.requestBase);
+    return response.data;
+  }
 }

@@ -8,18 +8,18 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const userId = req.headers['x-user-mail'];
   // Handle POST request
   if (req.method === 'POST') {
-    let userWorkspaceList;
+    let newSession;
     if (!req.body.workspaceName) {
-      userWorkspaceList = await theiaService.createSessionWithNewWorkspace(req.body.appId, userId);
+      newSession = await theiaService.createSessionWithNewWorkspace(req.body.appId, userId);
     } else {
-      userWorkspaceList = await theiaService.createSessionWithExistingWorkspace(
+      newSession = await theiaService.createSessionWithExistingWorkspace(
         req.body.appId,
         userId,
         req.body.workspaceName,
         req.body.appDefinition
       );
     }
-    return res.status(200).send(userWorkspaceList);
+    return res.status(200).send(newSession);
     // Handle delete request
   } else if (req.method === 'DELETE') {
     await theiaService.deleteSession(req.body.appId, userId, req.body.sessionName);
@@ -27,7 +27,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Handle get request
   } else if (req.method === 'GET') {
     const userSessionsList = await theiaService.getSessionsList('asdfghjkl', userId);
-    console.log('userSessionsList', userSessionsList);
+    await Promise.all(
+      userSessionsList.map(async (session: any) => {
+        session.sessionMetrics = await theiaService.getSessionMetricsList('asdfghjkl', session.name);
+      })
+    );
     return res.status(200).send(userSessionsList);
   }
 }
