@@ -2,17 +2,17 @@ import { useContext, useEffect, useState } from 'react';
 import { DataGrid, GridColDef, GridRowId } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
 import RefreshIcon from '../../components/icons/RefreshIcon';
-import { IPodMetric } from '../api/admin/metrics';
 import DeleteIcon from '../../components/icons/DeleteIcon';
 import TheiaButton from '../../components/TheiaButton';
 import { Modal } from '@mui/material';
 import PlusIcon from '../../components/icons/PlusIcon';
-import { ISessionCRData } from '../../../types/ISessionCRData';
+import { AdminSessionCRData } from '../../../types/AdminSessionCRData';
 import { KeycloakContext } from '../../context/KeycloakContext';
+import { AdminPodMetrics } from '../../../types/AdminPodMetrics';
 
 export type ItemData = {
-  sessionData: ISessionCRData;
-  podMetricData: IPodMetric;
+  sessionData: AdminSessionCRData;
+  podMetricData: AdminPodMetrics;
 };
 
 type Row = {
@@ -34,15 +34,15 @@ const XLCol = 250;
 const MCol = 80;
 
 const Sessions = () => {
-  const [sessions, setSessions] = useState<ISessionCRData[]>([]);
-  const [metrics, setMetrics] = useState<IPodMetric[]>([]);
+  const [sessions, setSessions] = useState<AdminSessionCRData[]>([]);
+  const [metrics, setMetrics] = useState<AdminPodMetrics[]>([]);
   const [rows, setRows] = useState<Row[]>([]);
   const [isFetching, setIsFetching] = useState<boolean>(false);
   const [selectedRows, setSelectedRows] = useState<GridRowId[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const { keycloak } = useContext(KeycloakContext);
 
-  const setTableData = (sessionsData: ISessionCRData[], metrics: IPodMetric[]) => {
+  const setTableData = (sessionsData: AdminSessionCRData[], metrics: AdminPodMetrics[]) => {
     const rows: Row[] = [];
     for (const session of sessionsData) {
       let isMatched = false;

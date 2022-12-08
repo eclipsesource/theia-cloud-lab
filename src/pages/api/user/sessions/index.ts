@@ -27,6 +27,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     // Handle get request
   } else if (req.method === 'GET') {
     const userSessionsList = await theiaService.getSessionsList('asdfghjkl', userId);
+    console.log('userSessionsList', userSessionsList);
     return res.status(200).send(userSessionsList);
   }
 }

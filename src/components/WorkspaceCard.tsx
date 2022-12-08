@@ -3,7 +3,8 @@ import AdditionalOptions from './AdditionalOptions';
 import OptionsIcon from './icons/OptionsIcon';
 
 export type WorkspaceCardProps = {
-  creationTimestamp: string;
+  status: string;
+  lastActivity: string;
   name: string;
   appDefinition: string;
   url: string;
@@ -22,7 +23,7 @@ export default function WorkspaceCard(props: WorkspaceCardProps) {
         >
           {props.name}
         </a>
-        <div className='w-1/5'>{props.creationTimestamp}</div>
+        <div className='w-1/5'>{props.lastActivity}</div>
         <div className='relative'>
           <button onClick={() => setIsOptionsShown(!isOptionsShown)}>
             <OptionsIcon />
@@ -31,7 +32,7 @@ export default function WorkspaceCard(props: WorkspaceCardProps) {
         </div>
       </div>
       <div className='flex justify-between'>
-        <div className='w-1/6'>Status</div>
+        <div className='w-1/6'>{props.status}</div>
         <div className='w-1/3'>{props.appDefinition}</div>
         <div className='flex justify-between w-1/3'>
           <div className='w-24 flex text-sm gap-1'>

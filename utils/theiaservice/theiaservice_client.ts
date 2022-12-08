@@ -118,7 +118,7 @@ export class TheiaServiceClient {
 
   // List sessions
   async getSessionsList(appId: string, user: any): Promise<any> {
-    this.requestBase.url = this.requestBase.url + '/service/session' + appId + '/' + user;
+    this.requestBase.url = this.requestBase.url + '/service/session/' + appId + '/' + user;
     this.requestBase.method = 'get';
     const response = await axios(this.requestBase);
     return response.data;

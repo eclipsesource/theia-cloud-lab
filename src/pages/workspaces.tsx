@@ -1,33 +1,53 @@
 import { useContext, useEffect, useState } from 'react';
-import { IPodMetric } from './api/admin/metrics';
 import RefreshIcon from '../components/icons/RefreshIcon';
 import TheiaButton from '../components/TheiaButton';
 import WorkspaceCard, { WorkspaceCardProps } from '../components/WorkspaceCard';
 import { KeycloakContext } from '../context/KeycloakContext';
 import dayjs from 'dayjs';
 import CircularProgress from '@mui/material/CircularProgress';
-import { SessionCRData } from './api/admin/sessions/cr';
 import { UserWorkspaceCRData } from '../../types/UserWorkspaceCRData';
+import { UserSessionCRData } from '../../types/UserSessionCRData';
 
 const Workspaces = () => {
   const [isFetching, setIsFetching] = useState(false);
+  const [sessions, setSessions] = useState<UserSessionCRData[]>([]);
   const [workspaces, setWorkspaces] = useState<UserWorkspaceCRData[]>([]);
   const [workspaceCardsData, setWorkspaceCardsData] = useState<WorkspaceCardProps[]>([]);
   const { keycloak } = useContext(KeycloakContext);
   const [isMounted, SetIsMounted] = useState(false);
 
-  const setCardsData = (workspaces: UserWorkspaceCRData[]) => {
+  const setCardsData = (workspaces: UserWorkspaceCRData[], sessions: UserSessionCRData[]) => {
     const cardsData: WorkspaceCardProps[] = [];
     for (const workspace of workspaces) {
-      const cardData: WorkspaceCardProps = {
-        name: workspace.name,
-        creationTimestamp: 'CREATION TIMESTAMP',
-        appDefinition: workspace.appDefinition,
-        url: 'URL',
-        cpuUsage: 'CPU',
-        memoryUsage: 'MEMORY',
-      };
-      cardsData.push(cardData);
+      let isMatched = false;
+      for (const session of sessions) {
+        if (session.workspace === workspace.name) {
+          isMatched = true;
+          const cardData: WorkspaceCardProps = {
+            status: 'Running',
+            name: workspace.name,
+            lastActivity: dayjs(session.lastActivity).toString(),
+            appDefinition: workspace.appDefinition,
+            url: session.url,
+            cpuUsage: 'CPU',
+            memoryUsage: 'MEMORY',
+          };
+          cardsData.push(cardData);
+          break;
+        }
+      }
+      if (!isMatched) {
+        const cardData: WorkspaceCardProps = {
+          status: 'Stopped',
+          name: workspace.name,
+          lastActivity: 'No Data',
+          appDefinition: workspace.appDefinition,
+          url: '',
+          cpuUsage: 'CPU',
+          memoryUsage: 'MEMORY',
+        };
+        cardsData.push(cardData);
+      }
     }
     setWorkspaceCardsData(cardsData);
   };
@@ -42,8 +62,26 @@ const Workspaces = () => {
     })
       .then((res) => res.json())
       .then((data) => {
-        console.log('data', data);
+        console.log('workspaces', data);
         setWorkspaces(data);
+      })
+      .catch((error) => {
+        console.log('Error occurred fetching workspaces: ', error);
+      })
+      .finally(() => {
+        setIsFetching(false);
+      });
+
+    fetch('/api/user/sessions', {
+      headers: {
+        Authorization: `Bearer ${keycloak.token}`,
+      },
+      method: 'GET',
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        console.log('sessions', data);
+        setSessions(data);
       })
       .catch((error) => {
         console.log('Error occurred fetching workspaces: ', error);
@@ -64,9 +102,9 @@ const Workspaces = () => {
 
   useEffect(() => {
     if (workspaces) {
-      setCardsData(workspaces);
+      setCardsData(workspaces, sessions);
     }
-  }, [workspaces]);
+  }, [workspaces, sessions]);
 
   return (
     <div className='w-full h-full'>

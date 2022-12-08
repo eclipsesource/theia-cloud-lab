@@ -1,4 +1,4 @@
-export type WorkspaceCRData = {
+export type AdminWorkspaceCRData = {
   name: string;
   creationTimestamp: string;
   uid: string;
