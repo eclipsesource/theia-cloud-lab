@@ -11,8 +11,10 @@ function TheiaButton({ text, icon, className, ...props }: IButtonProps) {
       className={`inline-flex items-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow ${className}`}
       {...props}
     >
-      {icon && icon}
-      <span>{text}</span>
+      <span className='flex gap-1'>
+        {icon && icon}
+        <span>{text}</span>
+      </span>
     </button>
   );
 }

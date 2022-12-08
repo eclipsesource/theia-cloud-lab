@@ -6,10 +6,10 @@ import { GridRowId, DataGrid, GridColDef } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
 import RefreshIcon from '../../components/icons/RefreshIcon';
 import PlusIcon from '../../components/icons/PlusIcon';
-import { WorkspaceCRData } from '../../../types/WorkspaceCRData';
+import { AdminWorkspaceCRData } from '../../../types/AdminWorkspaceCRData';
 import { KeycloakContext } from '../../context/KeycloakContext';
 
-type Row = WorkspaceCRData & {
+type Row = AdminWorkspaceCRData & {
   id: string;
 };
 
@@ -18,12 +18,12 @@ const MCol = 80;
 
 const Workspaces = () => {
   const [rows, setRows] = useState<Row[]>([]);
-  const [workspaces, setWorkspaces] = useState<WorkspaceCRData[]>([]);
+  const [workspaces, setWorkspaces] = useState<AdminWorkspaceCRData[]>([]);
   const [isFetching, setIsFetching] = useState(false);
   const [selectedRows, setSelectedRows] = useState<GridRowId[]>([]);
   const { keycloak } = useContext(KeycloakContext);
 
-  const setTableData = (workspaces: WorkspaceCRData[]) => {
+  const setTableData = (workspaces: AdminWorkspaceCRData[]) => {
     const rows: Row[] = [];
     for (const workspace of workspaces) {
       const row: Row = {
@@ -42,7 +42,7 @@ const Workspaces = () => {
   };
 
   const deleteWorkspaces = () => {
-    fetch('/api/workspaces/cr', {
+    fetch('/api/admin/workspaces/cr', {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${keycloak.token}`,
@@ -61,7 +61,7 @@ const Workspaces = () => {
   };
 
   const restartWorkspaces = () => {
-    fetch('/api/workspaces/session', {
+    fetch('/api/admin/workspaces/session', {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${keycloak.token}`,
@@ -80,7 +80,7 @@ const Workspaces = () => {
   };
 
   const createNewWorkplace = () => {
-    fetch('/api/workspaces/cr', {
+    fetch('/api/admin/workspaces/cr', {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${keycloak.token}`,
@@ -100,7 +100,7 @@ const Workspaces = () => {
 
   const fetchData = () => {
     setIsFetching(true);
-    fetch('/api/workspaces/cr', {
+    fetch('/api/admin/workspaces/cr', {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${keycloak.token}`,
@@ -125,7 +125,7 @@ const Workspaces = () => {
   }, []);
 
   useEffect(() => {
-    if (workspaces && workspaces.length > 0) {
+    if (workspaces) {
       setTableData(workspaces);
     }
   }, [workspaces]);

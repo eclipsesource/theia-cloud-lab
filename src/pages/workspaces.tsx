@@ -7,6 +7,7 @@ import dayjs from 'dayjs';
 import CircularProgress from '@mui/material/CircularProgress';
 import { UserWorkspaceCRData } from '../../types/UserWorkspaceCRData';
 import { UserSessionCRData } from '../../types/UserSessionCRData';
+import PlusIcon from '../components/icons/PlusIcon';
 
 const Workspaces = () => {
   const [isFetching, setIsFetching] = useState(false);
@@ -91,6 +92,27 @@ const Workspaces = () => {
       });
   };
 
+  const createWorkspace = () => {
+    setIsFetching(true);
+    fetch('/api/user/sessions', {
+      headers: {
+        Authorization: `Bearer ${keycloak.token}`,
+      },
+      method: 'POST',
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        fetchData();
+        console.log('createWorkspace', data);
+      })
+      .catch((error) => {
+        console.log('Error occurred creating workspace: ', error);
+      })
+      .finally(() => {
+        setIsFetching(false);
+      });
+  };
+
   useEffect(() => {
     SetIsMounted(true);
   }, []);
@@ -110,17 +132,20 @@ const Workspaces = () => {
     <div className='w-full h-full'>
       <div className='flex p-4 shadow-sm h-16 items-center justify-between'>
         <span className='text-lg text-gray-600 '>Workspaces</span>
-        <TheiaButton
-          text='Refresh'
-          icon={
-            <button className={`${isFetching ? 'animate-spin' : ''} hover:animate-pulse`}>
-              <RefreshIcon />
-            </button>
-          }
-          onClick={fetchData}
-        />
+        <span className='flex gap-4 '>
+          <TheiaButton
+            text='Create Workspace'
+            icon={<PlusIcon className={`${isFetching ? 'animate-spin' : ''} hover:animate-pulse`} />}
+            onClick={createWorkspace}
+          />
+          <TheiaButton
+            text='Refresh'
+            icon={<RefreshIcon className={`hover:animate-pulse`} />}
+            onClick={fetchData}
+          />
+        </span>
       </div>
-      <div className='flex p-5 w-full h-[calc(100vh-4rem)]'>
+      <div className='flex p-5 w-full h-[calc(100vh-4rem)] flex-col gap-6'>
         {isFetching ? (
           <div className='flex justify-center items-center w-full'>
             <CircularProgress />

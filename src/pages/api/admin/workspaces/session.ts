@@ -1,4 +1,4 @@
-import { KubernetesClient } from '../../../../utils/k8s/k8s_client';
+import { KubernetesClient } from '../../../../../utils/k8s/k8s_client';
 import type { NextApiRequest, NextApiResponse } from 'next';
 
 // process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";

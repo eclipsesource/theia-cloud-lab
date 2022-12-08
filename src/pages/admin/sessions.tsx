@@ -109,7 +109,7 @@ const Sessions = () => {
 
   const fetchData = () => {
     setIsFetching(true);
-    fetch('/api/sessions/cr', {
+    fetch('/api/admin/sessions/cr', {
       headers: {
         Authorization: `Bearer ${keycloak.token}`,
       },
@@ -150,7 +150,7 @@ const Sessions = () => {
 
   //TODO fix this logic
   useEffect(() => {
-    if (sessions && sessions.length > 0) {
+    if (sessions) {
       setTableData(sessions, metrics);
     }
   }, [sessions, metrics]);

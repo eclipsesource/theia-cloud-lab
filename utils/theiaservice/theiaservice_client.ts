@@ -1,6 +1,6 @@
 import apiConfig from '../../configs/service_api_config';
-import { AxiosHeaderObj } from './theiaservice_types';
-import axios from 'axios';
+import axios, { AxiosRequestConfig } from 'axios';
+import { getRequestBase } from './theiaservice_utils';
 
 /* HELPER: https://github.com/eclipsesource/theia-cloud/blob/main/doc/docs/openapi.json
 
@@ -13,74 +13,74 @@ import axios from 'axios';
 export class TheiaServiceClient {
   group: string;
   namespace: string;
-  requestBase: AxiosHeaderObj;
+  apiUrl: string;
+  authToken: string;
 
   constructor(authToken: any) {
     this.group = 'theia.cloud';
     this.namespace = 'theiacloud';
-    this.requestBase = {
-      headers: {
-        'Content-Type': 'application/json',
-        Accept: 'application/json',
-        Authorization: `Bearer ${authToken}`,
-      },
-      url: `${apiConfig.apiUrl}`,
-    };
+    this.apiUrl = apiConfig.apiUrl;
+    this.authToken = authToken;
   }
 
   // Replies if the service is available.
   async checkIfServiceAliveWithAppId(appId: string): Promise<any> {
-    this.requestBase.url = this.requestBase.url + '/service/' + appId;
-    this.requestBase.method = 'get';
-    const response = await axios(this.requestBase);
+    const requestBase = getRequestBase(`${this.apiUrl}/service/${appId}`, this.authToken, 'get');
+    const response = await axios(requestBase);
     return response.data;
   }
 
   // Replies if the service is available.
   async getUserWorkspaceList(appId: any, user: any): Promise<any> {
-    this.requestBase.url = this.requestBase.url + '/service/workspace/' + appId + '/' + user;
-    console.log('this.requestBase.url', this.requestBase.url);
-    this.requestBase.method = 'get';
-    const response = await axios(this.requestBase);
+    const requestBase = getRequestBase(`${this.apiUrl}/service/workspace/${appId}/${user}`, this.authToken, 'get');
+    const response = await axios(requestBase);
     return response.data;
   }
 
   // Request to create a new workspace.
-  async createUserWorkspace(appId: string, user: any): Promise<any> {
-    // appDefinition can be added
-    this.requestBase.url = this.requestBase.url + '/service/workspace';
-    this.requestBase.method = 'post';
-    this.requestBase.data = JSON.stringify({
-      appId: appId,
-      user: user,
-    });
-    const response = await axios(this.requestBase);
+  async createUserWorkspace(appId: string, user: any, appDefinition: string): Promise<any> {
+    const requestBase = getRequestBase(
+      `${this.apiUrl}/service/workspace`,
+      this.authToken,
+      'post',
+      JSON.stringify({
+        appId: appId,
+        user: user,
+        appDefinition: appDefinition,
+      })
+    );
+    const response = await axios(requestBase);
     return response.data;
   }
 
   // Delete workspace
   async deleteUserWorkspace(appId: string, user: any, workspaceName: string): Promise<any> {
-    // appDefinition can be added
-    this.requestBase.url = this.requestBase.url + '/service/workspace';
-    this.requestBase.method = 'delete';
-    this.requestBase.data = JSON.stringify({
-      appId: appId,
-      user: user,
-      workspaceName: workspaceName,
-    });
-    const response = await axios(this.requestBase);
+    const requestBase = getRequestBase(
+      `${this.apiUrl}/service/workspace`,
+      this.authToken,
+      'delete',
+      JSON.stringify({
+        appId: appId,
+        user: user,
+        workspaceName: workspaceName,
+      })
+    );
+    const response = await axios(requestBase);
     return response.data;
   }
 
   // Launches a session and creates a workspace if required. Responds with the URL of the launched session.
   async createSessionWithNewWorkspace(appId: string, user: any): Promise<any> {
-    this.requestBase.url = this.requestBase.url + '/service';
-    this.requestBase.method = 'post';
-    this.requestBase.data = JSON.stringify({
-      appId: appId,
-      user: user,
-    });
-    const response = await axios(this.requestBase);
+    const requestBase = getRequestBase(
+      `${this.apiUrl}/service`,
+      this.authToken,
+      'post',
+      JSON.stringify({
+        appId: appId,
+        user: user,
+      })
+    );
+    const response = await axios(requestBase);
     return response.data;
   }
 
@@ -91,44 +91,52 @@ export class TheiaServiceClient {
     workspaceName: string,
     appDefinition: string
   ): Promise<any> {
-    this.requestBase.url = this.requestBase.url + '/service/session';
-    this.requestBase.method = 'post';
-    this.requestBase.data = JSON.stringify({
-      appId: appId,
-      user: user,
-      workspaceName: workspaceName,
-      appDefinition: appDefinition,
-    });
-    const response = await axios(this.requestBase);
+    const requestBase = getRequestBase(
+      `${this.apiUrl}/service/session`,
+      this.authToken,
+      'post',
+      JSON.stringify({
+        appId: appId,
+        user: user,
+        workspaceName: workspaceName,
+        appDefinition: appDefinition,
+      })
+    );
+    const response = await axios(requestBase);
     return response.data;
   }
 
   // Stops a session.
   async deleteSession(appId: string, user: any, sessionName: string): Promise<any> {
-    this.requestBase.url = this.requestBase.url + '/service/session';
-    this.requestBase.method = 'delete';
-    this.requestBase.data = JSON.stringify({
-      appId: appId,
-      user: user,
-      sessionName: sessionName,
-    });
-    const response = await axios(this.requestBase);
+    const requestBase = getRequestBase(
+      `${this.apiUrl}/service/session`,
+      this.authToken,
+      'delete',
+      JSON.stringify({
+        appId: appId,
+        user: user,
+        sessionName: sessionName,
+      })
+    );
+    const response = await axios(requestBase);
     return response.data;
   }
 
   // List sessions
   async getSessionsList(appId: string, user: any): Promise<any> {
-    this.requestBase.url = this.requestBase.url + '/service/session/' + appId + '/' + user;
-    this.requestBase.method = 'get';
-    const response = await axios(this.requestBase);
+    const requestBase = getRequestBase(`${this.apiUrl}/service/session/${appId}/${user}`, this.authToken, 'get');
+    const response = await axios(requestBase);
     return response.data;
   }
 
   // Returns the current CPU and memory usage of the session's pod.
   async getSessionMetricsList(appId: string, sessionName: any): Promise<any> {
-    this.requestBase.url = this.requestBase.url + '/service/session/performance/' + appId + '/' + sessionName;
-    this.requestBase.method = 'get';
-    const response = await axios(this.requestBase);
+    const requestBase = getRequestBase(
+      `${this.apiUrl}/service/session/performance/${appId}/${sessionName}`,
+      this.authToken,
+      'get'
+    );
+    const response = await axios(requestBase);
     return response.data;
   }
 }

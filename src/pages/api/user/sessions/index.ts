@@ -10,7 +10,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method === 'POST') {
     let newSession;
     if (!req.body.workspaceName) {
-      newSession = await theiaService.createSessionWithNewWorkspace(req.body.appId, userId);
+      newSession = await theiaService.createSessionWithNewWorkspace('asdfghjkl', userId);
     } else {
       newSession = await theiaService.createSessionWithExistingWorkspace(
         req.body.appId,
@@ -22,16 +22,17 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(200).send(newSession);
     // Handle delete request
   } else if (req.method === 'DELETE') {
-    await theiaService.deleteSession(req.body.appId, userId, req.body.sessionName);
+    await theiaService.deleteSession('asdfghjkl', userId, req.body.sessionName);
     return res.status(204).send({});
     // Handle get request
   } else if (req.method === 'GET') {
     const userSessionsList = await theiaService.getSessionsList('asdfghjkl', userId);
+    /* let userSessionListWithMetrics;
     await Promise.all(
-      userSessionsList.map(async (session: any) => {
+      (userSessionListWithMetrics = userSessionsList.map(async (session: any) => {
         session.sessionMetrics = await theiaService.getSessionMetricsList('asdfghjkl', session.name);
-      })
-    );
+      }))
+    ); */
     return res.status(200).send(userSessionsList);
   }
 }

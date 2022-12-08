@@ -22,7 +22,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return res.status(204).send({});
     // Handle post request
   } else if (req.method === 'POST') {
-    const createdWorkspace = await theiaService.createUserWorkspace('asdfghjkl', userId);
+    const createdWorkspace = await theiaService.createUserWorkspace('asdfghjkl', userId, req.body.appDefinition);
     return res.status(201).send(createdWorkspace);
   }
 }

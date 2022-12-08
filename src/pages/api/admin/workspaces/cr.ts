@@ -1,13 +1,12 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { KubernetesClient } from '../../../../utils/k8s/k8s_client';
-import { WorkspaceCRData } from '../../../../types/WorkspaceCRData';
-import { TheiaServiceClient } from '../../../../utils/theiaservice/theiaservice_client';
+import { KubernetesClient } from '../../../../../utils/k8s/k8s_client';
+import { AdminWorkspaceCRData } from '../../../../../types/AdminWorkspaceCRData';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { randomUUID } from 'crypto';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const k8s = new KubernetesClient();
-  const workspaceCRDataArray: WorkspaceCRData[] = [];
+  const workspaceCRDataArray: AdminWorkspaceCRData[] = [];
   // Handle get request
   if (req.method === 'GET') {
     const data = await k8s.getWorkspaceList();
@@ -21,7 +20,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const storage = each.spec?.storage;
         const user = each.spec?.user;
 
-        const workspaceCRData: WorkspaceCRData = {
+        const workspaceCRData: AdminWorkspaceCRData = {
           name,
           creationTimestamp,
           uid,
