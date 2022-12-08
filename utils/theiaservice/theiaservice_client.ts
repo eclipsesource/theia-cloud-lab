@@ -78,7 +78,10 @@ export class TheiaServiceClient {
       JSON.stringify({
         appId: appId,
         user: user,
-        appDefinition: appDefinition
+        appDefinition: appDefinition,
+        kind: "launchRequest",
+        serviceUrl: this.apiUrl,
+        "ephemeral": false
       })
     );
     const response = await axios(requestBase);
@@ -98,9 +101,12 @@ export class TheiaServiceClient {
       'post',
       JSON.stringify({
         appId: appId,
+        kind: "sessionStartRequest",
+        serviceUrl: this.apiUrl,
         user: user,
         workspaceName: workspaceName,
         appDefinition: appDefinition,
+        timeout: 5
       })
     );
     const response = await axios(requestBase);
