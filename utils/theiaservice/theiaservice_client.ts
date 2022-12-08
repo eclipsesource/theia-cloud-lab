@@ -47,6 +47,9 @@ export class TheiaServiceClient {
     // appDefinition can be added
     this.requestBase.url = this.requestBase.url + '/service/workspace';
     this.requestBase.method = 'post';
+    this.requestBase.headers = {
+      'Content-Type': 'application/x-www-form-urlencoded'
+    };
     this.requestBase.data = JSON.stringify({
       appId: appId,
       user: user,
