@@ -4,7 +4,6 @@ export function getRequestBase(url: string, token: string, method: string, data?
   const requestBase: AxiosRequestConfig = {
     headers: {
       'Content-Type': 'application/json',
-      Accept: 'application/json',
       Authorization: `Bearer ${token}`,
     },
     url,

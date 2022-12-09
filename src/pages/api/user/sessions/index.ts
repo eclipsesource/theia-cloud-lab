@@ -9,15 +9,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   // Handle POST request
   if (req.method === 'POST') {
     let newSession;
-    if (!req.body.workspaceName) {
-      newSession = await theiaService.createSessionWithNewWorkspace('asdfghjkl', userId, req.body.appDefinition);
+    if (!req.body['workspaceName']) {
+      console.log('req.body[appDefinition]', req.body['appDefinition']);
+      newSession = await theiaService.createSessionWithNewWorkspace('asdfghjkl', userId, req.body['appDefinition']);
       // const newWorkspace = await theiaService.createUserWorkspace('asdfghjkl', userId, req.body.appDefinition);
-      // newSession = await theiaService.createSessionWithExistingWorkspace(
-      //   'asdfghjkl',
-      //   userId,
-      //   newWorkspace.name,
-      //   req.body.appDefinition
-      // );
+      // newSession = await theiaService.createSessionWithExistingWorkspace('asdfghjkl', userId, req.body.appDefinition);
     } else {
       newSession = await theiaService.createSessionWithExistingWorkspace(
         'asdfghjkl',

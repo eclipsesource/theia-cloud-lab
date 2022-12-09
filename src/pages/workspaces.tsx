@@ -97,6 +97,7 @@ const Workspaces = () => {
     fetch('/api/user/sessions', {
       headers: {
         Authorization: `Bearer ${keycloak.token}`,
+        'Content-Type': 'application/json',
       },
       method: 'POST',
       body: JSON.stringify({ appDefinition: 'theia-cloud-demo' }),

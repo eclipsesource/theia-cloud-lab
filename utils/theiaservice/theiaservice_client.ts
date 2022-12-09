@@ -79,11 +79,12 @@ export class TheiaServiceClient {
         appId: appId,
         user: user,
         appDefinition: appDefinition,
-        kind: "launchRequest",
+        kind: 'launchRequest',
         serviceUrl: this.apiUrl,
-        "ephemeral": false
+        ephemeral: false,
       })
     );
+    console.log('requestBase', requestBase);
     const response = await axios(requestBase);
     return response.data;
   }
@@ -101,12 +102,12 @@ export class TheiaServiceClient {
       'post',
       JSON.stringify({
         appId: appId,
-        kind: "sessionStartRequest",
+        kind: 'launchRequest',
         serviceUrl: this.apiUrl,
         user: user,
         workspaceName: workspaceName,
         appDefinition: appDefinition,
-        timeout: 5
+        timeout: 5,
       })
     );
     const response = await axios(requestBase);
