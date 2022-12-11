@@ -6,6 +6,7 @@ import Keycloak from 'keycloak-js';
 import keycloakConfig from '../../configs/keycloak_config';
 import { KeycloakContext } from '../context/KeycloakContext';
 import { useRouter } from 'next/router';
+import { useQueryClient, QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
 export default function App({ Component, pageProps }: AppProps) {
   const [shouldRenderLayout, setShouldRenderLayout] = useState(false);
@@ -13,6 +14,7 @@ export default function App({ Component, pageProps }: AppProps) {
   const [userType, setUserType] = useState('');
   const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
+  const queryClient = new QueryClient();
 
   useEffect(() => {
     setIsMounted(true);
@@ -48,7 +50,7 @@ export default function App({ Component, pageProps }: AppProps) {
           console.error('Authentication Failed');
         });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMounted]);
 
   useEffect(() => {
@@ -60,11 +62,13 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <>
       {shouldRenderLayout ? (
-        <KeycloakContext.Provider value={{ keycloak }}>
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
-        </KeycloakContext.Provider>
+        <QueryClientProvider client={queryClient}>
+          <KeycloakContext.Provider value={{ keycloak }}>
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
+          </KeycloakContext.Provider>
+        </QueryClientProvider>
       ) : (
         <></>
       )}

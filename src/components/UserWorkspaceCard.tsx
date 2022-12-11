@@ -2,7 +2,7 @@ import { useState } from 'react';
 import AdditionalOptions from './AdditionalOptions';
 import OptionsIcon from './icons/OptionsIcon';
 
-export type WorkspaceCardProps = {
+export type UserWorkspaceCardProps = {
   status: string;
   lastActivity: string;
   name: string;
@@ -12,7 +12,7 @@ export type WorkspaceCardProps = {
   memoryUsage: string;
 };
 
-export default function WorkspaceCard(props: WorkspaceCardProps) {
+export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
   const [isOptionsShown, setIsOptionsShown] = useState(false);
   return (
     <div className='flex flex-col p-4 w-full h-24 shadow-lg rounded-3xl bg-gray-100 justify-between'>
