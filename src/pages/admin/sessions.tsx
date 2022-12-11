@@ -148,9 +148,8 @@ const Sessions = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  //TODO fix this logic
   useEffect(() => {
-    if (sessions) {
+    if (sessions && sessions.length > 0) {
       setTableData(sessions, metrics);
     }
   }, [sessions, metrics]);

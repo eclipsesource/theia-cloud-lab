@@ -28,7 +28,7 @@ export default function Layout({ children }: any) {
         }
       }
       if (userType === 'admin') {
-        if (window.location.href.includes('/user')) {
+        if (!window.location.href.includes('/admin')) {
           router.push('/');
         }
       }
