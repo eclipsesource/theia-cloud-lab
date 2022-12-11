@@ -1,4 +1,4 @@
-import { useContext, useEffect } from 'react';
+import { useContext } from 'react';
 import RefreshIcon from '../components/icons/RefreshIcon';
 import TheiaButton from '../components/TheiaButton';
 import UserWorkspaceCard, { UserWorkspaceCardProps } from '../components/UserWorkspaceCard';
@@ -39,17 +39,22 @@ const Workspaces = () => {
       body: JSON.stringify({ appDefinition: 'theia-cloud-demo' }),
     }).then((res) => res.json());
 
-  const createUserWorkspaceResult = useQuery({
-    queryKey: ['user/createWorkspace'],
-    queryFn: createUserWorkspace,
-    enabled: false,
-  });
-
   const results = useQueries({
     queries: [
       { queryKey: ['user/workspaces'], queryFn: fetchUserWorkspaces },
       { queryKey: ['user/sessions'], queryFn: fetchUserSessions },
     ],
+  });
+
+  const createUserWorkspaceResult = useQuery({
+    queryKey: ['user/createWorkspace'],
+    queryFn: createUserWorkspace,
+    enabled: false,
+    onSettled() {
+      results[0].refetch();
+      results[1].refetch();
+    },
+    staleTime: Infinity,
   });
 
   const renderWorkspaceCards = () => {
@@ -101,7 +106,9 @@ const Workspaces = () => {
     } else {
       return (
         <div className='flex justify-center items-center w-full h-full'>
-          <span className='text-gray-400'>No Workspaces</span>
+          <span className='text-gray-400'>
+            You do not have any workspaces at the moment. You may create one using the button above.
+          </span>
         </div>
       );
     }
@@ -122,7 +129,7 @@ const Workspaces = () => {
           />
           <TheiaButton
             text='Refresh'
-            icon={<RefreshIcon className={`hover:animate-pulse`} />}
+            icon={<RefreshIcon className={`hover:animate-pulse `} />}
             onClick={() => {
               results[0].refetch();
               results[1].refetch();

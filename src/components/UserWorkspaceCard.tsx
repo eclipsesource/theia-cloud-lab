@@ -32,7 +32,7 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
               className='flex h-fit w-fit hover:underline hover:text-blue-500'
               rel='noreferrer'
             >
-              {props.name + ' '} <NewTabIcon />
+              {props.name + ' '} <NewTabIcon className='w-5 h-5' />
             </a>
           ) : (
             <span>{props.name}</span>
@@ -41,7 +41,7 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
 
         <div className='relative'>
           <button onClick={() => setIsOptionsShown(!isOptionsShown)}>
-            <OptionsIcon />
+            <OptionsIcon className='rounded-full hover:bg-black hover:stroke-white' />
           </button>
           {isOptionsShown ? <AdditionalOptions status={props.status} /> : <></>}
         </div>
