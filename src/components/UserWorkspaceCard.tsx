@@ -23,21 +23,18 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
   return (
     <div className='flex flex-col p-4 w-full shadow-lg rounded-3xl bg-gray-100 justify-between whitespace-pre-wrap'>
       <div className='flex justify-between'>
-        <div className='w-1/2'>
-          <span className='font-medium'>URL: </span>
-          {props.status === 'Running' ? (
-            <a
-              href={'//' + props.url + '/'}
-              target='_blank'
-              className='flex h-fit w-fit hover:underline hover:text-blue-500'
-              rel='noreferrer'
-            >
-              {props.name + ' '} <NewTabIcon className='w-5 h-5' />
-            </a>
-          ) : (
-            <span>{props.name}</span>
-          )}
-        </div>
+        {props.status === 'Running' ? (
+          <a
+            href={'//' + props.url + '/'}
+            target='_blank'
+            className='flex h-fit w-fit hover:underline hover:text-blue-500'
+            rel='noreferrer'
+          >
+            {props.name + ' '} <NewTabIcon className='w-5 h-5' />
+          </a>
+        ) : (
+          <span>{props.name}</span>
+        )}
 
         <div className='relative'>
           <button onClick={() => setIsOptionsShown(!isOptionsShown)}>
