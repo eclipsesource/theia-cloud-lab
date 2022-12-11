@@ -50,3 +50,7 @@ For all our CSS needs, we will be using TailwindCSS. To get started on how to us
 ### React-Query and React-Query Dev Tools
 
 React-Query is a library that helps us manage our data fetching and caching. To get started, head over to this link: https://tanstack.com/query/v4/docs/overview
+
+### Next.js Telemetry
+
+Run this command in root folder of the project to opt-out of Next.js telemetry: `npx next telemetry disable`

@@ -8,6 +8,8 @@ import { KeycloakContext } from '../context/KeycloakContext';
 import { useRouter } from 'next/router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function App({ Component, pageProps }: AppProps) {
   const [shouldRenderLayout, setShouldRenderLayout] = useState(false);
@@ -76,6 +78,18 @@ export default function App({ Component, pageProps }: AppProps) {
               <Component {...pageProps} />
             </Layout>
           </KeycloakContext.Provider>
+          <ToastContainer
+            position='bottom-right'
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme='light'
+          />
           <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       ) : (

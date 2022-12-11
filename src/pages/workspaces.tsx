@@ -9,6 +9,7 @@ import { UserWorkspaceCRData } from '../../types/UserWorkspaceCRData';
 import { UserSessionCRData } from '../../types/UserSessionCRData';
 import PlusIcon from '../components/icons/PlusIcon';
 import { useQueries, useQuery } from '@tanstack/react-query';
+import { toast } from 'react-toastify';
 
 const Workspaces = () => {
   const { keycloak } = useContext(KeycloakContext);
@@ -41,8 +42,8 @@ const Workspaces = () => {
 
   const results = useQueries({
     queries: [
-      { queryKey: ['user/workspaces'], queryFn: fetchUserWorkspaces, cacheTime: 0 },
-      { queryKey: ['user/sessions'], queryFn: fetchUserSessions, cacheTime: 0 },
+      { queryKey: ['user/workspaces'], queryFn: fetchUserWorkspaces, cacheTime: 0, initialData: undefined },
+      { queryKey: ['user/sessions'], queryFn: fetchUserSessions, cacheTime: 0, initialData: undefined },
     ],
   });
 
@@ -55,6 +56,9 @@ const Workspaces = () => {
       results[1].refetch();
     },
     staleTime: Infinity,
+    onError() {
+      toast.error('There was an error creating a workspace. Please try again later.');
+    },
   });
 
   const renderWorkspaceCards = () => {
@@ -62,6 +66,12 @@ const Workspaces = () => {
       return (
         <div className='flex justify-center items-center w-full h-full'>
           <CircularProgress />
+        </div>
+      );
+    } else if (results[0].isError || results[1].isError || results[0].isRefetchError || results[1].isRefetchError) {
+      return (
+        <div className='flex justify-center items-center w-full h-full'>
+          <span className='text-gray-400'>There was an error fetching data. Please try again later.</span>
         </div>
       );
     } else if (results[0].data && results[1].data && results[0].data.length > 0) {
