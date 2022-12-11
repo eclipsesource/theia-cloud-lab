@@ -34,7 +34,7 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
             {props.name + ' '} <NewTabIcon className='w-5 h-5' />
           </a>
         ) : (
-          <span>{props.name}</span>
+          <span className='text-lg font-medium'>{props.name}</span>
         )}
 
         <OutsideClickHandler onClickOutside={() => setIsOptionsShown(false)}>
