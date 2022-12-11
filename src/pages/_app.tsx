@@ -6,7 +6,8 @@ import Keycloak from 'keycloak-js';
 import keycloakConfig from '../../configs/keycloak_config';
 import { KeycloakContext } from '../context/KeycloakContext';
 import { useRouter } from 'next/router';
-import { useQueryClient, QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 export default function App({ Component, pageProps }: AppProps) {
   const [shouldRenderLayout, setShouldRenderLayout] = useState(false);
@@ -14,7 +15,14 @@ export default function App({ Component, pageProps }: AppProps) {
   const [userType, setUserType] = useState('');
   const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
-  const queryClient = new QueryClient();
+  // TODO(BORA): remove options for production
+  const queryClient = new QueryClient({
+    defaultOptions: {
+      queries: {
+        refetchOnWindowFocus: false,
+      },
+    },
+  });
 
   useEffect(() => {
     setIsMounted(true);
@@ -68,6 +76,7 @@ export default function App({ Component, pageProps }: AppProps) {
               <Component {...pageProps} />
             </Layout>
           </KeycloakContext.Provider>
+          <ReactQueryDevtools initialIsOpen={false} />
         </QueryClientProvider>
       ) : (
         <></>

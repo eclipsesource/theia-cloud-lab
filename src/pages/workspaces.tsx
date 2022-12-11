@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import RefreshIcon from '../components/icons/RefreshIcon';
 import TheiaButton from '../components/TheiaButton';
 import UserWorkspaceCard, { UserWorkspaceCardProps } from '../components/UserWorkspaceCard';
@@ -13,7 +13,7 @@ import { useQueries, useQuery } from '@tanstack/react-query';
 const Workspaces = () => {
   const { keycloak } = useContext(KeycloakContext);
 
-  const fetchUserWorkspaces = (): Promise<UserWorkspaceCRData[]> =>
+  const fetchUserWorkspaces = async (): Promise<UserWorkspaceCRData[]> =>
     fetch('/api/user/workspaces', {
       headers: {
         Authorization: `Bearer ${keycloak.token}`,
@@ -21,13 +21,29 @@ const Workspaces = () => {
       method: 'GET',
     }).then((res) => res.json());
 
-  const fetchUserSessions = (): Promise<UserSessionCRData[]> =>
+  const fetchUserSessions = async (): Promise<UserSessionCRData[]> =>
     fetch('/api/user/sessions', {
       headers: {
         Authorization: `Bearer ${keycloak.token}`,
       },
       method: 'GET',
     }).then((res) => res.json());
+
+  const createUserWorkspace = async (): Promise<any> =>
+    fetch('/api/user/sessions', {
+      headers: {
+        Authorization: `Bearer ${keycloak.token}`,
+        'Content-Type': 'application/json',
+      },
+      method: 'POST',
+      body: JSON.stringify({ appDefinition: 'theia-cloud-demo' }),
+    }).then((res) => res.json());
+
+  const createUserWorkspaceResult = useQuery({
+    queryKey: ['user/createWorkspace'],
+    queryFn: createUserWorkspace,
+    enabled: false,
+  });
 
   const results = useQueries({
     queries: [
@@ -36,32 +52,14 @@ const Workspaces = () => {
     ],
   });
 
-  const createWorkspace = () => {
-    fetch('/api/user/sessions', {
-      headers: {
-        Authorization: `Bearer ${keycloak.token}`,
-        'Content-Type': 'application/json',
-      },
-      method: 'POST',
-      body: JSON.stringify({ appDefinition: 'theia-cloud-demo' }),
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log('createWorkspace', data);
-      })
-      .catch((error) => {
-        console.log('Error occurred creating workspace: ', error);
-      });
-  };
-
   const renderWorkspaceCards = () => {
-    if (results[0].isFetching || results[1].isFetching) {
+    if (results[0].isFetching || results[1].isFetching || createUserWorkspaceResult.isFetching) {
       return (
         <div className='flex justify-center items-center w-full h-full'>
           <CircularProgress />
         </div>
       );
-    } else if (results[0].data && results[1].data && results[0].data.length > 0 && results[1].data.length > 0) {
+    } else if (results[0].data && results[1].data && results[0].data.length > 0) {
       const cardsData: UserWorkspaceCardProps[] = [];
       for (const workspace of results[0].data) {
         let isMatched = false;
@@ -116,15 +114,11 @@ const Workspaces = () => {
         <span className='flex gap-4 '>
           <TheiaButton
             text='Create Workspace'
-            icon={
-              <PlusIcon
-                className={`${
-                  results[0].isFetching || results[1].isFetching ? 'animate-spin' : ''
-                } hover:animate-pulse`}
-              />
-            }
-            onClick={createWorkspace}
-            disabled={results[0].isFetching || results[1].isFetching}
+            icon={<PlusIcon className={'hover:animate-pulse'} />}
+            onClick={() => {
+              createUserWorkspaceResult.refetch();
+            }}
+            disabled={results[0].isFetching || results[1].isFetching || createUserWorkspaceResult.isFetching}
           />
           <TheiaButton
             text='Refresh'
@@ -133,7 +127,7 @@ const Workspaces = () => {
               results[0].refetch();
               results[1].refetch();
             }}
-            disabled={results[0].isFetching || results[1].isFetching}
+            disabled={results[0].isFetching || results[1].isFetching || createUserWorkspaceResult.isFetching}
           />
         </span>
       </div>

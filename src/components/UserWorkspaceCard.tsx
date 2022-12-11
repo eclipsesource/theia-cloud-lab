@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import AdditionalOptions from './AdditionalOptions';
+import NewTabIcon from './icons/NewTabIcon';
 import OptionsIcon from './icons/OptionsIcon';
 
 export type UserWorkspaceCardProps = {
@@ -17,12 +18,18 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
   return (
     <div className='flex flex-col p-4 w-full h-24 shadow-lg rounded-3xl bg-gray-100 justify-between'>
       <div className='flex justify-between'>
-        <a
-          href={props.url}
-          className='w-1/2'
-        >
-          {props.name}
-        </a>
+        {props.status === 'Running' ? (
+          <a
+            href={'//' + props.url + '/'}
+            target='_blank'
+            className='flex w-1/2 hover:underline hover:text-blue-500 whitespace-pre-wrap'
+            rel='noreferrer'
+          >
+            {props.name + '  '} <NewTabIcon />
+          </a>
+        ) : (
+          <span>{props.name}</span>
+        )}
         <div className='w-1/5'>{props.lastActivity}</div>
         <div className='relative'>
           <button onClick={() => setIsOptionsShown(!isOptionsShown)}>
