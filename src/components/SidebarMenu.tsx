@@ -27,13 +27,13 @@ const SidebarMenu = ({ isSidebarClosed, setIsSidebarClosed }: Props) => {
   const showAdminMenu = () => {
     return (
       <>
-        <li className={`${adminClassStyle} text-sm text-gray-800 mb-1`}>
+        <li className={`${adminClassStyle} text-m text-gray-800 mb-1`}>
           <Link href='/admin/sessions'>Sessions</Link>
         </li>
-        <li className={`${adminClassStyle} text-sm text-gray-800 mb-1`}>
+        <li className={`${adminClassStyle} text-m text-gray-800 mb-1`}>
           <Link href='/admin/workspaces'>Workspaces</Link>
         </li>
-        <li className={`${adminClassStyle} text-sm text-gray-800 mb-1`}>App Definitions</li>
+        <li className={`${adminClassStyle} text-m text-gray-800 mb-1`}>App Definitions</li>
       </>
     );
   };
@@ -41,7 +41,7 @@ const SidebarMenu = ({ isSidebarClosed, setIsSidebarClosed }: Props) => {
   const showUserMenu = () => {
     return (
       <>
-        <li className={`${adminClassStyle} text-sm text-gray-800 mb-1`}>
+        <li className={`${adminClassStyle} text-m text-gray-800 mb-1`}>
           <Link href='/workspaces'>Workspaces</Link>
         </li>
       </>

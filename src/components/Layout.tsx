@@ -8,6 +8,7 @@ export default function Layout({ children }: any) {
   const { keycloak } = useContext(KeycloakContext);
   const [userType, setUserType] = useState('user');
   const [isSidebarClosed, setIsSidebarClosed] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   const router = useRouter();
 
@@ -15,44 +16,41 @@ export default function Layout({ children }: any) {
     keycloak && keycloak.resourceAccess && setUserType(keycloak.resourceAccess['theia-cloud'].roles[0]);
   }, [keycloak, userType]);
 
-  const shouldShowTheErrorPage = () => {
-    if (userType === 'user') {
-      if (window.location.href.includes('/admin')) {
-        return true;
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  useEffect(() => {
+    if (isMounted) {
+      if (userType === 'user') {
+        if (window.location.href.includes('/admin')) {
+          router.push('/');
+        }
+      }
+      if (userType === 'admin') {
+        if (window.location.href.includes('/user')) {
+          router.push('/');
+        }
       }
     }
-    if (userType === 'admin') {
-      if (window.location.href.includes('/user')) {
-        return true;
-      }
-    }
-    if (userType === '') {
-      return true;
-    } else {
-      return false;
-    }
-  };
+  }, [isMounted, router, userType]);
 
   return (
     <div className='flex'>
-      {shouldShowTheErrorPage() ? (
-        <Custom404 />
-      ) : (
-        <>
-          <SidebarMenu
-            isSidebarClosed={isSidebarClosed}
-            setIsSidebarClosed={setIsSidebarClosed}
-          />
-          <div className={`${isSidebarClosed ? 'w-screen' : 'w-[calc(100vw-15rem)]'} h-screen`}>
-            <main
-              role='main'
-              className='h-full'
-            >
-              {children}
-            </main>
-          </div>
-        </>
-      )}
+      <>
+        <SidebarMenu
+          isSidebarClosed={isSidebarClosed}
+          setIsSidebarClosed={setIsSidebarClosed}
+        />
+        <div className={`${isSidebarClosed ? 'w-screen' : 'w-[calc(100vw-15rem)]'} h-screen`}>
+          <main
+            role='main'
+            className='h-full'
+          >
+            {children}
+          </main>
+        </div>
+      </>
     </div>
   );
 }

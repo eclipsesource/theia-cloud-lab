@@ -21,13 +21,13 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
   };
 
   return (
-    <div className='flex flex-col p-4 w-full shadow-lg rounded-3xl bg-gray-100 justify-between whitespace-pre-wrap'>
+    <div className='flex flex-col p-4 w-full shadow-lg rounded-3xl bg-gray-100 justify-between whitespace-pre-wrap hover:shadow-xl'>
       <div className='flex justify-between'>
         {props.status === 'Running' ? (
           <a
             href={'//' + props.url + '/'}
             target='_blank'
-            className='flex h-fit w-fit hover:underline hover:text-blue-500'
+            className='flex text-lg cursor-pointer font-medium h-fit w-fit hover:underline text-blue-500'
             rel='noreferrer'
           >
             {props.name + ' '} <NewTabIcon className='w-5 h-5' />
@@ -49,14 +49,17 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
           {props.appDefinition}
         </div>
 
-        <div className='w-fit mt-1 mb-1'>
-          <span className='font-medium'>Memory Usage: </span>
-          <span>{props.memoryUsage}</span>
+        <div className='flex w-1/2 justify-end self-end'>
+          <div className='w-fit mt-1 mb-1 mr-2 text-sm'>
+            <span className='font-medium'>Memory Usage: </span>
+            <span>{props.memoryUsage}</span>
+          </div>
+          <div className='w-fit mt-1 mb-1 text-sm'>
+            <span className='font-medium'>CPU Usage: </span>
+            <span>{props.cpuUsage}</span>
+          </div>
         </div>
-        <div className='w-fit mt-1 mb-1'>
-          <span className='font-medium'>CPU Usage: </span>
-          <span>{props.cpuUsage}</span>
-        </div>
+
         <div className={'mt-1 mb-1 inline-flex justify-between'}>
           <div className={getStatusClassName()}>
             <span className='font-medium'>Status:</span> {props.status}

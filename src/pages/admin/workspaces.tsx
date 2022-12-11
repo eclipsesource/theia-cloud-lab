@@ -125,7 +125,7 @@ const Workspaces = () => {
   }, []);
 
   useEffect(() => {
-    if (workspaces) {
+    if (workspaces && workspaces.length > 0) {
       setTableData(workspaces);
     }
   }, [workspaces]);
