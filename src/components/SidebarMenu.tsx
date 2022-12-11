@@ -51,7 +51,7 @@ const SidebarMenu = ({ isSidebarClosed, setIsSidebarClosed }: Props) => {
   return (
     <>
       {isSidebarClosed ? (
-        <div className='flex justify-center shadow-xl	border-r-2'>
+        <div className='flex justify-center shadow-xl	border-r-2 hover:bg-gray-200'>
           <button onClick={() => setIsSidebarClosed(false)}>
             <RightIcon />
           </button>
