@@ -15,40 +15,57 @@ export type UserWorkspaceCardProps = {
 
 export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
   const [isOptionsShown, setIsOptionsShown] = useState(false);
+  const getStatusClassName = () => {
+    const className = props.status === 'Running' ? 'text-green-500' : props.status === 'Stopped' ? 'text-red-500' : '';
+    return className;
+  };
+
   return (
-    <div className='flex flex-col p-4 w-full h-24 shadow-lg rounded-3xl bg-gray-100 justify-between'>
+    <div className='flex flex-col p-4 w-full shadow-lg rounded-3xl bg-gray-100 justify-between whitespace-pre-wrap'>
       <div className='flex justify-between'>
-        {props.status === 'Running' ? (
-          <a
-            href={'//' + props.url + '/'}
-            target='_blank'
-            className='flex w-1/2 hover:underline hover:text-blue-500 whitespace-pre-wrap'
-            rel='noreferrer'
-          >
-            {props.name + '  '} <NewTabIcon />
-          </a>
-        ) : (
-          <span>{props.name}</span>
-        )}
-        <div className='w-1/5'>{props.lastActivity}</div>
+        <div className='w-1/2'>
+          <span className='font-medium'>URL: </span>
+          {props.status === 'Running' ? (
+            <a
+              href={'//' + props.url + '/'}
+              target='_blank'
+              className='flex h-fit w-fit hover:underline hover:text-blue-500'
+              rel='noreferrer'
+            >
+              {props.name + ' '} <NewTabIcon />
+            </a>
+          ) : (
+            <span>{props.name}</span>
+          )}
+        </div>
+
         <div className='relative'>
           <button onClick={() => setIsOptionsShown(!isOptionsShown)}>
             <OptionsIcon />
           </button>
-          {isOptionsShown ? <AdditionalOptions /> : <></>}
+          {isOptionsShown ? <AdditionalOptions status={props.status} /> : <></>}
         </div>
       </div>
-      <div className='flex justify-between'>
-        <div className='w-1/6'>{props.status}</div>
-        <div className='w-1/3'>{props.appDefinition}</div>
-        <div className='flex justify-between w-1/3'>
-          <div className='w-24 flex text-sm gap-1'>
-            <span>Memory:</span>
-            <span>{props.memoryUsage}</span>
+      <div className='flex flex-col flex-wrap justify-between'>
+        <div className='w-fit mt-1 mb-1'>
+          <span className='font-medium'>App Definition: </span>
+          {props.appDefinition}
+        </div>
+
+        <div className='w-fit mt-1 mb-1'>
+          <span className='font-medium'>Memory Usage: </span>
+          <span>{props.memoryUsage}</span>
+        </div>
+        <div className='w-fit mt-1 mb-1'>
+          <span className='font-medium'>CPU Usage: </span>
+          <span>{props.cpuUsage}</span>
+        </div>
+        <div className={'mt-1 mb-1 inline-flex justify-between'}>
+          <div className={getStatusClassName()}>
+            <span className='font-medium'>Status:</span> {props.status}
           </div>
-          <div className='w-24 flex text-sm gap-1'>
-            <span>CPU:</span>
-            <span>{props.cpuUsage}</span>
+          <div>
+            <span className='font-medium'>Last Activity:</span> {props.lastActivity}
           </div>
         </div>
       </div>
