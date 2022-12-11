@@ -49,16 +49,18 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
           {props.appDefinition}
         </div>
 
-        <div className='flex w-1/2 justify-end self-end'>
-          <div className='w-fit mt-1 mb-1 mr-2 text-sm'>
-            <span className='font-medium'>Memory Usage: </span>
-            <span>{props.memoryUsage}</span>
+        {props.status === 'Running' && (
+          <div className='flex w-1/2 justify-end self-end'>
+            <div className='w-fit mt-1 mb-1 mr-2 text-sm'>
+              <span className='font-medium'>Memory Usage: </span>
+              <span>{props.memoryUsage}</span>
+            </div>
+            <div className='w-fit mt-1 mb-1 text-sm'>
+              <span className='font-medium'>CPU Usage: </span>
+              <span>{props.cpuUsage}</span>
+            </div>
           </div>
-          <div className='w-fit mt-1 mb-1 text-sm'>
-            <span className='font-medium'>CPU Usage: </span>
-            <span>{props.cpuUsage}</span>
-          </div>
-        </div>
+        )}
 
         <div className={'mt-1 mb-1 inline-flex justify-between'}>
           <div className={getStatusClassName()}>
