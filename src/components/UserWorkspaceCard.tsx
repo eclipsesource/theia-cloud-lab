@@ -41,7 +41,7 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
 
         <div className='relative'>
           <button onClick={() => setIsOptionsShown(!isOptionsShown)}>
-            <OptionsIcon className='rounded-full hover:bg-black hover:stroke-white' />
+            <OptionsIcon className='w-6 h-6 rounded-full hover:bg-black hover:stroke-white' />
           </button>
           {isOptionsShown ? <AdditionalOptions status={props.status} /> : <></>}
         </div>

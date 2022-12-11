@@ -121,7 +121,7 @@ const Workspaces = () => {
         <span className='flex gap-4 '>
           <TheiaButton
             text='Create Workspace'
-            icon={<PlusIcon className={'hover:animate-pulse'} />}
+            icon={<PlusIcon className={'w-6 h-6 hover:animate-pulse'} />}
             onClick={() => {
               createUserWorkspaceResult.refetch();
             }}
@@ -129,7 +129,7 @@ const Workspaces = () => {
           />
           <TheiaButton
             text='Refresh'
-            icon={<RefreshIcon className={`hover:animate-pulse `} />}
+            icon={<RefreshIcon className={'w-5 h-5 hover:animate-pulse'} />}
             onClick={() => {
               results[0].refetch();
               results[1].refetch();
