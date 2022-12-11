@@ -41,8 +41,8 @@ const Workspaces = () => {
 
   const results = useQueries({
     queries: [
-      { queryKey: ['user/workspaces'], queryFn: fetchUserWorkspaces },
-      { queryKey: ['user/sessions'], queryFn: fetchUserSessions },
+      { queryKey: ['user/workspaces'], queryFn: fetchUserWorkspaces, cacheTime: 0 },
+      { queryKey: ['user/sessions'], queryFn: fetchUserSessions, cacheTime: 0 },
     ],
   });
 
