@@ -21,7 +21,7 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
   };
 
   return (
-    <div className='flex flex-col p-4 w-full shadow-lg rounded-3xl bg-gray-100 justify-between whitespace-pre-wrap hover:shadow-xl'>
+    <div className='flex flex-col p-4 w-full shadow-lg rounded-lg bg-gray-100 justify-between whitespace-pre-wrap hover:shadow-xl'>
       <div className='flex justify-between'>
         {props.status === 'Running' ? (
           <a
@@ -65,7 +65,13 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
             <span className='font-medium'>Status:</span> {props.status}
           </div>
           <div>
-            <span className='font-medium'>Last Activity:</span> {props.lastActivity}
+            {props.status === 'Running' ? (
+              <span>
+                <span className='font-medium'>Last Activity:</span> {props.lastActivity}
+              </span>
+            ) : (
+              <></>
+            )}
           </div>
         </div>
       </div>
