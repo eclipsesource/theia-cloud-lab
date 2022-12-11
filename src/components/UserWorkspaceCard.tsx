@@ -2,6 +2,7 @@ import { useState } from 'react';
 import AdditionalOptions from './AdditionalOptions';
 import NewTabIcon from './icons/NewTabIcon';
 import OptionsIcon from './icons/OptionsIcon';
+import OutsideClickHandler from './OutsideClickHandler';
 
 export type UserWorkspaceCardProps = {
   status: string;
@@ -36,12 +37,14 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
           <span>{props.name}</span>
         )}
 
-        <div className='relative'>
-          <button onClick={() => setIsOptionsShown(!isOptionsShown)}>
-            <OptionsIcon className='w-6 h-6 rounded-full hover:bg-black hover:stroke-white' />
-          </button>
-          {isOptionsShown ? <AdditionalOptions status={props.status} /> : <></>}
-        </div>
+        <OutsideClickHandler onClickOutside={() => setIsOptionsShown(false)}>
+          <div className='relative'>
+            <button onClick={() => setIsOptionsShown(!isOptionsShown)}>
+              <OptionsIcon className='w-6 h-6 rounded-full hover:bg-black hover:stroke-white' />
+            </button>
+            {isOptionsShown ? <AdditionalOptions status={props.status} /> : <></>}
+          </div>
+        </OutsideClickHandler>
       </div>
       <div className='flex flex-col flex-wrap justify-between'>
         <div className='w-fit mt-1 mb-1'>
