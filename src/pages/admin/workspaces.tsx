@@ -8,127 +8,129 @@ import RefreshIcon from '../../components/icons/RefreshIcon';
 import PlusIcon from '../../components/icons/PlusIcon';
 import { AdminWorkspaceCRData } from '../../../types/AdminWorkspaceCRData';
 import { KeycloakContext } from '../../context/KeycloakContext';
+import { useQuery } from '@tanstack/react-query';
+import { toast } from 'react-toastify';
 
 type Row = AdminWorkspaceCRData & {
   id: string;
 };
 
 const XLCol = 250;
-const MCol = 80;
 
 const Workspaces = () => {
-  const [rows, setRows] = useState<Row[]>([]);
-  const [workspaces, setWorkspaces] = useState<AdminWorkspaceCRData[]>([]);
-  const [isFetching, setIsFetching] = useState(false);
   const [selectedRows, setSelectedRows] = useState<GridRowId[]>([]);
   const { keycloak } = useContext(KeycloakContext);
 
-  const setTableData = (workspaces: AdminWorkspaceCRData[]) => {
-    const rows: Row[] = [];
-    for (const workspace of workspaces) {
-      const row: Row = {
-        id: workspace.name,
-        name: workspace.name,
-        creationTimestamp: dayjs(workspace.creationTimestamp).toString(),
-        uid: workspace.uid,
-        appDefinition: workspace.appDefinition,
-        label: workspace.label,
-        storage: workspace.storage,
-        user: workspace.user,
-      };
-      rows.push(row);
+  const setTableData = (): Row[] => {
+    if (fetchWorkspacesResult.data && fetchWorkspacesResult.data.length > 0) {
+      const rows: Row[] = [];
+      for (const workspace of fetchWorkspacesResult.data) {
+        const row: Row = {
+          id: workspace.name,
+          name: workspace.name,
+          creationTimestamp: dayjs(workspace.creationTimestamp).toString(),
+          uid: workspace.uid,
+          appDefinition: workspace.appDefinition,
+          label: workspace.label,
+          storage: workspace.storage,
+          user: workspace.user,
+        };
+        rows.push(row);
+      }
+      return rows;
     }
-    setRows(rows);
+    return [];
   };
 
   const deleteWorkspaces = () => {
-    fetch('/api/admin/workspaces/cr', {
+    return fetch('/api/admin/workspaces/cr', {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${keycloak.token}`,
       },
       method: 'DELETE',
       body: JSON.stringify({ toBeDeletedWorkspaces: selectedRows }),
-    })
-      .then((res) => {
-        if (res.status === 204) {
-          fetchData();
-        }
-      })
-      .catch((error) => {
-        console.log('Error occurred fetching data: ', error);
-      });
+    });
   };
 
+  const deleteWorkspacesResult = useQuery({
+    queryKey: ['admin/deleteWorkspaces'],
+    queryFn: deleteWorkspaces,
+    enabled: false,
+    onSettled() {
+      fetchWorkspacesResult.refetch();
+    },
+    staleTime: Infinity,
+    onError() {
+      toast.error('There was an error deleting a workspace. Please try again later.');
+    },
+    retry: false,
+  });
+
   const restartWorkspaces = () => {
-    fetch('/api/admin/workspaces/session', {
+    return fetch('/api/admin/workspaces/session', {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${keycloak.token}`,
       },
       method: 'POST',
       body: JSON.stringify({ toBeRestartedSessions: selectedRows }),
-    })
-      .then((res) => {
-        if (res.status === 201) {
-          fetchData();
-        }
-      })
-      .catch((error) => {
-        console.log('Error occurred fetching data: ', error);
-      });
+    });
   };
 
+  const restartWorkspacesResult = useQuery({
+    queryKey: ['admin/restartWorkspaces'],
+    queryFn: restartWorkspaces,
+    enabled: false,
+    onSettled() {
+      fetchWorkspacesResult.refetch();
+    },
+    staleTime: Infinity,
+    onError() {
+      toast.error('There was an error restaring a workspace. Please try again later.');
+    },
+    retry: false,
+  });
+
   const createNewWorkplace = () => {
-    fetch('/api/admin/workspaces/cr', {
+    return fetch('/api/admin/workspaces/cr', {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${keycloak.token}`,
       },
       method: 'POST',
       body: JSON.stringify({ toBeCreatedWorkspace: `${Date.now()}` }),
-    })
-      .then((res) => {
-        if (res.status === 201) {
-          fetchData();
-        }
-      })
-      .catch((error) => {
-        console.log('Error occurred fetching data: ', error);
-      });
+    });
   };
 
-  const fetchData = () => {
-    setIsFetching(true);
-    fetch('/api/admin/workspaces/cr', {
+  const createWorkspacesResult = useQuery({
+    queryKey: ['admin/createWorkspaces'],
+    queryFn: createNewWorkplace,
+    enabled: false,
+    onSettled() {
+      fetchWorkspacesResult.refetch();
+    },
+    staleTime: Infinity,
+    onError() {
+      toast.error('There was an error creating a workspace. Please try again later.');
+    },
+    retry: false,
+  });
+
+  const fetchWorkspaces = async (): Promise<AdminWorkspaceCRData[]> => {
+    return fetch('/api/admin/workspaces/cr', {
       headers: {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${keycloak.token}`,
       },
       method: 'GET',
-    })
-      .then((res) => res.json())
-      .then((data) => {
-        setWorkspaces(data);
-      })
-      .catch((error) => {
-        console.log('Error occurred fetching data: ', error);
-      })
-      .finally(() => {
-        setIsFetching(false);
-      });
+    }).then((res) => res.json());
   };
-
-  useEffect(() => {
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  useEffect(() => {
-    if (workspaces && workspaces.length > 0) {
-      setTableData(workspaces);
-    }
-  }, [workspaces]);
+  const fetchWorkspacesResult = useQuery({
+    queryKey: ['admin/fetchWorkspaces'],
+    queryFn: fetchWorkspaces,
+    initialData: undefined,
+  });
 
   const columns: GridColDef[] = [
     { field: 'name', headerName: 'Workspace Name', width: XLCol },
@@ -140,10 +142,16 @@ const Workspaces = () => {
     { field: 'uid', headerName: 'UID', width: XLCol },
   ];
 
+  const isFetching =
+    deleteWorkspacesResult.isFetching ||
+    createWorkspacesResult.isFetching ||
+    restartWorkspacesResult.isFetching ||
+    fetchWorkspacesResult.isFetching;
+
   const WorkspacesTableHeader = () => {
     return (
       <div className='flex justify-between py-4 px-4 '>
-        <span className='text-lg text-gray-600 hover:text-gray-800 hover:underline'>Workspaces</span>
+        <span className='text-lg font-extralight text-gray-600 hover:text-gray-800'>Workspaces</span>
         <div>
           <TheiaButton
             text='Create Workspace'
@@ -153,32 +161,28 @@ const Workspaces = () => {
               </button>
             }
             className='mr-2'
-            onClick={() => createNewWorkplace()}
+            onClick={() => createWorkspacesResult.refetch()}
           />
 
-          {workspaces.length > 0 && (
+          {fetchWorkspacesResult.data && fetchWorkspacesResult.data?.length > 0 && (
             <TheiaButton
               text='Delete Workspaces'
-              icon={
-                <button className='hover:animate-pulse'>
-                  <DeleteIcon />
-                </button>
-              }
+              icon={<DeleteIcon />}
               className='mr-2'
-              onClick={deleteWorkspaces}
+              onClick={() => deleteWorkspacesResult.refetch()}
             />
           )}
 
-          {workspaces.length > 0 && (
+          {fetchWorkspacesResult.data && fetchWorkspacesResult.data?.length > 0 && (
             <TheiaButton
               text='Restart Sessions'
               icon={
-                <button className={`${isFetching ? 'animate-bounce' : ''} hover:animate-pulse`}>
+                <button className={`${isFetching ? 'animate-bounce' : ''}`}>
                   <RestartIcon />
                 </button>
               }
               className='mr-2'
-              onClick={restartWorkspaces}
+              onClick={() => restartWorkspacesResult.refetch()}
             />
           )}
 
@@ -189,7 +193,7 @@ const Workspaces = () => {
                 <RefreshIcon />
               </button>
             }
-            onClick={fetchData}
+            onClick={() => fetchWorkspacesResult.refetch()}
           />
         </div>
       </div>
@@ -200,7 +204,7 @@ const Workspaces = () => {
     <>
       <DataGrid
         sx={{ height: '100%', width: '100%', borderRadius: 0 }}
-        rows={rows}
+        rows={setTableData()}
         columns={columns}
         checkboxSelection
         disableSelectionOnClick
