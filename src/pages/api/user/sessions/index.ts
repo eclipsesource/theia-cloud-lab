@@ -22,16 +22,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         );
       }
       return res.status(200).send(newSession);
-    } catch (error) {
-      return res.status(400).send(error);
+    } catch (error:any) {
+      return res.status(400).send(error.message);
     }
     // Handle delete request
   } else if (req.method === 'DELETE') {
     try {
       await theiaService.deleteSession(appConfig.appId, userId, req.body.sessionName);
       return res.status(204).send({});
-    } catch (error) {
-      return res.status(400).send(error);
+    } catch (error:any) {
+      return res.status(500).send(error.message);
     }
     // Handle get request
   } else if (req.method === 'GET') {
@@ -44,8 +44,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }))
       ); */
       return res.status(200).send(userSessionsList);
-    } catch (error) {
-      return res.status(500).send(error);
+    } catch (error:any) {
+      return res.status(500).send(error.message);
     }
   }
 }

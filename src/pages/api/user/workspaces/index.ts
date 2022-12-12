@@ -12,8 +12,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       const userWorkspaceList = await theiaService.getUserWorkspaceList(appConfig.appId, userId);
       return res.status(200).send(userWorkspaceList);
-    } catch (error) {
-      return res.status(500).send(error);
+    } catch (error: any) {
+      return res.status(500).send(error.message);
     }
     // Handle delete request
   } else if (req.method === 'DELETE') {
@@ -25,8 +25,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         })
       );
       return res.status(204).send({});
-    } catch (error) {
-      return res.status(400).send(error);
+    } catch (error: any) {
+      return res.status(500).send(error.message);
     }
     // Handle post request
   } else if (req.method === 'POST') {
@@ -43,8 +43,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         );
       }
       return res.status(201).send(createdWorkspace);
-    } catch (error) {
-      return res.status(400).send(error);
+    } catch (error: any) {
+      return res.status(500).send(error.message);
     }
   }
 }

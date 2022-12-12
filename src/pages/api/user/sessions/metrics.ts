@@ -11,8 +11,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       const sessionMetrics = await theiaService.getSessionMetricsList(appConfig.appId, req.query.sessionName);
       return res.status(200).send(sessionMetrics);
-    } catch (error) {
-      return res.status(500).send(error);
+    } catch (error: any) {
+      return res.status(500).send(error.message);
     }
   }
 }

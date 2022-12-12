@@ -1,5 +1,5 @@
 import apiConfig from '../../configs/service_api_config';
-import axios from 'axios';
+import axios, { AxiosError, AxiosInstance } from 'axios';
 import { getRequestBase } from './theiaservice_utils';
 
 /* HELPER: https://github.com/eclipsesource/theia-cloud/blob/main/doc/docs/openapi.json
@@ -24,13 +24,24 @@ export class TheiaServiceClient {
   }
 
   // Replies if the service is available.
+  handleAxiosError(error: any): Error {
+    if (error.response) {
+      throw new Error(`Request failed with status code ${error.response.status}: ${error.response.statusText}`);
+    } else if (error.request) {
+      throw new Error(`Request error: No response was received`);
+    } else {
+      throw new Error(`Request error: ${error.message}`);
+    }
+  }
+
+  // Replies if the service is available.
   async checkIfServiceAliveWithAppId(appId: string): Promise<any> {
     try {
       const requestBase = getRequestBase(`${this.apiUrl}/service/${appId}`, this.authToken, 'get');
       const response = await axios(requestBase);
       return response.data;
     } catch (error: any) {
-      return error.response;
+      this.handleAxiosError(error);
     }
   }
 
@@ -41,7 +52,7 @@ export class TheiaServiceClient {
       const response = await axios(requestBase);
       return response.data;
     } catch (error: any) {
-      return error.response;
+      this.handleAxiosError(error);
     }
   }
 
@@ -61,7 +72,7 @@ export class TheiaServiceClient {
       const response = await axios(requestBase);
       return response.data;
     } catch (error: any) {
-      return error.response;
+      this.handleAxiosError(error);
     }
   }
 
@@ -81,7 +92,7 @@ export class TheiaServiceClient {
       const response = await axios(requestBase);
       return response.data;
     } catch (error: any) {
-      return error.response;
+      this.handleAxiosError(error);
     }
   }
 
@@ -105,7 +116,7 @@ export class TheiaServiceClient {
       const response = await axios(requestBase);
       return response.data;
     } catch (error: any) {
-      return error.response;
+      this.handleAxiosError(error);
     }
   }
 
@@ -134,7 +145,7 @@ export class TheiaServiceClient {
       const response = await axios(requestBase);
       return response.data;
     } catch (error: any) {
-      return error.response;
+      this.handleAxiosError(error);
     }
   }
 
@@ -154,7 +165,7 @@ export class TheiaServiceClient {
       const response = await axios(requestBase);
       return response.data;
     } catch (error: any) {
-      return error.response;
+      this.handleAxiosError(error);
     }
   }
 
@@ -165,7 +176,7 @@ export class TheiaServiceClient {
       const response = await axios(requestBase);
       return response.data;
     } catch (error: any) {
-      return error.response;
+      this.handleAxiosError(error);
     }
   }
 
@@ -180,7 +191,7 @@ export class TheiaServiceClient {
       const response = await axios(requestBase);
       return response.data;
     } catch (error: any) {
-      return error.response;
+      this.handleAxiosError(error);
     }
   }
 }
