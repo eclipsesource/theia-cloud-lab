@@ -31,7 +31,7 @@ const Workspaces = () => {
     }).then((res) => res.json());
 
   const createUserWorkspace = async (): Promise<any> =>
-    fetch('/api/user/sessions', {
+    fetch('/api/user/workspaces', {
       headers: {
         Authorization: `Bearer ${keycloak.token}`,
         'Content-Type': 'application/json',

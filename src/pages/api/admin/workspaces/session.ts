@@ -5,12 +5,16 @@ import type { NextApiRequest, NextApiResponse } from 'next';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   const k8s = new KubernetesClient();
   if (req.method === 'POST') {
-    const toBeRestartedSessionNameArr = req.body.toBeRestartedSessions;
-    await Promise.all(
-      toBeRestartedSessionNameArr.map(async (name: string) => {
-        await k8s.createSession(`ns-${name}`, name);
-      })
-    );
-    return res.status(201).send({});
+    try {
+      const toBeRestartedSessionNameArr = req.body.toBeRestartedSessions;
+      await Promise.all(
+        toBeRestartedSessionNameArr.map(async (name: string) => {
+          await k8s.createSession(`ns-${name}`, name);
+        })
+      );
+      return res.status(201).send({});
+    } catch (error) {
+      return res.status(400).send(error);
+    }
   }
 }
