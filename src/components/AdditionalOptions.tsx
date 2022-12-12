@@ -4,11 +4,11 @@ type AdditionalOptionProps = {
 
 function AdditionalOptions({ status }: AdditionalOptionProps) {
   return (
-    <div className='absolute w-max top-7 right-0 z-10 bg-transparent shadow-lg hover:bg-gray-50  rounded-md border border-black border-solid p-2 animate-additional-options'>
-      <li className='flex rounded hover:text-gray-900 cursor-pointer'>
-        {status === 'Running' && 'Stop Session'}
-        {status === 'Stopped' && 'Restart Session'}
-      </li>
+    <div className='absolute h-max w-40 top-0 right-8 z-10 bg-gray-100 shadow-xl rounded-xl border border-black border-solid p-2'>
+      <ul>
+        {status === 'Running' && <li className='hover:bg-gray-300 cursor-pointer p-1 rounded-md'>Stop Session</li>}
+        {status === 'Stopped' && <li className='hover:bg-gray-300 cursor-pointer p-1 rounded-md'>Restart Session</li>}
+      </ul>
     </div>
   );
 }

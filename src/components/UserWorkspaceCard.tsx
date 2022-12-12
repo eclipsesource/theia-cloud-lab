@@ -3,9 +3,10 @@ import AdditionalOptions from './AdditionalOptions';
 import NewTabIcon from './icons/NewTabIcon';
 import OptionsIcon from './icons/OptionsIcon';
 import OutsideClickHandler from './OutsideClickHandler';
+import { useAutoAnimate } from '@formkit/auto-animate/react';
 
 export type UserWorkspaceCardProps = {
-  status: string;
+  status: 'Running' | 'Stopped';
   lastActivity: string;
   name: string;
   appDefinition: string;
@@ -16,10 +17,10 @@ export type UserWorkspaceCardProps = {
 
 export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
   const [isOptionsShown, setIsOptionsShown] = useState(false);
-  const getStatusClassName = () => {
-    const className = props.status === 'Running' ? 'text-green-500' : props.status === 'Stopped' ? 'text-red-500' : '';
-    return className;
-  };
+  const [parent, enableAnimations] = useAutoAnimate<HTMLDivElement>({
+    duration: 100,
+    easing: 'ease-in-out',
+  });
 
   return (
     <div className='flex flex-col p-4 w-full shadow-lg rounded-lg bg-gray-100 justify-between whitespace-pre-wrap hover:shadow-xl'>
@@ -38,11 +39,14 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
         )}
 
         <OutsideClickHandler onClickOutside={() => setIsOptionsShown(false)}>
-          <div className='relative'>
+          <div
+            ref={parent}
+            className='relative'
+          >
             <button onClick={() => setIsOptionsShown(!isOptionsShown)}>
               <OptionsIcon className='w-7 h-7 rounded-full hover:bg-black hover:stroke-white' />
             </button>
-            {isOptionsShown ? <AdditionalOptions status={props.status} /> : <></>}
+            {isOptionsShown && <AdditionalOptions status={props.status} />}
           </div>
         </OutsideClickHandler>
       </div>
@@ -66,7 +70,7 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
         )}
 
         <div className={'mt-1 mb-1 inline-flex justify-between'}>
-          <div className={getStatusClassName()}>
+          <div className={props.status === 'Running' ? 'text-green-500' : 'text-red-500'}>
             <span className='font-medium'>Status:</span> {props.status}
           </div>
           <div>

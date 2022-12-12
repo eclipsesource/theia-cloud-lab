@@ -10,9 +10,14 @@ import { UserSessionCRData } from '../../types/UserSessionCRData';
 import PlusIcon from '../components/icons/PlusIcon';
 import { useQueries, useQuery } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
+import { useAutoAnimate } from '@formkit/auto-animate/react';
 
 const Workspaces = () => {
   const { keycloak } = useContext(KeycloakContext);
+  const [parent, enableAnimations] = useAutoAnimate<HTMLDivElement>({
+    duration: 100,
+    easing: 'ease-in-out',
+  });
 
   const fetchUserWorkspaces = async (): Promise<UserWorkspaceCRData[]> =>
     fetch('/api/user/workspaces', {
@@ -59,9 +64,11 @@ const Workspaces = () => {
     onError() {
       toast.error('There was an error creating a workspace. Please try again later.');
     },
+    retry: false,
   });
 
   const renderWorkspaceCards = () => {
+    console.log('token', keycloak.token);
     if (results[0].isFetching || results[1].isFetching || createUserWorkspaceResult.isFetching) {
       return (
         <div className='flex justify-center items-center w-full h-full'>
@@ -116,7 +123,7 @@ const Workspaces = () => {
     } else {
       return (
         <div className='flex justify-center items-center w-full h-full'>
-          <span className='text-gray-400'>
+          <span className='text-gray-400 text-lg font-normal'>
             You do not have any workspaces at the moment. You may create one using the button above.
           </span>
         </div>
@@ -148,7 +155,12 @@ const Workspaces = () => {
           />
         </span>
       </div>
-      <div className='flex p-5 w-full h-[calc(100vh-4rem)] flex-col gap-6'>{renderWorkspaceCards()}</div>
+      <div
+        ref={parent}
+        className='flex p-5 w-full h-[calc(100vh-4rem)] flex-col gap-6'
+      >
+        {renderWorkspaceCards()}
+      </div>
     </div>
   );
 };

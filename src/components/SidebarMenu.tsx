@@ -17,7 +17,7 @@ const SidebarMenu = ({ isSidebarClosed, setIsSidebarClosed }: Props) => {
   const [dashboardName, setDashboardName] = useState('');
 
   const adminClassStyle =
-    'flex relative items-center px-6 h-12 overflow-hidden text-ellipsis whitespace-nowrap rounded hover:text-gray-900 hover:bg-gray-100 transition duration-300 ease-in-out cursor-pointer';
+    'flex relative items-center px-6 h-12 overflow-hidden text-ellipsis whitespace-nowrap rounded hover:text-gray-900 hover:bg-slate-300 transition duration-300 ease-in-out cursor-pointer';
 
   useEffect(() => {
     keycloak && keycloak.resourceAccess && setUserType(keycloak.resourceAccess['theia-cloud'].roles[0]);
@@ -51,21 +51,21 @@ const SidebarMenu = ({ isSidebarClosed, setIsSidebarClosed }: Props) => {
   return (
     <>
       {isSidebarClosed ? (
-        <div className='flex justify-center shadow-xl	border-r-2 hover:bg-gray-200'>
+        <div className='flex justify-center shadow-xl	border-r-2 hover:bg-slate-300'>
           <button onClick={() => setIsSidebarClosed(false)}>
             <RightIcon />
           </button>
         </div>
       ) : (
         <Fade in={!isSidebarClosed}>
-          <div className='w-80 h-screen shadow-xl bg-slate-50 sticky py-2 px-4'>
+          <div className='w-80 h-screen shadow-xl bg-slate-100 sticky py-2 px-4'>
             <div className='flex justify-between'>
               <div className='flex items-center w-20'>
                 <TheiaSvg />
               </div>
               <span className='py-2 px-3 text-m text-gray-700'>{`${dashboardName} Dashboard`}</span>
               <button
-                className='py-2 text-m text-gray-700'
+                className='p-2 text-m text-gray-700 hover:bg-slate-300 rounded-md'
                 onClick={() => setIsSidebarClosed(true)}
               >
                 <LeftIcon />

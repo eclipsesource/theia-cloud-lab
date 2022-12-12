@@ -32,25 +32,19 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   } else if (req.method === 'POST') {
     try {
       const mySessions = await theiaService.getSessionsList(appConfig.appId, userId);
-      const checkActiveSession = hasActiveField(mySessions);
       let createdWorkspace;
-      if(checkActiveSession){
+      if (mySessions.length > 0) {
         createdWorkspace = await theiaService.createUserWorkspace(appConfig.appId, userId, req.body.appDefinition);
-      } else{
-        createdWorkspace = await theiaService.createSessionWithNewWorkspace(appConfig.appId, userId, req.body.appDefinition);
+      } else {
+        createdWorkspace = await theiaService.createSessionWithNewWorkspace(
+          appConfig.appId,
+          userId,
+          req.body.appDefinition
+        );
       }
       return res.status(201).send(createdWorkspace);
     } catch (error) {
       return res.status(400).send(error);
     }
   }
-}
-
-function hasActiveField(sessions: { [key: string]: any; }[]): boolean {
-  for (const session of sessions) {
-    if (session.active) {
-      return true;
-    }
-  }
-  return false;
 }

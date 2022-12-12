@@ -10,6 +10,7 @@
   "dependencies": {
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
+    "@formkit/auto-animate": "^1.0.0-beta.5",
     "@kubernetes/client-node": "^0.17.1",
     "@mui/material": "^5.10.14",
     "@mui/x-data-grid": "^5.17.12",
