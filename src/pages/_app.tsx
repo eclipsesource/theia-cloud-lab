@@ -22,6 +22,7 @@ export default function App({ Component, pageProps }: AppProps) {
     defaultOptions: {
       queries: {
         refetchOnWindowFocus: false,
+        cacheTime: 0,
       },
     },
   });
@@ -68,6 +69,26 @@ export default function App({ Component, pageProps }: AppProps) {
       router.replace('/admin');
     }
   }, [userType, router]);
+
+  useEffect(() => {
+    if (keycloak) {
+      keycloak.onAuthRefreshSuccess = () => {
+        console.log('Auth refresh success');
+      };
+
+      keycloak.onAuthRefreshError = () => {
+        console.log('Auth refresh error');
+      };
+
+      keycloak.onAuthLogout = () => {
+        console.log('Auth logout');
+      };
+
+      keycloak.onTokenExpired = () => {
+        console.log('Token expired');
+      };
+    }
+  }, [keycloak]);
 
   return (
     <>

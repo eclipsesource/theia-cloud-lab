@@ -43,12 +43,12 @@ const Workspaces = () => {
       },
       method: 'POST',
       body: JSON.stringify({ appDefinition: 'theia-cloud-demo' }),
-    }).then((res) => res.json());
+    });
 
   const results = useQueries({
     queries: [
-      { queryKey: ['user/workspaces'], queryFn: fetchUserWorkspaces, cacheTime: 0, initialData: undefined },
-      { queryKey: ['user/sessions'], queryFn: fetchUserSessions, cacheTime: 0, initialData: undefined },
+      { queryKey: ['user/workspaces'], queryFn: fetchUserWorkspaces, initialData: undefined },
+      { queryKey: ['user/sessions'], queryFn: fetchUserSessions, initialData: undefined },
     ],
   });
 
@@ -68,7 +68,6 @@ const Workspaces = () => {
   });
 
   const renderWorkspaceCards = () => {
-    console.log('token', keycloak.token);
     if (results[0].isFetching || results[1].isFetching || createUserWorkspaceResult.isFetching) {
       return (
         <div className='flex justify-center items-center w-full h-full'>
@@ -96,6 +95,12 @@ const Workspaces = () => {
               url: session.url,
               cpuUsage: 'CPU',
               memoryUsage: 'MEMORY',
+              userWorkspaceCRData: workspace,
+              userSessionCRData: session,
+              refetch: () => {
+                results[0].refetch();
+                results[1].refetch();
+              },
             };
             cardsData.push(cardData);
             break;
@@ -110,6 +115,11 @@ const Workspaces = () => {
             url: '',
             cpuUsage: 'CPU',
             memoryUsage: 'MEMORY',
+            userWorkspaceCRData: workspace,
+            refetch: () => {
+              results[0].refetch();
+              results[1].refetch();
+            },
           };
           cardsData.push(cardData);
         }
@@ -118,6 +128,10 @@ const Workspaces = () => {
         <UserWorkspaceCard
           key={cardData.name}
           {...cardData}
+          refetch={() => {
+            results[0].refetch();
+            results[1].refetch();
+          }}
         />
       ));
     } else {
