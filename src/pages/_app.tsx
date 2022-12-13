@@ -20,11 +20,11 @@ export default function App({ Component, pageProps }: AppProps) {
   const [userType, setUserType] = useState('');
   const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
-  // TODO(BORA): remove options for production
+
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
-        refetchOnWindowFocus: false,
+        refetchOnWindowFocus: false, // TODO(BORA): remove refetchOnWindowFocus for production
         cacheTime: 0,
       },
     },

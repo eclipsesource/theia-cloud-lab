@@ -40,80 +40,72 @@ const Sessions = () => {
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const { keycloak } = useContext(Context);
 
-  const fetchSessions = async (): Promise<AdminSessionCRData[]> => {
-    return fetch('/api/admin/sessions/cr', {
-      headers: {
-        Authorization: `Bearer ${keycloak.token}`,
-      },
-      method: 'GET',
-    }).then((res) => res.json());
-  };
-
-  const fetchMetrics = async (): Promise<AdminPodMetrics[]> => {
-    return fetch('/api/admin/metrics', {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${keycloak.token}`,
-      },
-      method: 'GET',
-    }).then((res) => res.json());
-  };
-
-  const results = useQueries({
+  const fetchResults = useQueries({
     queries: [
-      { queryKey: ['admin/sessions'], queryFn: fetchSessions, initialData: undefined },
-      { queryKey: ['admin/metrics'], queryFn: fetchMetrics, initialData: undefined },
+      {
+        queryKey: ['admin/sessions'],
+        queryFn: async (): Promise<AdminSessionCRData[]> =>
+          fetch('/api/admin/sessions/cr', {
+            headers: {
+              Authorization: `Bearer ${keycloak.token}`,
+            },
+            method: 'GET',
+          }).then((res) => res.json()),
+        initialData: [],
+        retry: false,
+      },
+      {
+        queryKey: ['admin/metrics'],
+        queryFn: async (): Promise<AdminPodMetrics[]> =>
+          fetch('/api/admin/metrics', {
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${keycloak.token}`,
+            },
+            method: 'GET',
+          }).then((res) => res.json()),
+        initialData: [],
+        retry: false,
+      },
     ],
   });
 
-  const deleteSessions = () => {
-    return fetch('/api/admin/sessions/cr', {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${keycloak.token}`,
-      },
-      method: 'DELETE',
-      body: JSON.stringify({ toBeDeletedSessions: selectedRows }),
-    });
-  };
-
   const deleteSessionResult = useQuery({
     queryKey: ['admin/deleteSession'],
-    queryFn: deleteSessions,
+    queryFn: () =>
+      fetch('/api/admin/sessions/cr', {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${keycloak.token}`,
+        },
+        method: 'DELETE',
+        body: JSON.stringify({ toBeDeletedSessions: selectedRows }),
+      }),
     enabled: false,
     onSettled() {
-      results[0].refetch();
-      results[1].refetch();
+      fetchResults[0].refetch();
+      fetchResults[1].refetch();
     },
     staleTime: Infinity,
-    onError() {
-      toast.error('There was an error deleting sessions. Please try again later.');
-    },
     retry: false,
   });
 
-  const createSession = () => {
-    return fetch('/api/admin/sessions/cr', {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${keycloak.token}`,
-      },
-      method: 'POST',
-    });
-  };
-
   const createSessionResult = useQuery({
     queryKey: ['admin/createSession'],
-    queryFn: createSession,
+    queryFn: () =>
+      fetch('/api/admin/sessions/cr', {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${keycloak.token}`,
+        },
+        method: 'POST',
+      }),
     enabled: false,
     onSettled() {
-      results[0].refetch();
-      results[1].refetch();
+      fetchResults[0].refetch();
+      fetchResults[1].refetch();
     },
     staleTime: Infinity,
-    onError() {
-      toast.error('There was an error creating a session. Please try again later.');
-    },
     retry: false,
   });
 
@@ -158,10 +150,10 @@ const Sessions = () => {
   ];
 
   const setTableData = (): Row[] => {
-    if (results[0].data && results[0].data.length > 0) {
+    if (fetchResults[0].data && fetchResults[0].data.length > 0) {
       const rows: Row[] = [];
       const arr: AdminPodMetrics[] = [];
-      for (const session of results[0].data) {
+      for (const session of fetchResults[0].data) {
         let isMatched = false;
         //TODO fix [] with results[1] array when metrics endpoint works, and remove arr
         for (const podMetric of arr) {
@@ -227,36 +219,68 @@ const Sessions = () => {
 
   const SessionsTableHeader = () => {
     return (
-      <div className='flex justify-between py-4 px-4 '>
-        <span className='text-lg font-extralight text-gray-600 hover:text-gray-800'>Sessions</span>
+      <div className='flex py-4 px-5 shadow-sm h-20 items-center justify-between'>
+        <span className='text-xl text-gray-600'>Sessions</span>
         <div>
           <TheiaButton
-            text='Create Sessions'
+            text='Create Session'
             icon={<PlusIcon />}
             className='mr-2'
             onClick={() => createSessionResult.refetch()}
+            disabled={
+              fetchResults[0].isFetching ||
+              fetchResults[1].isFetching ||
+              createSessionResult.isFetching ||
+              deleteSessionResult.isFetching
+            }
           />
 
-          {results[0].data && results[0].data?.length > 0 && (
+          {fetchResults[0].data && fetchResults[0].data?.length > 0 && (
             <TheiaButton
               text='Delete Sessions'
               icon={<DeleteIcon />}
-              className='mr-2'
+              className='mr-2 bg-red-500 hover:bg-red-700'
               onClick={() => deleteSessionResult.refetch()}
+              disabled={
+                fetchResults[0].isFetching ||
+                fetchResults[1].isFetching ||
+                createSessionResult.isFetching ||
+                deleteSessionResult.isFetching
+              }
             />
           )}
 
           <TheiaButton
-            text='Refresh'
+            className='w-32'
+            text={
+              fetchResults[0].isFetching ||
+              fetchResults[1].isFetching ||
+              createSessionResult.isFetching ||
+              deleteSessionResult.isFetching
+                ? ''
+                : 'Refresh'
+            }
             icon={
-              <button className={`${results[0].isFetching ? 'animate-spin' : ''} `}>
-                <RefreshIcon />
-              </button>
+              <RefreshIcon
+                className={`w-6 h-6 ${
+                  (fetchResults[0].isFetching ||
+                    fetchResults[1].isFetching ||
+                    createSessionResult.isFetching ||
+                    deleteSessionResult.isFetching) &&
+                  'animate-spin'
+                }`}
+              />
             }
             onClick={() => {
-              results[0].refetch();
-              results[1].refetch();
+              fetchResults[0].refetch();
+              fetchResults[1].refetch();
             }}
+            disabled={
+              fetchResults[0].isFetching ||
+              fetchResults[1].isFetching ||
+              createSessionResult.isFetching ||
+              deleteSessionResult.isFetching
+            }
           />
         </div>
       </div>
@@ -272,7 +296,7 @@ const Sessions = () => {
         disableSelectionOnClick
         experimentalFeatures={{ newEditingApi: true }}
         getRowClassName={() => 'text-xs'}
-        loading={results[0].isFetching || createSessionResult.isFetching || deleteSessionResult.isFetching}
+        loading={fetchResults[0].isFetching || createSessionResult.isFetching || deleteSessionResult.isFetching}
         components={{
           Toolbar: SessionsTableHeader,
         }}

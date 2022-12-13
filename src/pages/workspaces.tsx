@@ -161,12 +161,12 @@ const Workspaces = () => {
 
   return (
     <div className='w-full h-full'>
-      <div className='flex py-4 px-5 shadow-sm h-16 items-center justify-between'>
-        <span className='text-lg text-gray-600 '>Workspaces</span>
+      <div className='flex py-4 px-5 shadow-sm h-20 items-center justify-between'>
+        <span className='text-xl text-gray-600 '>Workspaces</span>
         <span className='flex gap-4 '>
           <TheiaButton
             text='Create Workspace'
-            icon={<PlusIcon className={'w-6 h-6 hover:animate-pulse'} />}
+            icon={<PlusIcon />}
             onClick={() => {
               createUserWorkspaceResult.refetch();
             }}
@@ -179,7 +179,7 @@ const Workspaces = () => {
             }
             icon={
               <RefreshIcon
-                className={`w-5 h-5 hover:animate-pulse ${
+                className={`w-6 h-6 ${
                   (results[0].isFetching || results[1].isFetching || createUserWorkspaceResult.isFetching) &&
                   'animate-spin'
                 }`}
