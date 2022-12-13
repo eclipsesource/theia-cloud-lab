@@ -110,10 +110,10 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
           <a
             href={'//' + props.url + '/'}
             target='_blank'
-            className='flex text-lg cursor-pointer font-medium h-fit w-fit hover:underline text-blue-500'
+            className='flex text-lg cursor-pointer font-medium h-fit w-fit hover:underline text-blue-500 items-center'
             rel='noreferrer'
           >
-            {props.name + ' '} <NewTabIcon className='w-5 h-5' />
+            {props.name} <NewTabIcon className='w-5 h-5' />
           </a>
         ) : (
           <span className='text-lg font-medium'>{props.name}</span>

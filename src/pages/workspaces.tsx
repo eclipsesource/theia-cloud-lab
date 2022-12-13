@@ -5,8 +5,6 @@ import UserWorkspaceCard, { UserWorkspaceCardProps } from '../components/UserWor
 import { Context } from '../context/Context';
 import dayjs from 'dayjs';
 import CircularProgress from '@mui/material/CircularProgress';
-import { UserWorkspaceCRData } from '../../types/UserWorkspaceCRData';
-import { UserSessionCRData } from '../../types/UserSessionCRData';
 import PlusIcon from '../components/icons/PlusIcon';
 import { useQueries, useQuery } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
@@ -19,51 +17,67 @@ const Workspaces = () => {
     easing: 'ease-in-out',
   });
 
-  const fetchUserWorkspaces = async (): Promise<UserWorkspaceCRData[]> =>
-    fetch('/api/user/workspaces', {
-      headers: {
-        Authorization: `Bearer ${keycloak.token}`,
-      },
-      method: 'GET',
-    }).then((res) => res.json());
-
-  const fetchUserSessions = async (): Promise<UserSessionCRData[]> =>
-    fetch('/api/user/sessions', {
-      headers: {
-        Authorization: `Bearer ${keycloak.token}`,
-      },
-      method: 'GET',
-    }).then((res) => res.json());
-
-  const createUserWorkspace = async (): Promise<any> =>
-    fetch('/api/user/workspaces', {
-      headers: {
-        Authorization: `Bearer ${keycloak.token}`,
-        'Content-Type': 'application/json',
-      },
-      method: 'POST',
-      body: JSON.stringify({ appDefinition: 'theia-cloud-demo' }),
-    });
-
   const results = useQueries({
     queries: [
-      { queryKey: ['user/workspaces'], queryFn: fetchUserWorkspaces, initialData: undefined },
-      { queryKey: ['user/sessions'], queryFn: fetchUserSessions, initialData: undefined },
+      {
+        queryKey: ['user/workspaces'],
+        queryFn: () =>
+          fetch('/api/user/workspaces', {
+            headers: {
+              Authorization: `Bearer ${keycloak.token}`,
+            },
+            method: 'GET',
+          }).then((res) => {
+            if (!res.ok) {
+              toast.error('There was an error fetching workspaces. Please try again later.');
+            }
+            return res.json();
+          }),
+        initialData: undefined,
+        retry: false,
+      },
+      {
+        queryKey: ['user/sessions'],
+        queryFn: () =>
+          fetch('/api/user/sessions', {
+            headers: {
+              Authorization: `Bearer ${keycloak.token}`,
+            },
+            method: 'GET',
+          }).then((res) => {
+            if (!res.ok) {
+              toast.error('There was an error fetching sessions. Please try again later.');
+            }
+            return res.json();
+          }),
+        initialData: undefined,
+        retry: false,
+      },
     ],
   });
 
   const createUserWorkspaceResult = useQuery({
     queryKey: ['user/createWorkspace'],
-    queryFn: createUserWorkspace,
+    queryFn: () =>
+      fetch('/api/user/workspaces', {
+        headers: {
+          Authorization: `Bearer ${keycloak.token}`,
+          'Content-Type': 'application/json',
+        },
+        method: 'POST',
+        body: JSON.stringify({ appDefinition: 'theia-cloud-demo' }),
+      }).then((res) => {
+        if (!res.ok) {
+          toast.error('There was an error creating workspace. Please try again later.');
+        }
+        return res.json();
+      }),
     enabled: false,
     onSettled() {
       results[0].refetch();
       results[1].refetch();
     },
     staleTime: Infinity,
-    onError() {
-      toast.error('There was an error creating a workspace. Please try again later.');
-    },
     retry: false,
   });
 
@@ -147,7 +161,7 @@ const Workspaces = () => {
 
   return (
     <div className='w-full h-full'>
-      <div className='flex p-4 shadow-sm h-16 items-center justify-between'>
+      <div className='flex py-4 px-5 shadow-sm h-16 items-center justify-between'>
         <span className='text-lg text-gray-600 '>Workspaces</span>
         <span className='flex gap-4 '>
           <TheiaButton

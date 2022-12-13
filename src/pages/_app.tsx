@@ -53,11 +53,11 @@ export default function App({ Component, pageProps }: AppProps) {
             window.location.reload();
           } else {
             //TODO read username as well
-            if (keycloakObj.token) {
+            if (keycloakObj) {
               console.log('keycloakObj', keycloakObj);
               setKeycloak(keycloakObj);
               setShouldRenderLayout(true);
-              keycloak && keycloak.resourceAccess && setUserType(keycloak.resourceAccess['theia-cloud'].roles[0]);
+              keycloakObj.resourceAccess && setUserType(keycloakObj.resourceAccess['theia-cloud'].roles[0]);
             }
           }
         })
@@ -65,34 +65,15 @@ export default function App({ Component, pageProps }: AppProps) {
           console.error('Authentication Failed');
         });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isMounted]);
 
   useEffect(() => {
     if (userType === 'admin') {
-      router.replace('/admin');
+      router.push('/admin/sessions');
+    } else if (userType === 'user') {
+      router.push('/workspaces');
     }
-  }, [userType, router]);
-
-  useEffect(() => {
-    if (keycloak) {
-      keycloak.onAuthRefreshSuccess = () => {
-        console.log('Auth refresh success');
-      };
-
-      keycloak.onAuthRefreshError = () => {
-        console.log('Auth refresh error');
-      };
-
-      keycloak.onAuthLogout = () => {
-        console.log('Auth logout');
-      };
-
-      keycloak.onTokenExpired = () => {
-        console.log('Token expired');
-      };
-    }
-  }, [keycloak]);
+  }, [userType]);
 
   return (
     <>
