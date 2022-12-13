@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import TheiaButton from '../../components/TheiaButton';
 import DeleteIcon from '../../components/icons/DeleteIcon';
 import RestartIcon from '../../components/icons/RestartIcon';
@@ -10,6 +10,8 @@ import { AdminWorkspaceCRData } from '../../../types/AdminWorkspaceCRData';
 import { Context } from '../../context/Context';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
+import ExclamationIcon from '../../components/icons/ExclamationIcon';
+import CancelIcon from '../../components/icons/CancelIcon';
 
 type Row = AdminWorkspaceCRData & {
   id: string;
@@ -19,7 +21,7 @@ const XLCol = 250;
 
 const Workspaces = () => {
   const [selectedRows, setSelectedRows] = useState<GridRowId[]>([]);
-  const { keycloak } = useContext(Context);
+  const { keycloak, setModalContent, setIsModalOpen } = useContext(Context);
 
   const setTableData = (): Row[] => {
     if (fetchWorkspacesResult.data && fetchWorkspacesResult.data.length > 0) {
@@ -52,6 +54,11 @@ const Workspaces = () => {
         },
         method: 'DELETE',
         body: JSON.stringify({ toBeDeletedWorkspaces: selectedRows }),
+      }).then((res) => {
+        if (!res.ok) {
+          toast.error('There was an error deleting workspaces. Please try again later.');
+        }
+        return res.json();
       }),
     enabled: false,
     onSettled() {
@@ -71,6 +78,11 @@ const Workspaces = () => {
         },
         method: 'POST',
         body: JSON.stringify({ toBeRestartedSessions: selectedRows }),
+      }).then((res) => {
+        if (!res.ok) {
+          toast.error('There was an error starting workspaces. Please try again later.');
+        }
+        return res.json();
       }),
     enabled: false,
     onSettled() {
@@ -90,6 +102,11 @@ const Workspaces = () => {
         },
         method: 'POST',
         body: JSON.stringify({ toBeCreatedWorkspace: `${Date.now()}` }),
+      }).then((res) => {
+        if (!res.ok) {
+          toast.error('There was an error creating workspaces. Please try again later.');
+        }
+        return res.json();
       }),
     enabled: false,
     onSettled() {
@@ -108,7 +125,12 @@ const Workspaces = () => {
           Authorization: `Bearer ${keycloak.token}`,
         },
         method: 'GET',
-      }).then((res) => res.json()),
+      }).then((res) => {
+        if (!res.ok) {
+          toast.error('There was an error fetching workspaces. Please try again later.');
+        }
+        return res.json();
+      }),
     initialData: [],
     retry: false,
   });
@@ -140,34 +162,61 @@ const Workspaces = () => {
               fetchWorkspacesResult.isFetching
             }
           />
-          {fetchWorkspacesResult.data.length > 0 && (
-            <TheiaButton
-              text='Delete Workspaces'
-              icon={<DeleteIcon />}
-              className='mr-2 bg-red-500 hover:bg-red-700'
-              onClick={() => deleteWorkspacesResult.refetch()}
-              disabled={
-                deleteWorkspacesResult.isFetching ||
-                createWorkspacesResult.isFetching ||
-                restartWorkspacesResult.isFetching ||
-                fetchWorkspacesResult.isFetching
-              }
-            />
-          )}
-          {fetchWorkspacesResult.data.length > 0 && (
-            <TheiaButton
-              text='Start Sessions'
-              icon={<RestartIcon />}
-              className='mr-2'
-              onClick={() => restartWorkspacesResult.refetch()}
-              disabled={
-                deleteWorkspacesResult.isFetching ||
-                createWorkspacesResult.isFetching ||
-                restartWorkspacesResult.isFetching ||
-                fetchWorkspacesResult.isFetching
-              }
-            />
-          )}
+          <TheiaButton
+            text='Delete Workspaces'
+            icon={<DeleteIcon />}
+            className='mr-2 bg-red-500 hover:bg-red-700 disabled:bg-red-300'
+            onClick={() => {
+              setModalContent(
+                <div className='w-full h-full flex flex-col gap-5 items-center'>
+                  <ExclamationIcon className='w-16 h-16' />
+                  <div className='w-full font-normal'>
+                    You are trying to delete {selectedRows.length} workspace{selectedRows.length > 1 && 's'}. This
+                    action cannot be undone. Are you sure?
+                  </div>
+                  <div className='flex justify-between w-full'>
+                    <TheiaButton
+                      text='Cancel'
+                      icon={<CancelIcon />}
+                      onClick={() => {
+                        setIsModalOpen(false);
+                      }}
+                    />
+                    <TheiaButton
+                      className='bg-red-500 hover:bg-red-700'
+                      text='Delete Workspace'
+                      icon={<DeleteIcon className='w-6 h-6 stroke-white' />}
+                      onClick={() => {
+                        deleteWorkspacesResult.refetch();
+                        setIsModalOpen(false);
+                      }}
+                    />
+                  </div>
+                </div>
+              );
+              setIsModalOpen(true);
+            }}
+            disabled={
+              deleteWorkspacesResult.isFetching ||
+              createWorkspacesResult.isFetching ||
+              restartWorkspacesResult.isFetching ||
+              fetchWorkspacesResult.isFetching ||
+              selectedRows.length < 1
+            }
+          />
+          <TheiaButton
+            text='Start Sessions'
+            icon={<RestartIcon />}
+            className='mr-2'
+            onClick={() => restartWorkspacesResult.refetch()}
+            disabled={
+              deleteWorkspacesResult.isFetching ||
+              createWorkspacesResult.isFetching ||
+              restartWorkspacesResult.isFetching ||
+              fetchWorkspacesResult.isFetching ||
+              selectedRows.length < 1
+            }
+          />
           <TheiaButton
             className='w-32'
             text={

@@ -1,16 +1,17 @@
-import { useContext, useEffect, useState } from 'react';
-import { DataGrid, GridColDef, GridRowId, GridRowsProp } from '@mui/x-data-grid';
+import { useContext, useState } from 'react';
+import { DataGrid, GridColDef, GridRowId } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
 import RefreshIcon from '../../components/icons/RefreshIcon';
 import DeleteIcon from '../../components/icons/DeleteIcon';
 import TheiaButton from '../../components/TheiaButton';
-import { CircularProgress, Modal } from '@mui/material';
 import PlusIcon from '../../components/icons/PlusIcon';
 import { AdminSessionCRData } from '../../../types/AdminSessionCRData';
 import { Context } from '../../context/Context';
 import { AdminPodMetrics } from '../../../types/AdminPodMetrics';
 import { useQueries, useQuery } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
+import ExclamationIcon from '../../components/icons/ExclamationIcon';
+import CancelIcon from '../../components/icons/CancelIcon';
 
 export type ItemData = {
   sessionData: AdminSessionCRData;
@@ -37,8 +38,7 @@ const MCol = 80;
 
 const Sessions = () => {
   const [selectedRows, setSelectedRows] = useState<GridRowId[]>([]);
-  const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const { keycloak } = useContext(Context);
+  const { keycloak, setModalContent, setIsModalOpen } = useContext(Context);
 
   const fetchResults = useQueries({
     queries: [
@@ -50,7 +50,12 @@ const Sessions = () => {
               Authorization: `Bearer ${keycloak.token}`,
             },
             method: 'GET',
-          }).then((res) => res.json()),
+          }).then((res) => {
+            if (!res.ok) {
+              toast.error('There was an error fetching sessions. Please try again later.');
+            }
+            return res.json();
+          }),
         initialData: [],
         retry: false,
       },
@@ -63,7 +68,12 @@ const Sessions = () => {
               Authorization: `Bearer ${keycloak.token}`,
             },
             method: 'GET',
-          }).then((res) => res.json()),
+          }).then((res) => {
+            if (!res.ok) {
+              toast.error('There was an error fetching metrics. Please try again later.');
+            }
+            return res.json();
+          }),
         initialData: [],
         retry: false,
       },
@@ -80,6 +90,11 @@ const Sessions = () => {
         },
         method: 'DELETE',
         body: JSON.stringify({ toBeDeletedSessions: selectedRows }),
+      }).then((res) => {
+        if (!res.ok) {
+          toast.error('There was an error deleting sessions. Please try again later.');
+        }
+        return res.json();
       }),
     enabled: false,
     onSettled() {
@@ -99,6 +114,11 @@ const Sessions = () => {
           Authorization: `Bearer ${keycloak.token}`,
         },
         method: 'POST',
+      }).then((res) => {
+        if (!res.ok) {
+          toast.error('There was an error creating session. Please try again later.');
+        }
+        return res.json();
       }),
     enabled: false,
     onSettled() {
@@ -200,23 +220,6 @@ const Sessions = () => {
     return [];
   };
 
-  const getModalComponent = () => {
-    return (
-      <>
-        <Modal
-          open={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
-          aria-labelledby='modal-modal-title'
-          aria-describedby='modal-modal-description'
-        >
-          <div className='absolute top-[50%] left-[50%] translate-x-[-50%] translate-y-[-50%] w-1/2 p-6	bg-slate-100 shadow'>
-            <span>Create a new session</span>
-          </div>
-        </Modal>
-      </>
-    );
-  };
-
   const SessionsTableHeader = () => {
     return (
       <div className='flex py-4 px-5 shadow-sm h-20 items-center justify-between'>
@@ -234,22 +237,48 @@ const Sessions = () => {
               deleteSessionResult.isFetching
             }
           />
-
-          {fetchResults[0].data && fetchResults[0].data?.length > 0 && (
-            <TheiaButton
-              text='Delete Sessions'
-              icon={<DeleteIcon />}
-              className='mr-2 bg-red-500 hover:bg-red-700'
-              onClick={() => deleteSessionResult.refetch()}
-              disabled={
-                fetchResults[0].isFetching ||
-                fetchResults[1].isFetching ||
-                createSessionResult.isFetching ||
-                deleteSessionResult.isFetching
-              }
-            />
-          )}
-
+          <TheiaButton
+            text='Delete Sessions'
+            icon={<DeleteIcon />}
+            className='mr-2 bg-red-500 hover:bg-red-700 disabled:bg-red-300'
+            onClick={() => {
+              setModalContent(
+                <div className='w-full h-full flex flex-col gap-5 items-center'>
+                  <ExclamationIcon className='w-16 h-16' />
+                  <div className='w-full font-normal'>
+                    You are trying to delete {selectedRows.length} session{selectedRows.length > 1 && 's'}. This action
+                    cannot be undone. Are you sure?
+                  </div>
+                  <div className='flex justify-between w-full'>
+                    <TheiaButton
+                      text='Cancel'
+                      icon={<CancelIcon />}
+                      onClick={() => {
+                        setIsModalOpen(false);
+                      }}
+                    />
+                    <TheiaButton
+                      className='bg-red-500 hover:bg-red-700'
+                      text='Delete Workspace'
+                      icon={<DeleteIcon className='w-6 h-6 stroke-white' />}
+                      onClick={() => {
+                        deleteSessionResult.refetch();
+                        setIsModalOpen(false);
+                      }}
+                    />
+                  </div>
+                </div>
+              );
+              setIsModalOpen(true);
+            }}
+            disabled={
+              fetchResults[0].isFetching ||
+              fetchResults[1].isFetching ||
+              createSessionResult.isFetching ||
+              deleteSessionResult.isFetching ||
+              selectedRows.length < 1
+            }
+          />
           <TheiaButton
             className='w-32'
             text={
@@ -287,25 +316,21 @@ const Sessions = () => {
     );
   };
   return (
-    <>
-      <DataGrid
-        sx={{ height: '100%', width: '100%', borderRadius: 0 }}
-        rows={setTableData()}
-        columns={columns}
-        checkboxSelection
-        disableSelectionOnClick
-        experimentalFeatures={{ newEditingApi: true }}
-        getRowClassName={() => 'text-xs'}
-        loading={fetchResults[0].isFetching || createSessionResult.isFetching || deleteSessionResult.isFetching}
-        components={{
-          Toolbar: SessionsTableHeader,
-        }}
-        getRowHeight={() => 'auto'}
-        onSelectionModelChange={(e: GridRowId[]) => setSelectedRows(e)}
-      />
-
-      {getModalComponent()}
-    </>
+    <DataGrid
+      sx={{ height: '100%', width: '100%', borderRadius: 0 }}
+      rows={setTableData()}
+      columns={columns}
+      checkboxSelection
+      disableSelectionOnClick
+      experimentalFeatures={{ newEditingApi: true }}
+      getRowClassName={() => 'text-xs'}
+      loading={fetchResults[0].isFetching || createSessionResult.isFetching || deleteSessionResult.isFetching}
+      components={{
+        Toolbar: SessionsTableHeader,
+      }}
+      getRowHeight={() => 'auto'}
+      onSelectionModelChange={(e: GridRowId[]) => setSelectedRows(e)}
+    />
   );
 };
 
