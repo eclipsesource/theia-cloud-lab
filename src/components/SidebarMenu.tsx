@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { useContext, useEffect, useState } from 'react';
 import TheiaSvg from './icons/TheiaSvg';
 import LeftIcon from './icons/LeftIcon';
-import { KeycloakContext } from '../context/KeycloakContext';
+import { Context } from '../context/Context';
 import TheiaButton from './TheiaButton';
 import RightIcon from './icons/RightIcon';
 import Fade from '@mui/material/Fade';
@@ -12,7 +12,7 @@ interface Props {
   setIsSidebarClosed: (val: boolean) => void;
 }
 const SidebarMenu = ({ isSidebarClosed, setIsSidebarClosed }: Props) => {
-  const { keycloak } = useContext(KeycloakContext);
+  const { keycloak } = useContext(Context);
   const [userType, setUserType] = useState('');
   const [dashboardName, setDashboardName] = useState('');
 
@@ -51,7 +51,7 @@ const SidebarMenu = ({ isSidebarClosed, setIsSidebarClosed }: Props) => {
   return (
     <>
       {isSidebarClosed ? (
-        <div className='flex justify-center shadow-xl	border-r-2 hover:bg-slate-300'>
+        <div className='flex justify-center shadow-xl	border-r-2 bg-slate-100 hover:bg-slate-300'>
           <button onClick={() => setIsSidebarClosed(false)}>
             <RightIcon />
           </button>

@@ -4,16 +4,19 @@ import Layout from '../components/Layout';
 import { useEffect, useState } from 'react';
 import Keycloak from 'keycloak-js';
 import keycloakConfig from '../../configs/keycloak_config';
-import { KeycloakContext } from '../context/KeycloakContext';
+import { Context } from '../context/Context';
 import { useRouter } from 'next/router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import TheiaModal from '../components/TheiaModal';
 
 export default function App({ Component, pageProps }: AppProps) {
   const [shouldRenderLayout, setShouldRenderLayout] = useState(false);
   const [keycloak, setKeycloak] = useState({} as Keycloak);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [modalContent, setModalContent] = useState(<></>);
   const [userType, setUserType] = useState('');
   const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
@@ -95,11 +98,15 @@ export default function App({ Component, pageProps }: AppProps) {
     <>
       {shouldRenderLayout ? (
         <QueryClientProvider client={queryClient}>
-          <KeycloakContext.Provider value={{ keycloak }}>
+          <Context.Provider value={{ keycloak, isModalOpen, setIsModalOpen, modalContent, setModalContent }}>
+            <TheiaModal
+              isModalOpen={isModalOpen}
+              modalContent={modalContent}
+            />
             <Layout>
               <Component {...pageProps} />
             </Layout>
-          </KeycloakContext.Provider>
+          </Context.Provider>
           <ToastContainer
             position='bottom-right'
             autoClose={5000}

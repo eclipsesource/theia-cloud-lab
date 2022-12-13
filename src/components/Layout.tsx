@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
 import SidebarMenu from '../components/SidebarMenu';
-import { KeycloakContext } from '../context/KeycloakContext';
+import { Context } from '../context/Context';
 
 export default function Layout({ children }: any) {
-  const { keycloak } = useContext(KeycloakContext);
+  const { keycloak } = useContext(Context);
   const [userType, setUserType] = useState('user');
   const [isSidebarClosed, setIsSidebarClosed] = useState(false);
 

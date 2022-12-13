@@ -12,7 +12,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       let newSession;
       if (!req.body['workspaceName']) {
-        newSession = await theiaService.createSessionWithNewWorkspace(appConfig.appId, userId, req.body['appDefinition']);
+        newSession = await theiaService.createSessionWithNewWorkspace(
+          appConfig.appId,
+          userId,
+          req.body['appDefinition']
+        );
       } else {
         newSession = await theiaService.createSessionWithExistingWorkspace(
           appConfig.appId,
@@ -22,7 +26,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         );
       }
       return res.status(200).send(newSession);
-    } catch (error:any) {
+    } catch (error: any) {
       return res.status(400).send(error.message);
     }
     // Handle delete request
@@ -30,7 +34,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       await theiaService.deleteSession(appConfig.appId, userId, req.body.sessionName);
       return res.status(204).send({});
-    } catch (error:any) {
+    } catch (error: any) {
       return res.status(500).send(error.message);
     }
     // Handle get request
@@ -44,7 +48,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         }))
       ); */
       return res.status(200).send(userSessionsList);
-    } catch (error:any) {
+    } catch (error: any) {
       return res.status(500).send(error.message);
     }
   }

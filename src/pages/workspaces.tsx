@@ -1,8 +1,8 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import RefreshIcon from '../components/icons/RefreshIcon';
 import TheiaButton from '../components/TheiaButton';
 import UserWorkspaceCard, { UserWorkspaceCardProps } from '../components/UserWorkspaceCard';
-import { KeycloakContext } from '../context/KeycloakContext';
+import { Context } from '../context/Context';
 import dayjs from 'dayjs';
 import CircularProgress from '@mui/material/CircularProgress';
 import { UserWorkspaceCRData } from '../../types/UserWorkspaceCRData';
@@ -13,7 +13,7 @@ import { toast } from 'react-toastify';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
 
 const Workspaces = () => {
-  const { keycloak } = useContext(KeycloakContext);
+  const { keycloak } = useContext(Context);
   const [parent, enableAnimations] = useAutoAnimate<HTMLDivElement>({
     duration: 100,
     easing: 'ease-in-out',
@@ -68,19 +68,7 @@ const Workspaces = () => {
   });
 
   const renderWorkspaceCards = () => {
-    if (results[0].isFetching || results[1].isFetching || createUserWorkspaceResult.isFetching) {
-      return (
-        <div className='flex justify-center items-center w-full h-full'>
-          <CircularProgress />
-        </div>
-      );
-    } else if (results[0].isError || results[1].isError || results[0].isRefetchError || results[1].isRefetchError) {
-      return (
-        <div className='flex justify-center items-center w-full h-full'>
-          <span className='text-gray-400'>There was an error fetching data. Please try again later.</span>
-        </div>
-      );
-    } else if (results[0].data && results[1].data && results[0].data.length > 0) {
+    if (results[0].data && results[1].data && results[0].data.length > 0) {
       const cardsData: UserWorkspaceCardProps[] = [];
       for (const workspace of results[0].data) {
         let isMatched = false;
@@ -134,6 +122,18 @@ const Workspaces = () => {
           }}
         />
       ));
+    } else if (results[0].isFetching || results[1].isFetching || createUserWorkspaceResult.isFetching) {
+      return (
+        <div className='flex justify-center items-center w-full h-full'>
+          <CircularProgress />
+        </div>
+      );
+    } else if (results[0].isError || results[1].isError || results[0].isRefetchError || results[1].isRefetchError) {
+      return (
+        <div className='flex justify-center items-center w-full h-full'>
+          <span className='text-gray-400'>There was an error fetching data. Please try again later.</span>
+        </div>
+      );
     } else {
       return (
         <div className='flex justify-center items-center w-full h-full'>
@@ -159,8 +159,18 @@ const Workspaces = () => {
             disabled={results[0].isFetching || results[1].isFetching || createUserWorkspaceResult.isFetching}
           />
           <TheiaButton
-            text='Refresh'
-            icon={<RefreshIcon className={'w-5 h-5 hover:animate-pulse'} />}
+            className='w-32'
+            text={
+              results[0].isFetching || results[1].isFetching || createUserWorkspaceResult.isFetching ? '' : 'Refresh'
+            }
+            icon={
+              <RefreshIcon
+                className={`w-5 h-5 hover:animate-pulse ${
+                  (results[0].isFetching || results[1].isFetching || createUserWorkspaceResult.isFetching) &&
+                  'animate-spin'
+                }`}
+              />
+            }
             onClick={() => {
               results[0].refetch();
               results[1].refetch();

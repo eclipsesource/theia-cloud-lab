@@ -7,7 +7,7 @@ import TheiaButton from '../../components/TheiaButton';
 import { CircularProgress, Modal } from '@mui/material';
 import PlusIcon from '../../components/icons/PlusIcon';
 import { AdminSessionCRData } from '../../../types/AdminSessionCRData';
-import { KeycloakContext } from '../../context/KeycloakContext';
+import { Context } from '../../context/Context';
 import { AdminPodMetrics } from '../../../types/AdminPodMetrics';
 import { useQueries, useQuery } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
@@ -38,7 +38,7 @@ const MCol = 80;
 const Sessions = () => {
   const [selectedRows, setSelectedRows] = useState<GridRowId[]>([]);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
-  const { keycloak } = useContext(KeycloakContext);
+  const { keycloak } = useContext(Context);
 
   const fetchSessions = async (): Promise<AdminSessionCRData[]> => {
     return fetch('/api/admin/sessions/cr', {

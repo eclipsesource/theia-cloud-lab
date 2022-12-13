@@ -7,7 +7,7 @@ import dayjs from 'dayjs';
 import RefreshIcon from '../../components/icons/RefreshIcon';
 import PlusIcon from '../../components/icons/PlusIcon';
 import { AdminWorkspaceCRData } from '../../../types/AdminWorkspaceCRData';
-import { KeycloakContext } from '../../context/KeycloakContext';
+import { Context } from '../../context/Context';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 
@@ -19,7 +19,7 @@ const XLCol = 250;
 
 const Workspaces = () => {
   const [selectedRows, setSelectedRows] = useState<GridRowId[]>([]);
-  const { keycloak } = useContext(KeycloakContext);
+  const { keycloak } = useContext(Context);
 
   const setTableData = (): Row[] => {
     if (fetchWorkspacesResult.data && fetchWorkspacesResult.data.length > 0) {

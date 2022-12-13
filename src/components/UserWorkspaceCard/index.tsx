@@ -7,7 +7,7 @@ import { useAutoAnimate } from '@formkit/auto-animate/react';
 import { UserWorkspaceCRData } from '../../../types/UserWorkspaceCRData';
 import { UserSessionCRData } from '../../../types/UserSessionCRData';
 import { useQuery } from '@tanstack/react-query';
-import { KeycloakContext } from '../../context/KeycloakContext';
+import { Context } from '../../context/Context';
 import { toast } from 'react-toastify';
 
 export type UserWorkspaceCardProps = {
@@ -24,7 +24,7 @@ export type UserWorkspaceCardProps = {
 };
 
 export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
-  const { keycloak } = useContext(KeycloakContext);
+  const { keycloak } = useContext(Context);
   const [isOptionsShown, setIsOptionsShown] = useState(false);
   const [parent, enableAnimations] = useAutoAnimate<HTMLDivElement>({
     duration: 100,
@@ -41,15 +41,17 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
         },
         method: 'DELETE',
         body: JSON.stringify({ toBeDeletedWorkspaces: [props.userWorkspaceCRData.name] }),
-      }).then((res) => res),
+      }).then((res) => {
+        if (!res.ok) {
+          toast.error('There was an error deleting workspace. Please try again later.');
+        }
+        return res;
+      }),
     enabled: false,
-    onSettled() {
+    onSettled: () => {
       props.refetch();
     },
     staleTime: Infinity,
-    onError() {
-      toast.error('There was an error deleting workspace. Please try again later.');
-    },
     retry: false,
   });
 
@@ -63,15 +65,17 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
         },
         method: 'POST',
         body: JSON.stringify({ appDefinition: 'theia-cloud-demo', workspaceName: props.userWorkspaceCRData.name }),
-      }).then((res) => res),
+      }).then((res) => {
+        if (!res.ok) {
+          toast.error('There was an error restarting workspace. Please try again later.');
+        }
+        return res;
+      }),
     enabled: false,
-    onSettled() {
+    onSettled: () => {
       props.refetch();
     },
     staleTime: Infinity,
-    onError() {
-      toast.error('There was an error restarting workspace. Please try again later.');
-    },
     retry: false,
   });
 
@@ -85,15 +89,17 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
         },
         method: 'DELETE',
         body: JSON.stringify({ sessionName: props.userSessionCRData?.name }),
-      }).then((res) => res),
+      }).then((res) => {
+        if (!res.ok) {
+          toast.error('There was an error stopping workspace. Please try again later.');
+        }
+        return res;
+      }),
     enabled: false,
     onSettled: () => {
       props.refetch();
     },
     staleTime: Infinity,
-    onError: () => {
-      toast.error('There was an error stopping workspace. Please try again later.');
-    },
     retry: false,
   });
 
@@ -117,7 +123,14 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
             ref={parent}
             className='relative'
           >
-            <button onClick={() => setIsOptionsShown(!isOptionsShown)}>
+            <button
+              onClick={() => setIsOptionsShown(!isOptionsShown)}
+              disabled={
+                stopUserWorkspaceResult.isFetching ||
+                deleteUserWorkspaceResult.isFetching ||
+                restartUserWorkspaceResult.isFetching
+              }
+            >
               <OptionsIcon className='w-7 h-7 rounded-full hover:bg-black hover:stroke-white' />
             </button>
             {isOptionsShown &&
@@ -125,12 +138,14 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
                 <AdditionalOptionsContainer
                   status={props.status}
                   stopUserWorkspace={() => stopUserWorkspaceResult.refetch()}
+                  closeAdditionalOptions={() => setIsOptionsShown(false)}
                 />
               ) : (
                 <AdditionalOptionsContainer
                   status={props.status}
                   deleteUserWorkspace={() => deleteUserWorkspaceResult.refetch()}
                   restartUserWorkspace={() => restartUserWorkspaceResult.refetch()}
+                  closeAdditionalOptions={() => setIsOptionsShown(false)}
                 />
               ))}
           </div>
