@@ -1,9 +1,8 @@
-import { useContext, useState } from 'react';
+import { useContext } from 'react';
 import RefreshIcon from '../components/icons/RefreshIcon';
 import TheiaButton from '../components/TheiaButton';
 import UserWorkspaceCard, { UserWorkspaceCardProps } from '../components/UserWorkspaceCard';
 import { Context } from '../context/Context';
-import dayjs from 'dayjs';
 import CircularProgress from '@mui/material/CircularProgress';
 import PlusIcon from '../components/icons/PlusIcon';
 import { useQueries, useQuery } from '@tanstack/react-query';
@@ -90,11 +89,6 @@ const Workspaces = () => {
           if (session.workspace === workspace.name) {
             isMatched = true;
             const cardData: UserWorkspaceCardProps = {
-              status: 'Running',
-              name: workspace.name,
-              lastActivity: dayjs(session.lastActivity).toString(),
-              appDefinition: workspace.appDefinition,
-              url: session.url,
               cpuUsage: 'CPU',
               memoryUsage: 'MEMORY',
               userWorkspaceCRData: workspace,
@@ -110,11 +104,6 @@ const Workspaces = () => {
         }
         if (!isMatched) {
           const cardData: UserWorkspaceCardProps = {
-            status: 'Stopped',
-            name: workspace.name,
-            lastActivity: 'No Data',
-            appDefinition: workspace.appDefinition,
-            url: '',
             cpuUsage: 'CPU',
             memoryUsage: 'MEMORY',
             userWorkspaceCRData: workspace,
@@ -128,7 +117,7 @@ const Workspaces = () => {
       }
       return cardsData.map((cardData) => (
         <UserWorkspaceCard
-          key={cardData.name}
+          key={cardData.userWorkspaceCRData.name}
           {...cardData}
           refetch={() => {
             results[0].refetch();

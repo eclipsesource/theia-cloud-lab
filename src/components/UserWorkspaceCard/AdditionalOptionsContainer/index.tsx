@@ -10,7 +10,7 @@ import CancelIcon from '../../icons/CancelIcon';
 import ExclamationIcon from '../../icons/ExclamationIcon';
 
 type AdditionalOptionProps = {
-  status: UserWorkspaceCardProps['status'];
+  isRunning: boolean;
   deleteUserWorkspace?: () => void;
   restartUserWorkspace?: () => void;
   stopUserWorkspace?: () => void;
@@ -21,7 +21,7 @@ function AdditionalOptions(props: AdditionalOptionProps) {
   const { setModalContent, setIsModalOpen } = useContext(Context);
   return (
     <div className='flex items-center flex-col absolute h-auto w-52 top-0 right-8 z-10 bg-gray-100 shadow-lg rounded-lg border border-black border-solid p-1'>
-      {props.status === 'Running' ? (
+      {props.isRunning ? (
         <>
           <AdditionalOptionsItem
             className='w-full h-8 hover:bg-gray-300 cursor-pointer p-1 rounded-md font-normal'

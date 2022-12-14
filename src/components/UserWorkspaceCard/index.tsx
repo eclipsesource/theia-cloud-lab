@@ -9,15 +9,11 @@ import { UserSessionCRData } from '../../../types/UserSessionCRData';
 import { useQuery } from '@tanstack/react-query';
 import { Context } from '../../context/Context';
 import { toast } from 'react-toastify';
+import dayjs from 'dayjs';
 
 export type UserWorkspaceCardProps = {
-  status: 'Running' | 'Stopped';
-  lastActivity: string;
-  name: string;
-  appDefinition: string;
-  url: string;
-  cpuUsage: string;
-  memoryUsage: string;
+  cpuUsage: 'CPU';
+  memoryUsage: 'MEMORY';
   userWorkspaceCRData: UserWorkspaceCRData;
   userSessionCRData?: UserSessionCRData;
   refetch: () => void;
@@ -106,17 +102,17 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
   return (
     <div className='flex flex-col p-4 w-full shadow-lg rounded-lg bg-gray-100 justify-between whitespace-pre-wrap hover:shadow-xl'>
       <div className='flex justify-between'>
-        {props.status === 'Running' ? (
+        {props.userSessionCRData ? (
           <a
-            href={'//' + props.url + '/'}
+            href={'//' + props.userSessionCRData.url + '/'}
             target='_blank'
             className='flex text-lg cursor-pointer font-medium h-fit w-fit hover:underline text-blue-500 items-center'
             rel='noreferrer'
           >
-            {props.name} <NewTabIcon className='w-5 h-5' />
+            {props.userWorkspaceCRData.name} <NewTabIcon className='w-5 h-5' />
           </a>
         ) : (
-          <span className='text-lg font-medium'>{props.name}</span>
+          <span className='text-lg font-medium'>{props.userWorkspaceCRData.name}</span>
         )}
         <OutsideClickHandler onClickOutside={() => setIsOptionsShown(false)}>
           <div
@@ -131,18 +127,25 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
                 restartUserWorkspaceResult.isFetching
               }
             >
-              <OptionsIcon className='w-7 h-7 rounded-full hover:bg-black hover:stroke-white' />
+              <OptionsIcon
+                className={`w-7 h-7 rounded-full hover:bg-black hover:stroke-white ${
+                  (stopUserWorkspaceResult.isFetching ||
+                    deleteUserWorkspaceResult.isFetching ||
+                    restartUserWorkspaceResult.isFetching) &&
+                  'animate-spin'
+                }`}
+              />
             </button>
             {isOptionsShown &&
-              (props.status === 'Running' ? (
+              (props.userSessionCRData ? (
                 <AdditionalOptionsContainer
-                  status={props.status}
+                  isRunning={true}
                   stopUserWorkspace={() => stopUserWorkspaceResult.refetch()}
                   closeAdditionalOptions={() => setIsOptionsShown(false)}
                 />
               ) : (
                 <AdditionalOptionsContainer
-                  status={props.status}
+                  isRunning={false}
                   deleteUserWorkspace={() => deleteUserWorkspaceResult.refetch()}
                   restartUserWorkspace={() => restartUserWorkspaceResult.refetch()}
                   closeAdditionalOptions={() => setIsOptionsShown(false)}
@@ -154,9 +157,9 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
       <div className='flex flex-col flex-wrap justify-between'>
         <div className='w-fit mt-1 mb-1'>
           <span className='font-medium'>App Definition: </span>
-          {props.appDefinition}
+          {props.userWorkspaceCRData.appDefinition}
         </div>
-        {props.status === 'Running' && (
+        {props.userSessionCRData && (
           <div className='flex w-1/2 justify-end self-end'>
             <div className='w-fit mt-1 mb-1 mr-2 text-sm'>
               <span className='font-medium'>Memory Usage: </span>
@@ -169,13 +172,14 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
           </div>
         )}
         <div className={'mt-1 mb-1 inline-flex justify-between'}>
-          <div className={props.status === 'Running' ? 'text-green-500' : 'text-red-500'}>
-            <span className='font-medium'>Status:</span> {props.status}
+          <div className={props.userSessionCRData ? 'text-green-500' : 'text-red-500'}>
+            <span className='font-medium'>Status:</span> {props.userSessionCRData ? 'Running' : 'Stopped'}
           </div>
           <div>
-            {props.status === 'Running' && (
+            {props.userSessionCRData && (
               <span>
-                <span className='font-medium'>Last Activity:</span> {props.lastActivity}
+                <span className='font-medium'>Last Activity:</span>{' '}
+                {dayjs(props.userSessionCRData.lastActivity).toString()}
               </span>
             )}
           </div>
