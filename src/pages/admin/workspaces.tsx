@@ -149,11 +149,10 @@ const Workspaces = () => {
     return (
       <div className='flex py-4 px-5 shadow-sm h-20 items-center justify-between'>
         <span className='text-xl text-gray-600'>Workspaces</span>
-        <div>
+        <div className='flex gap-2 flex-wrap justify-end'>
           <TheiaButton
             text='Create Workspace'
             icon={<PlusIcon />}
-            className='mr-2'
             onClick={() => createWorkspacesResult.refetch()}
             disabled={
               deleteWorkspacesResult.isFetching ||
@@ -165,14 +164,18 @@ const Workspaces = () => {
           <TheiaButton
             text='Delete Workspaces'
             icon={<DeleteIcon />}
-            className='mr-2 bg-red-500 hover:bg-red-700 disabled:bg-red-300'
+            className='bg-red-500 hover:bg-red-700 disabled:bg-red-300'
             onClick={() => {
               setModalContent(
                 <div className='w-full h-full flex flex-col gap-5 items-center'>
                   <ExclamationIcon className='w-16 h-16' />
                   <div className='w-full font-normal'>
                     You are trying to delete {selectedRows.length} workspace{selectedRows.length > 1 && 's'}. This
-                    action cannot be undone. Are you sure?
+                    action cannot be undone.{' '}
+                    {selectedRows.length > 1
+                      ? 'If they have running sessions, they will be deleted too.'
+                      : 'If there is a running session, it will be deleted too.'}
+                    {' Are you sure?'}
                   </div>
                   <div className='flex justify-between w-full'>
                     <TheiaButton
@@ -207,7 +210,6 @@ const Workspaces = () => {
           <TheiaButton
             text='Start Sessions'
             icon={<RestartIcon />}
-            className='mr-2'
             onClick={() => restartWorkspacesResult.refetch()}
             disabled={
               deleteWorkspacesResult.isFetching ||
@@ -218,7 +220,7 @@ const Workspaces = () => {
             }
           />
           <TheiaButton
-            className='w-32'
+            className='lg:w-32'
             text={
               deleteWorkspacesResult.isFetching ||
               createWorkspacesResult.isFetching ||

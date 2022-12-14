@@ -162,7 +162,7 @@ const Workspaces = () => {
             disabled={results[0].isFetching || results[1].isFetching || createUserWorkspaceResult.isFetching}
           />
           <TheiaButton
-            className='w-32'
+            className='lg:w-32'
             text={
               results[0].isFetching || results[1].isFetching || createUserWorkspaceResult.isFetching ? '' : 'Refresh'
             }

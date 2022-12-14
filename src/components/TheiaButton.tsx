@@ -14,7 +14,7 @@ function TheiaButton({ text, icon, className, ...props }: TheiaButtonProps) {
     >
       <span className='flex gap-1 items-center justify-center w-full'>
         {icon && icon}
-        {text !== '' && <span className='flex justify-center items-center'>{text}</span>}
+        {text !== '' && <span className='justify-center items-center hidden lg:flex'>{text}</span>}
       </span>
     </button>
   );

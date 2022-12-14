@@ -280,7 +280,7 @@ const Sessions = () => {
             }
           />
           <TheiaButton
-            className='w-32'
+            className='lg:w-32'
             text={
               fetchResults[0].isFetching ||
               fetchResults[1].isFetching ||
