@@ -2,12 +2,9 @@ import { useContext } from 'react';
 import DeleteIcon from '../../icons/DeleteIcon';
 import RefreshIcon from '../../icons/RefreshIcon';
 import StopIcon from '../../icons/StopIcon';
-import { UserWorkspaceCardProps } from '../../UserWorkspaceCard';
 import AdditionalOptionsItem from './AdditionalOptionsItem';
 import { Context } from '../../../context/Context';
-import TheiaButton from '../../TheiaButton';
-import CancelIcon from '../../icons/CancelIcon';
-import ExclamationIcon from '../../icons/ExclamationIcon';
+import UserDeleteWorkspaceModalContent from '../../TheiaModalContents/UserDeleteWorkspaceModalContent';
 
 type AdditionalOptionProps = {
   isRunning: boolean;
@@ -39,32 +36,10 @@ function AdditionalOptions(props: AdditionalOptionProps) {
             className='w-full h-8 hover:bg-gray-300 cursor-pointer p-1 rounded-md text-red-500 font-normal'
             text='Delete Workspace'
             onClick={() => {
-              setModalContent(
-                <div className='w-full h-full flex flex-col gap-5 items-center'>
-                  <ExclamationIcon className='w-16 h-16' />
-                  <div className='w-full font-normal'>
-                    You are trying to delete a workspace. This action cannot be undone. Are you sure?
-                  </div>
-                  <div className='flex justify-between w-full'>
-                    <TheiaButton
-                      text='Cancel'
-                      icon={<CancelIcon />}
-                      onClick={() => {
-                        setIsModalOpen(false);
-                      }}
-                    />
-                    <TheiaButton
-                      className='bg-red-500 hover:bg-red-700'
-                      text='Delete Workspace'
-                      icon={<DeleteIcon className='w-6 h-6 stroke-white' />}
-                      onClick={() => {
-                        props.deleteUserWorkspace && props.deleteUserWorkspace();
-                        setIsModalOpen(false);
-                      }}
-                    />
-                  </div>
-                </div>
-              );
+              setModalContent({
+                function: UserDeleteWorkspaceModalContent,
+                props: { refetch: props.deleteUserWorkspace, setIsModalOpen },
+              });
               setIsModalOpen(true);
               props.closeAdditionalOptions();
             }}

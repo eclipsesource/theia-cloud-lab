@@ -1,15 +1,23 @@
 import { KubernetesClient } from '../../../../../utils/k8s/k8s_client';
 import type { NextApiRequest, NextApiResponse } from 'next';
+import { AdminWorkspaceCRData } from '../../../../../types/AdminWorkspaceCRData';
+import appConfig from '../../../../../configs/app_config';
+import { TheiaServiceClient } from '../../../../../utils/theiaservice/theiaservice_client';
 
 // process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-  const k8s = new KubernetesClient();
+  const theiaService = new TheiaServiceClient(req.headers['x-access-token']);
   if (req.method === 'POST') {
     try {
-      const toBeRestartedSessionNameArr = req.body.toBeRestartedSessions;
       await Promise.all(
-        toBeRestartedSessionNameArr.map(async (name: string) => {
-          await k8s.createSession(`ns-${name}`, name);
+        req.body.toBeStartedSessions.map(async (workspace: AdminWorkspaceCRData) => {
+          await theiaService.createSessionWithExistingWorkspace(
+            appConfig.appId,
+            workspace.user,
+            workspace.name,
+            workspace.appDefinition
+          );
+          // await k8s.createSession(`ns-${name}`, name);
         })
       );
       return res.status(201).send({});

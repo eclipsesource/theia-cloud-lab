@@ -1,10 +1,10 @@
 import '../styles/globals.css';
 import type { AppProps } from 'next/app';
 import Layout from '../components/Layout';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState, Dispatch, SetStateAction } from 'react';
 import Keycloak from 'keycloak-js';
 import keycloakConfig from '../../configs/keycloak_config';
-import { Context } from '../context/Context';
+import { Context, ModalContent } from '../context/Context';
 import { useRouter } from 'next/router';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
@@ -16,7 +16,13 @@ export default function App({ Component, pageProps }: AppProps) {
   const [shouldRenderLayout, setShouldRenderLayout] = useState(false);
   const [keycloak, setKeycloak] = useState({} as Keycloak);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [modalContent, setModalContent] = useState(<></>);
+  const [modalContent, setModalContent] = useState<ModalContent>({
+    function: () => <></>,
+    props: { setIsModalOpen: () => {} },
+  });
+  const [adminCreateSessionIsFetching, setAdminCreateSessionIsFetching] = useState(false);
+  const [adminCreateWorkspaceIsFetching, setAdminCreateWorkspaceIsFetching] = useState(false);
+  const [adminDeleteSessionIsFetching, setAdminDeleteSessionIsFetching] = useState(false);
   const [userType, setUserType] = useState('');
   const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
@@ -79,7 +85,19 @@ export default function App({ Component, pageProps }: AppProps) {
     <>
       {shouldRenderLayout ? (
         <QueryClientProvider client={queryClient}>
-          <Context.Provider value={{ keycloak, isModalOpen, setIsModalOpen, modalContent, setModalContent }}>
+          <Context.Provider
+            value={{
+              keycloak,
+              isModalOpen,
+              setIsModalOpen,
+              modalContent,
+              setModalContent,
+              adminCreateSessionIsFetching,
+              setAdminCreateSessionIsFetching,
+              adminCreateWorkspaceIsFetching,
+              setAdminCreateWorkspaceIsFetching,
+            }}
+          >
             <TheiaModal
               isModalOpen={isModalOpen}
               modalContent={modalContent}

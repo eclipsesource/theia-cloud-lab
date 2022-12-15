@@ -1,9 +1,11 @@
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
+import React from 'react';
+import { ModalContent } from '../context/Context';
 
 export type TheiaModalProps = {
   isModalOpen: boolean;
-  modalContent: JSX.Element;
+  modalContent: ModalContent;
 };
 
 function TheiaModal(props: TheiaModalProps) {
@@ -23,7 +25,7 @@ function TheiaModal(props: TheiaModalProps) {
           borderRadius: 2,
         }}
       >
-        {props.modalContent}
+        {props.modalContent.function(props.modalContent.props)}
       </Box>
     </Modal>
   );

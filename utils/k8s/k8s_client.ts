@@ -88,7 +88,7 @@ export class KubernetesClient {
       this.namespace,
       this.pluralWS,
       name
-    )
+    );
   }
 
   async getCustomResourceDefinitionList(): Promise<{
@@ -166,11 +166,7 @@ export class KubernetesClient {
     );
 
     // delete the PVC binded to the workspace
-    return await coreV1Api.deleteNamespacedPersistentVolumeClaim(
-      toBeDeletedWS.body.spec.storage,
-      this.namespace,
-    );
-
+    return await coreV1Api.deleteNamespacedPersistentVolumeClaim(toBeDeletedWS.body.spec.storage, this.namespace);
   }
 
   async createSession(sessionName: string, workspaceName: string): Promise<any> {

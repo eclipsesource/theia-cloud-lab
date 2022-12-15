@@ -10,24 +10,24 @@ import { AdminWorkspaceCRData } from '../../../types/AdminWorkspaceCRData';
 import { Context } from '../../context/Context';
 import { useQuery } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
-import ExclamationIcon from '../../components/icons/ExclamationIcon';
-import CancelIcon from '../../components/icons/CancelIcon';
+import AdminDeleteWorkspaceModalContent from '../../components/TheiaModalContents/AdminDeleteWorkspaceModalContent';
+import AdminCreateWorkspaceModalContent from '../../components/TheiaModalContents/AdminCreateWorkspaceModalContent';
 
-type Row = AdminWorkspaceCRData & {
+export type WorkspaceRow = AdminWorkspaceCRData & {
   id: string;
 };
 
 const XLCol = 250;
 
 const Workspaces = () => {
-  const [selectedRows, setSelectedRows] = useState<GridRowId[]>([]);
-  const { keycloak, setModalContent, setIsModalOpen } = useContext(Context);
+  const [selectedRows, setSelectedRows] = useState<WorkspaceRow[]>([]);
+  const { keycloak, setModalContent, setIsModalOpen, adminCreateWorkspaceIsFetching } = useContext(Context);
 
-  const setTableData = (): Row[] => {
+  const setTableData = (): WorkspaceRow[] => {
     if (fetchWorkspacesResult.data && fetchWorkspacesResult.data.length > 0) {
-      const rows: Row[] = [];
+      const rows: WorkspaceRow[] = [];
       for (const workspace of fetchWorkspacesResult.data) {
-        const row: Row = {
+        const row: WorkspaceRow = {
           id: workspace.name,
           name: workspace.name,
           creationTimestamp: dayjs(workspace.creationTimestamp).toString(),
@@ -77,34 +77,10 @@ const Workspaces = () => {
           Authorization: `Bearer ${keycloak.token}`,
         },
         method: 'POST',
-        body: JSON.stringify({ toBeRestartedSessions: selectedRows }),
+        body: JSON.stringify({ toBeStartedSessions: selectedRows }),
       }).then((res) => {
         if (!res.ok) {
           toast.error('There was an error starting workspaces. Please try again later.');
-        }
-        return res.json();
-      }),
-    enabled: false,
-    onSettled() {
-      fetchWorkspacesResult.refetch();
-    },
-    staleTime: Infinity,
-    retry: false,
-  });
-
-  const createWorkspacesResult = useQuery({
-    queryKey: ['admin/createWorkspaces'],
-    queryFn: () =>
-      fetch('/api/admin/workspaces/cr', {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${keycloak.token}`,
-        },
-        method: 'POST',
-        body: JSON.stringify({ toBeCreatedWorkspace: `${Date.now()}` }),
-      }).then((res) => {
-        if (!res.ok) {
-          toast.error('There was an error creating workspaces. Please try again later.');
         }
         return res.json();
       }),
@@ -149,14 +125,26 @@ const Workspaces = () => {
     return (
       <div className='flex py-4 px-5 shadow-sm h-20 items-center justify-between'>
         <span className='text-xl text-gray-600'>Workspaces</span>
-        <div className='flex gap-2 flex-wrap justify-end'>
+        <span className='flex gap-2 flex-wrap justify-end'>
           <TheiaButton
             text='Create Workspace'
             icon={<PlusIcon />}
-            onClick={() => createWorkspacesResult.refetch()}
+            onClick={() => {
+              setModalContent({
+                function: AdminCreateWorkspaceModalContent,
+                props: {
+                  refresh: () => {
+                    fetchWorkspacesResult.refetch();
+                  },
+                  setIsModalOpen,
+                  keycloak,
+                },
+              });
+              setIsModalOpen(true);
+            }}
             disabled={
               deleteWorkspacesResult.isFetching ||
-              createWorkspacesResult.isFetching ||
+              adminCreateWorkspaceIsFetching ||
               restartWorkspacesResult.isFetching ||
               fetchWorkspacesResult.isFetching
             }
@@ -166,42 +154,19 @@ const Workspaces = () => {
             icon={<DeleteIcon />}
             className='bg-red-500 hover:bg-red-700 disabled:bg-red-300'
             onClick={() => {
-              setModalContent(
-                <div className='w-full h-full flex flex-col gap-5 items-center'>
-                  <ExclamationIcon className='w-16 h-16' />
-                  <div className='w-full font-normal'>
-                    You are trying to delete {selectedRows.length} workspace{selectedRows.length > 1 && 's'}. This
-                    action cannot be undone.{' '}
-                    {selectedRows.length > 1
-                      ? 'If they have running sessions, they will be deleted too.'
-                      : 'If there is a running session, it will be deleted too.'}
-                    {' Are you sure?'}
-                  </div>
-                  <div className='flex justify-between w-full'>
-                    <TheiaButton
-                      text='Cancel'
-                      icon={<CancelIcon />}
-                      onClick={() => {
-                        setIsModalOpen(false);
-                      }}
-                    />
-                    <TheiaButton
-                      className='bg-red-500 hover:bg-red-700'
-                      text='Delete Workspace'
-                      icon={<DeleteIcon className='w-6 h-6 stroke-white' />}
-                      onClick={() => {
-                        deleteWorkspacesResult.refetch();
-                        setIsModalOpen(false);
-                      }}
-                    />
-                  </div>
-                </div>
-              );
+              setModalContent({
+                function: AdminDeleteWorkspaceModalContent,
+                props: {
+                  refetch: deleteWorkspacesResult.refetch,
+                  setIsModalOpen,
+                  selectedRows,
+                },
+              });
               setIsModalOpen(true);
             }}
             disabled={
               deleteWorkspacesResult.isFetching ||
-              createWorkspacesResult.isFetching ||
+              adminCreateWorkspaceIsFetching ||
               restartWorkspacesResult.isFetching ||
               fetchWorkspacesResult.isFetching ||
               selectedRows.length < 1
@@ -213,7 +178,7 @@ const Workspaces = () => {
             onClick={() => restartWorkspacesResult.refetch()}
             disabled={
               deleteWorkspacesResult.isFetching ||
-              createWorkspacesResult.isFetching ||
+              adminCreateWorkspaceIsFetching ||
               restartWorkspacesResult.isFetching ||
               fetchWorkspacesResult.isFetching ||
               selectedRows.length < 1
@@ -223,7 +188,7 @@ const Workspaces = () => {
             className='lg:w-32'
             text={
               deleteWorkspacesResult.isFetching ||
-              createWorkspacesResult.isFetching ||
+              adminCreateWorkspaceIsFetching ||
               restartWorkspacesResult.isFetching ||
               fetchWorkspacesResult.isFetching
                 ? ''
@@ -233,7 +198,7 @@ const Workspaces = () => {
               <RefreshIcon
                 className={`w-6 h-6 ${
                   (deleteWorkspacesResult.isFetching ||
-                    createWorkspacesResult.isFetching ||
+                    adminCreateWorkspaceIsFetching ||
                     restartWorkspacesResult.isFetching ||
                     fetchWorkspacesResult.isFetching) &&
                   'animate-spin'
@@ -243,12 +208,12 @@ const Workspaces = () => {
             onClick={() => fetchWorkspacesResult.refetch()}
             disabled={
               deleteWorkspacesResult.isFetching ||
-              createWorkspacesResult.isFetching ||
+              adminCreateWorkspaceIsFetching ||
               restartWorkspacesResult.isFetching ||
               fetchWorkspacesResult.isFetching
             }
           />
-        </div>
+        </span>
       </div>
     );
   };
@@ -267,7 +232,11 @@ const Workspaces = () => {
         Toolbar: WorkspacesTableHeader,
       }}
       getRowHeight={() => 'auto'}
-      onSelectionModelChange={(e: GridRowId[]) => setSelectedRows(e)}
+      onSelectionModelChange={(ids) => {
+        const selectedIDs = new Set(ids);
+        const selectedRowData = setTableData().filter((row) => selectedIDs.has(row.id.toString()));
+        setSelectedRows(selectedRowData);
+      }}
     />
   );
 };
