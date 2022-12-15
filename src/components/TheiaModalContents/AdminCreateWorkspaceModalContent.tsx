@@ -44,6 +44,7 @@ const AdminCreateWorkspaceModalContent = (props: AdminCreateWorkspaceModalConten
 
   useEffect(() => {
     setAdminCreateWorkspaceIsFetching(createWorkspacesResult.isFetching);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [createWorkspacesResult.isFetching]);
 
   return (

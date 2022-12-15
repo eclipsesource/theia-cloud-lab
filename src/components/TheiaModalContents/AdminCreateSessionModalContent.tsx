@@ -7,6 +7,7 @@ import CancelIcon from '../icons/CancelIcon';
 import { Context } from '../../context/Context';
 import Keycloak from 'keycloak-js';
 import CheckIcon from '../icons/CheckIcon';
+import InfoIcon from '../icons/InfoIcon';
 
 export type AdminCreateSessionModalContentProps = {
   refresh: () => void;
@@ -43,15 +44,20 @@ const AdminCreateSessionModalContent = (props: AdminCreateSessionModalContentPro
 
   useEffect(() => {
     setAdminCreateSessionIsFetching(createSessionResult.isFetching);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [createSessionResult.isFetching]);
 
   return (
     <div className='w-full h-full flex flex-col gap-5 items-center'>
+      <InfoIcon className='w-16 h-16' />
       <div className='w-full font-normal'>
+        <div className='font-normal mb-4'> Please provide an email to be further assigned to a user session.</div>
         <TextField
-          label='User ID'
+          label='User Email'
           variant='outlined'
+          size='small'
           value={userId}
+          style={{ width: 250 }}
           onChange={(e) => setUserId(e.target.value)}
         />
       </div>
