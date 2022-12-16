@@ -33,7 +33,7 @@ const SidebarMenu = ({ isSidebarClosed, setIsSidebarClosed }: Props) => {
         <li className={`${adminClassStyle} text-m text-gray-800 mb-1`}>
           <Link href='/admin/workspaces'>Workspaces</Link>
         </li>
-        <li className={`${adminClassStyle} text-m text-gray-800 mb-1`}>App Definitions</li>
+        {/* <li className={`${adminClassStyle} text-m text-gray-800 mb-1`}>App Definitions</li> */}
       </>
     );
   };
