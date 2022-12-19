@@ -6,6 +6,7 @@ import { Context } from '../context/Context';
 import TheiaButton from './TheiaButton';
 import RightIcon from './icons/RightIcon';
 import Fade from '@mui/material/Fade';
+import LogoutIcon from './icons/LogoutIcon';
 
 interface Props {
   isSidebarClosed: boolean;
@@ -76,6 +77,7 @@ const SidebarMenu = ({ isSidebarClosed, setIsSidebarClosed }: Props) => {
             <div className='absolute bottom-3 py-2 px-4'>
               <TheiaButton
                 text='Logout'
+                icon={<LogoutIcon />}
                 onClick={() => keycloak.logout()}
               />
             </div>
