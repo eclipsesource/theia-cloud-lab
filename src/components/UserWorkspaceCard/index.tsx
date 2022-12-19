@@ -10,6 +10,7 @@ import { useQuery } from '@tanstack/react-query';
 import { Context } from '../../context/Context';
 import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
+import { dividerClasses } from '@mui/material';
 
 export type UserWorkspaceCardProps = {
   cpuUsage: 'CPU';
@@ -28,7 +29,7 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
   });
 
   const deleteUserWorkspaceResult = useQuery({
-    queryKey: ['user/deleteWorkspace'],
+    queryKey: [`user/deleteWorkspace/${props.userWorkspaceCRData.name}}`],
     queryFn: () =>
       fetch('/api/user/workspaces', {
         headers: {
@@ -52,7 +53,7 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
   });
 
   const restartUserWorkspaceResult = useQuery({
-    queryKey: ['user/restartWorkspace'],
+    queryKey: [`user/restartWorkspace/${props.userWorkspaceCRData.name}}`],
     queryFn: () =>
       fetch('/api/user/sessions', {
         headers: {
@@ -76,7 +77,7 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
   });
 
   const stopUserWorkspaceResult = useQuery({
-    queryKey: ['user/stopWorkspace'],
+    queryKey: [`user/stopWorkspace/${props.userWorkspaceCRData.name}}`],
     queryFn: () =>
       fetch('/api/user/sessions', {
         headers: {
@@ -100,7 +101,12 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
   });
 
   return (
-    <div className='flex flex-col p-4 w-full shadow-lg rounded-lg bg-gray-100 justify-between whitespace-pre-wrap hover:shadow-xl'>
+    <div className='flex flex-col p-4 w-full shadow-lg rounded-lg bg-gray-100 justify-between whitespace-pre-wrap hover:shadow-xl relative'>
+      {(stopUserWorkspaceResult.isFetching ||
+        deleteUserWorkspaceResult.isFetching ||
+        restartUserWorkspaceResult.isFetching) && (
+        <div className='absolute z-50 bg-gray-100 bg-opacity-75 w-full h-full top-0 left-0 rounded-lg'></div>
+      )}
       <div className='flex justify-between'>
         {props.userSessionCRData ? (
           <a
