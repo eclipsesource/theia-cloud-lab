@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import { DataGrid, GridColDef, GridRenderCellParams, GridRowId } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
 import RefreshIcon from '../../components/icons/RefreshIcon';
@@ -35,7 +35,6 @@ export type SessionRow = {
 };
 
 const XLCol = 250;
-const MCol = 80;
 
 const Sessions = () => {
   const [selectedRows, setSelectedRows] = useState<SessionRow[]>([]);
@@ -106,31 +105,6 @@ const Sessions = () => {
     retry: false,
   });
 
-  /* const createSessionResult = useQuery({
-    queryKey: ['admin/createSession'],
-    queryFn: () =>
-      fetch('/api/admin/sessions/', {
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${keycloak.token}`,
-        },
-        method: 'POST',
-        body: JSON.stringify({ userId: createSessionUserId, appDefinition: 'theia-cloud-demo' }),
-      }).then((res) => {
-        if (!res.ok) {
-          toast.error('There was an error creating session. Please try again later.');
-        }
-        return res.json();
-      }),
-    enabled: false,
-    onSettled() {
-      fetchResults[0].refetch();
-      fetchResults[1].refetch();
-    },
-    staleTime: Infinity,
-    retry: false,
-  }); */
-
   const columns: GridColDef[] = [
     { field: 'name', headerName: 'Session Name', width: XLCol },
     { field: 'creationTimestamp', headerName: 'Creation Timestamp', width: XLCol },
@@ -143,7 +117,6 @@ const Sessions = () => {
       width: XLCol,
       sortable: true,
       renderCell: (params: GridRenderCellParams<any, any, any>): React.ReactNode => {
-        console.log(params);
         return (
           <a
             href={'//' + params.value}
@@ -156,7 +129,7 @@ const Sessions = () => {
         );
       },
     },
-    { field: 'user', headerName: 'User', width: XLCol },
+    { field: 'user', headerName: 'User', width: 130 },
     { field: 'workspace', headerName: 'Workspace', width: XLCol },
     /* {
       field: 'url',
@@ -194,31 +167,44 @@ const Sessions = () => {
   const setTableData = (): SessionRow[] => {
     if (fetchResults[0].data && fetchResults[0].data.length > 0) {
       const rows: SessionRow[] = [];
-      const arr: AdminPodMetrics[] = [];
       for (const session of fetchResults[0].data) {
         let isMatched = false;
-        //TODO fix [] with results[1] array when metrics endpoint works, and remove arr
-        for (const podMetric of arr) {
-          if (podMetric.metadata?.labels && session.name === podMetric.metadata?.labels.app) {
-            isMatched = true;
-            const row: SessionRow = {
-              id: session.name,
-              creationTimestamp: dayjs(session.creationTimestamp).toString(),
-              name: session.name,
-              namespace: session.namespace,
-              resourceVersion: session.resourceVersion,
-              uid: session.uid,
-              appDefinition: session.appDefinition,
-              url: session.url,
-              user: session.user,
-              workspace: session.workspace,
-              cpuUsage: podMetric.containers[0].usage.cpu,
-              memoryUsage: podMetric.containers[0].usage.memory,
-            };
-            rows.push(row);
-            break;
+        if (fetchResults[1].data && fetchResults[1].data.length > 3) {
+          for (const podMetric of fetchResults[1].data) {
+            if (podMetric.metadata?.name.includes(session.uid)) {
+              isMatched = true;
+              let totalCpuUsage = 0;
+              let totalMemoryUsage = 0;
+              for (const container of podMetric.containers) {
+                const matchesMemoryString = container.usage.memory.match(/(\d*)\D*/);
+                const matchesCPUString = container.usage.cpu.match(/(\d*)\D*/);
+                if (matchesMemoryString && matchesMemoryString[1]) {
+                  totalMemoryUsage = totalMemoryUsage + Number(matchesMemoryString[1]);
+                }
+                if (matchesCPUString && matchesCPUString[1]) {
+                  totalCpuUsage = totalCpuUsage + Number(matchesCPUString[1]);
+                }
+              }
+              const row: SessionRow = {
+                id: session.name,
+                creationTimestamp: dayjs(session.creationTimestamp).toString(),
+                name: session.name,
+                namespace: session.namespace,
+                resourceVersion: session.resourceVersion,
+                uid: session.uid,
+                appDefinition: session.appDefinition,
+                url: session.url,
+                user: session.user,
+                workspace: session.workspace,
+                cpuUsage: '% ' + ((totalCpuUsage / 10 ** 9) * 10 ** 2).toFixed(3),
+                memoryUsage: (totalMemoryUsage / 1024).toFixed(3) + ' MiB',
+              };
+              rows.push(row);
+              break;
+            }
           }
         }
+
         if (!isMatched) {
           const row: SessionRow = {
             id: session.name,
@@ -339,7 +325,7 @@ const Sessions = () => {
       disableSelectionOnClick
       experimentalFeatures={{ newEditingApi: true }}
       getRowClassName={() => 'text-xs'}
-      loading={fetchResults[0].isFetching || adminCreateSessionIsFetching || deleteSessionResult.isFetching}
+      loading={fetchResults[0].isFetching && fetchResults[0].data?.length === 0}
       components={{
         Toolbar: SessionsTableHeader,
       }}
