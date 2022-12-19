@@ -30,11 +30,33 @@ export default function App({ Component, pageProps }: AppProps) {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
-        refetchOnWindowFocus: false, // TODO(BORA): remove refetchOnWindowFocus for production
+        // refetchOnWindowFocus: false, // TODO(BORA): remove refetchOnWindowFocus for production
         cacheTime: 0,
       },
     },
   });
+
+  useEffect(() => {
+    let interval: NodeJS.Timer;
+    if (isMounted && keycloak) {
+      interval = setInterval(() => {
+        console.log('interval fired');
+        keycloak
+          .updateToken(300)
+          .then((refreshed) => {
+            if (refreshed) {
+              console.log('Token refreshed');
+            } else {
+              console.log('Token not refreshed');
+            }
+          })
+          .catch(() => {
+            console.log('Failed to refresh token');
+          });
+      }, 120000);
+    }
+    return () => clearInterval(interval);
+  }, [isMounted, keycloak]);
 
   useEffect(() => {
     setIsMounted(true);

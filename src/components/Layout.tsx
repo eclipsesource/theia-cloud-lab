@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
-import SidebarMenu from '../components/SidebarMenu';
 import { Context } from '../context/Context';
+import SidebarMenu from './SidebarMenu';
 
 export default function Layout({ children }: any) {
   const { keycloak } = useContext(Context);
