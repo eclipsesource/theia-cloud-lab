@@ -121,10 +121,10 @@ const Sessions = () => {
           <a
             href={'//' + params.value}
             target='_blank'
-            className='flex text-xs cursor-pointer font-medium h-fit w-fit hover:underline text-blue-500 items-center'
+            className='flex text-xs cursor-pointer font-medium h-full w-full hover:underline text-blue-500 items-center'
             rel='noreferrer'
           >
-            {params.value} <NewTabIcon className='w-5 h-5' />
+            <span className='w-60 truncate'>{params.value}</span> <NewTabIcon className='w-5 h-5' />
           </a>
         );
       },
