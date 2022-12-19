@@ -1,18 +1,21 @@
 import React from 'react';
 
-interface IButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export type TheiaButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   text: string;
   icon?: JSX.Element;
   className?: string;
-}
-function TheiaButton({ text, icon, className, ...props }: IButtonProps) {
+};
+
+function TheiaButton({ text, icon, className, ...props }: TheiaButtonProps) {
   return (
     <button
-      className={`inline-flex items-center bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded shadow ${className}`}
+      className={`inline-flex items-center bg-blue-500 hover:bg-blue-700 disabled:bg-blue-300 text-white font-bold py-2 px-4 rounded shadow  ${className}`}
       {...props}
     >
-      {icon && icon}
-      <span className='ml-2'>{text}</span>
+      <span className='flex gap-1 items-center justify-center w-full'>
+        {icon && icon}
+        {text !== '' && <span className='justify-center items-center hidden lg:flex'>{text}</span>}
+      </span>
     </button>
   );
 }

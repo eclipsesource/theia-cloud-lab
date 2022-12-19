@@ -1,6 +1,8 @@
-import React from 'react';
+export type CheckIconProps = {
+  className?: string;
+};
 
-function CheckIcon() {
+function CheckIcon(props: CheckIconProps) {
   return (
     <svg
       xmlns='http://www.w3.org/2000/svg'
@@ -8,7 +10,7 @@ function CheckIcon() {
       viewBox='0 0 24 24'
       strokeWidth={1.5}
       stroke='currentColor'
-      className='w-6 h-6'
+      className={props.className ? props.className : 'w-6 h-6'}
     >
       <path
         strokeLinecap='round'

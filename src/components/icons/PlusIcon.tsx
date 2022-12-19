@@ -1,6 +1,8 @@
-import React from 'react';
+export type PlusIconProps = {
+  className?: string;
+};
 
-function PlusIcon() {
+function PlusIcon(props: PlusIconProps) {
   return (
     <svg
       xmlns='http://www.w3.org/2000/svg'
@@ -8,7 +10,7 @@ function PlusIcon() {
       viewBox='0 0 24 24'
       strokeWidth={1.5}
       stroke='currentColor'
-      className='w-6 h-6'
+      className={props.className ? props.className : 'w-6 h-6'}
     >
       <path
         strokeLinecap='round'

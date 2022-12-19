@@ -1,6 +1,8 @@
-import React from 'react';
+export type DeleteIconProps = {
+  className?: string;
+};
 
-function DeleteIcon() {
+function DeleteIcon(props: DeleteIconProps) {
   return (
     <svg
       xmlns='http://www.w3.org/2000/svg'
@@ -8,7 +10,7 @@ function DeleteIcon() {
       viewBox='0 0 24 24'
       strokeWidth={1.5}
       stroke='currentColor'
-      className='w-6 h-6'
+      className={props.className ? props.className : 'w-6 h-6'}
     >
       <path
         strokeLinecap='round'

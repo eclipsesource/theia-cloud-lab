@@ -1,204 +1,194 @@
-import { PodMetric } from '@kubernetes/client-node';
-import { useEffect, useState } from 'react';
-import TableContainer from '../components/TableContainer';
-import { SessionData } from './api/sessions';
-import TheiaButton from '../components/TheiaButton';
-import DeleteIcon from '../components/icons/DeleteIcon';
-import {
-  GridRowId,
-  DataGrid,
-  GridColDef,
-  GridValueGetterParams,
-  GridRenderCellParams,
-  DataGridProps,
-} from '@mui/x-data-grid';
-import dayjs from 'dayjs';
+import { useContext } from 'react';
 import RefreshIcon from '../components/icons/RefreshIcon';
+import TheiaButton from '../components/TheiaButton';
+import UserWorkspaceCard, { UserWorkspaceCardProps } from '../components/UserWorkspaceCard';
+import { Context } from '../context/Context';
+import CircularProgress from '@mui/material/CircularProgress';
 import PlusIcon from '../components/icons/PlusIcon';
-import { WorkspaceCRData } from './api/workspaces/cr';
-
-type Row = WorkspaceCRData & {
-  id: string;
-};
-
-const XLCol = 250;
-const MCol = 80;
+import { useQueries, useQuery } from '@tanstack/react-query';
+import { toast } from 'react-toastify';
+import { useAutoAnimate } from '@formkit/auto-animate/react';
 
 const Workspaces = () => {
-  const [rows, setRows] = useState<Row[]>([]);
-  const [workspaces, setWorkspaces] = useState<WorkspaceCRData[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isFetching, setIsFetching] = useState(false);
-  const [isDeleting, setIsDeleting] = useState<boolean>(false);
-  const [isDeleted, setIsDeleted] = useState<boolean>(false);
-  const [selectedRows, setSelectedRows] = useState<GridRowId[]>([]);
+  const { keycloak } = useContext(Context);
+  const [parent, enableAnimations] = useAutoAnimate<HTMLDivElement>({
+    duration: 100,
+    easing: 'ease-in-out',
+  });
 
-  const setTableData = (workspaces: WorkspaceCRData[]) => {
-    const rows: Row[] = [];
-    for (const workspace of workspaces) {
-      const row: Row = {
-        id: workspace.name,
-        name: workspace.name,
-        creationTimestamp: dayjs(workspace.creationTimestamp).toString(),
-        uid: workspace.uid,
-        appDefinition: workspace.appDefinition,
-        label: workspace.label,
-        storage: workspace.storage,
-        user: workspace.user,
-      };
-      rows.push(row);
-    }
-    setRows(rows);
-  };
-
-  const deleteWorkspaces = () => {
-    setIsDeleting(true);
-    console.log('here', selectedRows);
-    fetch('/api/workspaces/cr', {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      method: 'DELETE',
-      body: JSON.stringify({ toBeDeletedWorkspaces: selectedRows }),
-    })
-      .then((res) => {
-        if (res.status === 204) {
-          fetchData();
-          setIsDeleted(true);
-        }
-      })
-      .catch((error) => {
-        console.log('Error occured fetching data: ', error);
-      })
-      .finally(() => {
-        setIsDeleting(false);
-      });
-  };
-
-  const createNewWorkplace = () => {
-    setIsFetching(true);
-    fetch('/api/workspaces/cr', {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      method: 'POST',
-      body: JSON.stringify({ toBeCreatedWorkspace: `${Date.now()}` }),
-    })
-      .then((res) => {
-        if (res.status === 201) {
-          fetchData();
-        }
-      })
-      .catch((error) => {
-        console.log('Error occured fetching data: ', error);
-      })
-      .finally(() => {
-        setIsFetching(false);
-      });
-  };
-
-  const fetchData = () => {
-    setIsFetching(true);
-    fetch('/api/workspaces/cr')
-      .then((res) => res.json())
-      .then((data) => {
-        setWorkspaces(data);
-      })
-      .catch((error) => {
-        console.log('Error occured fetching data: ', error);
-      })
-      .finally(() => {
-        setIsFetching(false);
-      });
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    if (workspaces && workspaces.length > 0) {
-      setTableData(workspaces);
-      setIsLoading(false);
-    } else if (isDeleted) {
-      setTableData(workspaces);
-      setIsLoading(false);
-    } else {
-      setIsLoading(true);
-    }
-  }, [workspaces, isDeleted]);
-
-  const columns: GridColDef[] = [
-    { field: 'name', headerName: 'Workspace Name', width: XLCol },
-    { field: 'creationTimestamp', headerName: 'Creation Timestamp', width: 220 },
-    { field: 'user', headerName: 'User', width: 200 },
-    { field: 'appDefinition', headerName: 'App Definition', width: 120 },
-    { field: 'label', headerName: 'Label', width: XLCol },
-    { field: 'storage', headerName: 'Storage', width: XLCol },
-    { field: 'uid', headerName: 'UID', width: XLCol },
-  ];
-
-  const WorkspacesTableHeader = () => {
-    return (
-      <div className='flex justify-between py-4 px-4 '>
-        <span className='text-lg text-gray-600 hover:text-gray-800 hover:underline'>Workplaces</span>
-        <div>
-          <TheiaButton
-            text='Create Workspace'
-            icon={
-              <button className='hover:animate-pulse'>
-                <PlusIcon />
-              </button>
+  const results = useQueries({
+    queries: [
+      {
+        queryKey: ['user/workspaces'],
+        queryFn: () =>
+          fetch('/api/user/workspaces', {
+            headers: {
+              Authorization: `Bearer ${keycloak.token}`,
+            },
+            method: 'GET',
+          }).then((res) => {
+            if (!res.ok) {
+              toast.error('There was an error fetching workspaces. Please try again later.');
             }
-            className='mr-2'
-            onClick={() => createNewWorkplace()}
-          />
-
-          {workspaces.length > 0 && (
-            <TheiaButton
-              text='Delete Workspaces'
-              icon={
-                <button className={`${isDeleting ? 'animate-bounce' : ''} hover:animate-pulse`}>
-                  <DeleteIcon />
-                </button>
-              }
-              className='mr-2'
-              onClick={deleteWorkspaces}
-            />
-          )}
-
-          <TheiaButton
-            text='Refresh'
-            icon={
-              <button className={`${isFetching ? 'animate-spin' : ''} hover:animate-pulse`}>
-                <RefreshIcon />
-              </button>
+            return res.json();
+          }),
+        initialData: undefined,
+        retry: false,
+      },
+      {
+        queryKey: ['user/sessions'],
+        queryFn: () =>
+          fetch('/api/user/sessions', {
+            headers: {
+              Authorization: `Bearer ${keycloak.token}`,
+            },
+            method: 'GET',
+          }).then((res) => {
+            if (!res.ok) {
+              toast.error('There was an error fetching sessions. Please try again later.');
             }
-            onClick={fetchData}
-          />
+            return res.json();
+          }),
+        initialData: undefined,
+        retry: false,
+      },
+    ],
+  });
+
+  const createUserWorkspaceResult = useQuery({
+    queryKey: ['user/createWorkspace'],
+    queryFn: () =>
+      fetch('/api/user/workspaces', {
+        headers: {
+          Authorization: `Bearer ${keycloak.token}`,
+          'Content-Type': 'application/json',
+        },
+        method: 'POST',
+        body: JSON.stringify({ appDefinition: 'theia-cloud-demo' }),
+      }).then((res) => {
+        if (!res.ok) {
+          toast.error('There was an error creating workspace. Please try again later.');
+        }
+        return res.json();
+      }),
+    enabled: false,
+    onSettled() {
+      results[0].refetch();
+      results[1].refetch();
+    },
+    staleTime: Infinity,
+    retry: false,
+  });
+
+  const renderWorkspaceCards = () => {
+    if (results[0].data && results[1].data && results[0].data.length > 0) {
+      const cardsData: UserWorkspaceCardProps[] = [];
+      for (const workspace of results[0].data) {
+        let isMatched = false;
+        for (const session of results[1].data) {
+          if (session.workspace === workspace.name) {
+            isMatched = true;
+            const cardData: UserWorkspaceCardProps = {
+              cpuUsage: 'CPU',
+              memoryUsage: 'MEMORY',
+              userWorkspaceCRData: workspace,
+              userSessionCRData: session,
+              refetch: () => {
+                results[0].refetch();
+                results[1].refetch();
+              },
+            };
+            cardsData.push(cardData);
+            break;
+          }
+        }
+        if (!isMatched) {
+          const cardData: UserWorkspaceCardProps = {
+            cpuUsage: 'CPU',
+            memoryUsage: 'MEMORY',
+            userWorkspaceCRData: workspace,
+            refetch: () => {
+              results[0].refetch();
+              results[1].refetch();
+            },
+          };
+          cardsData.push(cardData);
+        }
+      }
+      return cardsData.map((cardData) => (
+        <UserWorkspaceCard
+          key={cardData.userWorkspaceCRData.name}
+          {...cardData}
+          refetch={() => {
+            results[0].refetch();
+            results[1].refetch();
+          }}
+        />
+      ));
+    } else if (results[0].isFetching || results[1].isFetching || createUserWorkspaceResult.isFetching) {
+      return (
+        <div className='flex justify-center items-center w-full h-full'>
+          <CircularProgress />
         </div>
-      </div>
-    );
+      );
+    } else if (results[0].isError || results[1].isError || results[0].isRefetchError || results[1].isRefetchError) {
+      return (
+        <div className='flex justify-center items-center w-full h-full'>
+          <span className='text-gray-400'>There was an error fetching data. Please try again later.</span>
+        </div>
+      );
+    } else {
+      return (
+        <div className='flex justify-center items-center w-full h-full'>
+          <span className='text-gray-400 text-lg font-normal'>
+            You do not have any workspaces at the moment. You may create one using the button above.
+          </span>
+        </div>
+      );
+    }
   };
 
   return (
-    <>
-      <DataGrid
-        sx={{ height: '100%', width: '100%', borderRadius: 0 }}
-        rows={rows}
-        columns={columns}
-        checkboxSelection
-        disableSelectionOnClick
-        experimentalFeatures={{ newEditingApi: true }}
-        getRowClassName={() => 'text-xs'}
-        loading={isLoading}
-        components={{
-          Toolbar: WorkspacesTableHeader,
-        }}
-        getRowHeight={() => 'auto'}
-        onSelectionModelChange={(e: GridRowId[]) => setSelectedRows(e)}
-      />
-    </>
+    <div className='w-full h-full'>
+      <div className='flex py-4 px-5 shadow-sm h-20 items-center justify-between'>
+        <span className='text-xl text-gray-600 '>Workspaces</span>
+        <span className='flex gap-2 flex-wrap justify-end'>
+          <TheiaButton
+            text='Create Workspace'
+            icon={<PlusIcon />}
+            onClick={() => {
+              createUserWorkspaceResult.refetch();
+            }}
+            disabled={results[0].isFetching || results[1].isFetching || createUserWorkspaceResult.isFetching}
+          />
+          <TheiaButton
+            className='lg:w-32'
+            text={
+              results[0].isFetching || results[1].isFetching || createUserWorkspaceResult.isFetching ? '' : 'Refresh'
+            }
+            icon={
+              <RefreshIcon
+                className={`w-6 h-6 ${
+                  (results[0].isFetching || results[1].isFetching || createUserWorkspaceResult.isFetching) &&
+                  'animate-spin'
+                }`}
+              />
+            }
+            onClick={() => {
+              results[0].refetch();
+              results[1].refetch();
+            }}
+            disabled={results[0].isFetching || results[1].isFetching || createUserWorkspaceResult.isFetching}
+          />
+        </span>
+      </div>
+      <div
+        ref={parent}
+        className='flex p-5 w-full h-[calc(100vh-4rem)] flex-col gap-6'
+      >
+        {renderWorkspaceCards()}
+      </div>
+    </div>
   );
 };
 
