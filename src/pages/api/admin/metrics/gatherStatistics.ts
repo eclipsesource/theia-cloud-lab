@@ -21,6 +21,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
               if (podMetric.metadata?.name.includes(session.metadata?.uid)) {
                 // Matched podMetric with session
                 // Update Database
+                const tableName = session.metadata.name;
                 console.log('podMetric', podMetric);
                 console.log('session', session);
               }
