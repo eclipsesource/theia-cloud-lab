@@ -105,48 +105,6 @@ const Sessions = () => {
     retry: false,
   });
 
-  const startMetricFetchingResult = useQuery({
-    queryKey: ['admin/metrics/gatherStatistics/start'],
-    queryFn: () =>
-      fetch('/api/admin/metrics/gatherStatistics', {
-        headers: {
-          Authorization: `Bearer ${keycloak.token}`,
-          'Content-Type': 'application/json',
-        },
-        method: 'POST',
-        body: JSON.stringify({ start: true }),
-      }).then((res) => {
-        if (!res.ok) {
-          toast.error('There was an error starting fetching interval of metrics. Please try again later.');
-        }
-        return res.json();
-      }),
-    enabled: false,
-    staleTime: Infinity,
-    retry: false,
-  });
-
-  const stopMetricFetchingResult = useQuery({
-    queryKey: ['admin/metrics/gatherStatistics/stop'],
-    queryFn: () =>
-      fetch('/api/admin/metrics/gatherStatistics', {
-        headers: {
-          Authorization: `Bearer ${keycloak.token}`,
-          'Content-Type': 'application/json',
-        },
-        method: 'POST',
-        body: JSON.stringify({ stop: true }),
-      }).then((res) => {
-        if (!res.ok) {
-          toast.error('There was an error stopping fetching interval of metrics. Please try again later.');
-        }
-        return res.json();
-      }),
-    enabled: false,
-    staleTime: Infinity,
-    retry: false,
-  });
-
   const printMetricsResult = useQuery({
     queryKey: ['admin/metrics/gatherStatistics/print'],
     queryFn: async () =>
@@ -303,18 +261,6 @@ const Sessions = () => {
             text='Print Metrics'
             onClick={() => {
               printMetricsResult.refetch();
-            }}
-          />
-          <TheiaButton
-            text='Start Metric Fetching'
-            onClick={() => {
-              startMetricFetchingResult.refetch();
-            }}
-          />
-          <TheiaButton
-            text='Stop Metric Fetching'
-            onClick={() => {
-              stopMetricFetchingResult.refetch();
             }}
           />
           <TheiaButton

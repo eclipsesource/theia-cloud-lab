@@ -20,6 +20,7 @@ const SidebarMenu = ({ isSidebarClosed, setIsSidebarClosed }: Props) => {
   useEffect(() => {
     keycloak && keycloak.resourceAccess && setUserType(keycloak.resourceAccess['theia-cloud'].roles[0]);
     setDashboardName(userType.slice(0, 1).toUpperCase() + userType.slice(1));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userType]);
 
   return (
@@ -56,6 +57,10 @@ const SidebarMenu = ({ isSidebarClosed, setIsSidebarClosed }: Props) => {
                   <SidebarMenuButton
                     href='/admin/workspaces'
                     text='Workspaces'
+                  />
+                  <SidebarMenuButton
+                    href='/admin/settings'
+                    text='Settings'
                   />
                 </>
               ) : (

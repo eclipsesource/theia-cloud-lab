@@ -20,15 +20,21 @@ kc.loadFromDefault();
 const metricsClient = new Metrics(kc);
 const k8s = new KubernetesClient();
 
+const globalUsage = 'GLOBAL USAGE';
+const globalSessions = 'GLOBAL SESSIONS';
+const globalWorkspaces = 'GLOBAL WORKSPACES';
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
     try {
       if (req.body['start'] && intervalId === undefined) {
-        const createTable = await client.query(
-          `CREATE TABLE IF NOT EXISTS 'GLOBAL USAGE' (ts TIMESTAMP, cpu STRING, memory STRING) timestamp(ts);`
+        await client.query(
+          `CREATE TABLE IF NOT EXISTS '${globalUsage}' (ts TIMESTAMP, cpu STRING, memory STRING) timestamp(ts);`
         );
-        await client.query(`CREATE TABLE IF NOT EXISTS 'GLOBAL SESSIONS' (ts TIMESTAMP, number INT) timestamp(ts);`);
-        await client.query(`CREATE TABLE IF NOT EXISTS 'GLOBAL WORKSPACES' (ts TIMESTAMP, number INT) timestamp(ts);`);
+        await client.query(`CREATE TABLE IF NOT EXISTS '${globalSessions}' (ts TIMESTAMP, number INT) timestamp(ts);`);
+        await client.query(
+          `CREATE TABLE IF NOT EXISTS '${globalWorkspaces}' (ts TIMESTAMP, number INT) timestamp(ts);`
+        );
 
         intervalId = setInterval(async () => {
           let globalCPUUsage = 0;
@@ -38,7 +44,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
           const sessionList = await k8s.getSessionList();
           const workspaceList = await k8s.getWorkspaceList();
 
-          await client.query(`INSERT INTO 'GLOBAL SESSIONS' VALUES($1, $2);`, [
+          await client.query(`INSERT INTO '${globalSessions}' VALUES($1, $2);`, [
             dayjs().toISOString(),
             sessionList.body.items.length,
           ]);
@@ -83,6 +89,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
                   totalCpuUsage + cpuUnit,
                   totalMemoryUsage + memoryUnit,
                 ]);
+
                 console.log(insertData);
 
                 globalCPUUsage = globalCPUUsage + totalCpuUsage;
@@ -94,7 +101,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             }
           }
           // TODO: Figure out calculation of metrics units
-          const insertData = await client.query(`INSERT INTO 'GLOBAL USAGE' VALUES($1, $2, $3);`, [
+          const insertData = await client.query(`INSERT INTO '${globalUsage}' VALUES($1, $2, $3);`, [
             dayjs().toISOString(),
             globalCPUUsage + 'n',
             globalMemoryUsage + 'Ki',
@@ -105,9 +112,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       } else if (req.body['stop'] && intervalId !== undefined) {
         clearInterval(intervalId);
         intervalId = undefined;
-        return res.status(200).send('Stopped fetching metrics');
+        return res.status(200).json('Stopped fetching metrics');
       } else {
-        return res.status(400).send('Bad request');
+        return res.status(400).json('Bad request');
       }
     } catch (error: any) {
       return res.status(400).json({ error: error.message });
