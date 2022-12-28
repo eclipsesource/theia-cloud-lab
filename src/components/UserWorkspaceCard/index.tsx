@@ -1,3 +1,5 @@
+'use client';
+
 import { useContext, useState } from 'react';
 import AdditionalOptionsContainer from './AdditionalOptionsContainer';
 import NewTabIcon from '../icons/NewTabIcon';
@@ -10,7 +12,6 @@ import { useQuery } from '@tanstack/react-query';
 import { Context } from '../../context/Context';
 import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
-import { dividerClasses } from '@mui/material';
 
 export type UserWorkspaceCardProps = {
   cpuUsage: 'CPU';
@@ -27,6 +28,28 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
     duration: 100,
     easing: 'ease-in-out',
   });
+
+  // TODO: Uncomment when metrics are available
+  /* const fetchUserSessionMetrics = useQuery({
+    queryKey: [`user/sessions/metrics/${props.userWorkspaceCRData.name}`],
+    queryFn: async () =>
+      fetch('/api/user/sessions/metrics', {
+        headers: {
+          Authorization: `Bearer ${keycloak.token}`,
+        },
+        method: 'POST',
+        body: JSON.stringify({ sessionName: props.userSessionCRData?.name }),
+      }).then((res) => {
+        return res.json();
+      }),
+    initialData: [],
+    retry: false,
+    onSettled(data) {
+      console.log('user Metrics', data);
+      console.log('body', { sessionName: props.userSessionCRData?.name });
+    },
+    refetchInterval: 10000,
+  }); */
 
   const deleteUserWorkspaceResult = useQuery({
     queryKey: [`user/deleteWorkspace/${props.userWorkspaceCRData.name}}`],
@@ -165,7 +188,10 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
           <span className='font-medium'>App Definition: </span>
           {props.userWorkspaceCRData.appDefinition}
         </div>
-        {props.userSessionCRData && (
+        {
+          // TODO: Uncomment when we have memory and cpu usage
+        }
+        {/* {props.userSessionCRData && (
           <div className='flex w-1/2 justify-end self-end'>
             <div className='w-fit mt-1 mb-1 mr-2 text-sm'>
               <span className='font-medium'>Memory Usage: </span>
@@ -176,7 +202,7 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
               <span>{props.cpuUsage}</span>
             </div>
           </div>
-        )}
+        )} */}
         <div className={'mt-1 mb-1 inline-flex justify-between'}>
           <div className={props.userSessionCRData ? 'text-green-500' : 'text-red-500'}>
             <span className='font-medium'>Status:</span> {props.userSessionCRData ? 'Running' : 'Stopped'}

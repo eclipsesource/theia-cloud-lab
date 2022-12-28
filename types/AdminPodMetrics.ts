@@ -4,7 +4,6 @@ export type AdminPodMetrics = {
   metadata: {
     name: string;
     namespace: string;
-    selfLink: string;
     creationTimestamp: string;
     labels: {
       [key: string]: string;

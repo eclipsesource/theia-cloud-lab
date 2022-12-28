@@ -24,15 +24,4 @@ export default function handler(req: NextApiRequest, res: NextApiResponse<any[]>
   metricsClient.getPodMetrics('theiacloud').then((metrics) => {
     res.send(metrics.items);
   });
-
-  // topPods(k8sApi, metricsClient, 'theiacloud').then((pods) => {
-  //   const podsColumns = pods.map((pod) => {
-  //     return {
-  //       POD: pod.Pod.metadata?.name,
-  //       CPU: Number(pod.CPU.CurrentUsage),
-  //       MEMORY: Number(pod.Memory.CurrentUsage),
-  //     };
-  //   });
-  //   res.send(podsColumns);
-  // });
 }

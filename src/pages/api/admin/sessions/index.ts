@@ -1,6 +1,5 @@
 import { KubernetesClient } from '../../../../../utils/k8s/k8s_client';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { randomUUID } from 'crypto';
 import { TheiaServiceClient } from '../../../../../utils/theiaservice/theiaservice_client';
 import appConfig from '../../../../../configs/app_config';
 import { AdminSessionCRData } from '../../../../../types/AdminSessionCRData';

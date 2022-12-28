@@ -227,7 +227,7 @@ const Workspaces = () => {
       disableSelectionOnClick
       experimentalFeatures={{ newEditingApi: true }}
       getRowClassName={() => 'text-xs'}
-      loading={fetchWorkspacesResult.isFetching}
+      loading={fetchWorkspacesResult.isFetching && fetchWorkspacesResult.data.length === 0}
       components={{
         Toolbar: WorkspacesTableHeader,
       }}

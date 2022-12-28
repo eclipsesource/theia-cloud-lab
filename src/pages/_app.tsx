@@ -1,7 +1,7 @@
 import '../styles/globals.css';
 import type { AppProps } from 'next/app';
 import Layout from '../components/Layout';
-import React, { useEffect, useState, Dispatch, SetStateAction } from 'react';
+import React, { useEffect, useState } from 'react';
 import Keycloak from 'keycloak-js';
 import keycloakConfig from '../../configs/keycloak_config';
 import { Context, ModalContent } from '../context/Context';
@@ -22,7 +22,6 @@ export default function App({ Component, pageProps }: AppProps) {
   });
   const [adminCreateSessionIsFetching, setAdminCreateSessionIsFetching] = useState(false);
   const [adminCreateWorkspaceIsFetching, setAdminCreateWorkspaceIsFetching] = useState(false);
-  const [adminDeleteSessionIsFetching, setAdminDeleteSessionIsFetching] = useState(false);
   const [userType, setUserType] = useState('');
   const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
@@ -30,7 +29,7 @@ export default function App({ Component, pageProps }: AppProps) {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
-        // refetchOnWindowFocus: false, // TODO(BORA): remove refetchOnWindowFocus for production
+        refetchOnWindowFocus: false, // TODO(BORA): remove refetchOnWindowFocus for production
         cacheTime: 0,
       },
     },

@@ -8,6 +8,8 @@ import PlusIcon from '../components/icons/PlusIcon';
 import { useQueries, useQuery } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
+import { UserSessionCRData } from '../../types/UserSessionCRData';
+import { UserWorkspaceCRData } from '../../types/UserWorkspaceCRData';
 
 const Workspaces = () => {
   const { keycloak } = useContext(Context);
@@ -20,7 +22,7 @@ const Workspaces = () => {
     queries: [
       {
         queryKey: ['user/workspaces'],
-        queryFn: () =>
+        queryFn: async (): Promise<UserWorkspaceCRData[]> =>
           fetch('/api/user/workspaces', {
             headers: {
               Authorization: `Bearer ${keycloak.token}`,
@@ -32,12 +34,12 @@ const Workspaces = () => {
             }
             return res.json();
           }),
-        initialData: undefined,
+        initialData: [],
         retry: false,
       },
       {
         queryKey: ['user/sessions'],
-        queryFn: () =>
+        queryFn: async (): Promise<UserSessionCRData[]> =>
           fetch('/api/user/sessions', {
             headers: {
               Authorization: `Bearer ${keycloak.token}`,
@@ -49,7 +51,7 @@ const Workspaces = () => {
             }
             return res.json();
           }),
-        initialData: undefined,
+        initialData: [],
         retry: false,
       },
     ],
@@ -184,7 +186,7 @@ const Workspaces = () => {
       </div>
       <div
         ref={parent}
-        className='flex p-5 w-full h-[calc(100vh-4rem)] flex-col gap-6'
+        className='flex p-5 w-full h-[calc(100vh-5rem)] flex-col gap-6'
       >
         {renderWorkspaceCards()}
       </div>

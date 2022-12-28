@@ -33,6 +33,7 @@ const AdminCreateSessionModalContent = (props: AdminCreateSessionModalContentPro
         if (!res.ok) {
           toast.error('There was an error creating session. Please try again later.');
         }
+        return res;
       }),
     enabled: false,
     onSettled() {
