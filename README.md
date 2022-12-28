@@ -54,3 +54,14 @@ React-Query is a library that helps us manage our data fetching and caching. To 
 ### Next.js Telemetry
 
 Run this command in root folder of the project to opt-out of Next.js telemetry: `npx next telemetry disable`
+
+### Prisma
+
+Prisma is a set of tools for working with databases in a modern, type-safe way. It is designed to be a replacement for traditional ORMs (Object-Relational Mappers) and provides a simple and intuitive API for interacting with databases.
+
+To reflect changes in your model to the database run this command: `npx prisma db push`
+
+### MongoDB Atlas
+
+MongoDB Atlas is a cloud-based database service that is provided by MongoDB.
+To connect the database please change the .env file and set connection url as indicated in MongoDB Atlas.

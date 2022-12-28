@@ -57,6 +57,10 @@ const SidebarMenu = ({ isSidebarClosed, setIsSidebarClosed }: Props) => {
                     href='/admin/workspaces'
                     text='Workspaces'
                   />
+                  <SidebarMenuButton
+                    href='/admin/statistic'
+                    text='Statistics DB Test'
+                  />
                 </>
               ) : (
                 <>
