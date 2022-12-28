@@ -2,12 +2,16 @@
 
 ## Getting Started
 
-First, run the development server:
+First, install dependencies:
+
+```bash
+npm install
+```
+
+Then, run the development server:
 
 ```bash
 npm run dev
-# or
-yarn dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
@@ -17,6 +21,24 @@ You can start editing the page by modifying `pages/index.tsx`. The page auto-upd
 [API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
 
 The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+
+## QuestDB
+
+We will be using QuestDB as our time-series database. This database is responsible for storing all the data that we will be collecting for statistics.
+
+To run a development instance of QuestDB, run the following command in your terminal:
+
+```bash
+docker run -p 9000:9000 \
+-p 9009:9009 \
+-p 8812:8812 \
+-p 9003:9003 \
+questdb/questdb:6.6.1
+```
+
+Visit [http://localhost:9000](http://localhost:9000) to view the QuestDB console.
+
+To get started with QuestDB, head over to this link: https://questdb.io/docs/guide/
 
 ## Deployment
 

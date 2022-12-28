@@ -2,6 +2,17 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { KubeConfig, Metrics } from '@kubernetes/client-node';
 import { KubernetesClient } from '../../../../../utils/k8s/k8s_client';
+import dayjs from 'dayjs';
+
+const { Client } = require('pg');
+const client = new Client({
+  database: 'qdb',
+  host: '127.0.0.1',
+  password: 'quest',
+  port: 8812,
+  user: 'admin',
+});
+client.connect();
 
 let intervalId: NodeJS.Timer | undefined = undefined;
 const kc = new KubeConfig();
@@ -13,21 +24,83 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method === 'POST') {
     try {
       if (req.body['start'] && intervalId === undefined) {
+        const createTable = await client.query(
+          `CREATE TABLE IF NOT EXISTS 'GLOBAL USAGE' (ts TIMESTAMP, cpu STRING, memory STRING) timestamp(ts);`
+        );
+        await client.query(`CREATE TABLE IF NOT EXISTS 'GLOBAL SESSIONS' (ts TIMESTAMP, number INT) timestamp(ts);`);
+        await client.query(`CREATE TABLE IF NOT EXISTS 'GLOBAL WORKSPACES' (ts TIMESTAMP, number INT) timestamp(ts);`);
+
         intervalId = setInterval(async () => {
+          let globalCPUUsage = 0;
+          let globalMemoryUsage = 0;
+
           const metrics = await metricsClient.getPodMetrics('theiacloud');
           const sessionList = await k8s.getSessionList();
+          const workspaceList = await k8s.getWorkspaceList();
+
+          await client.query(`INSERT INTO 'GLOBAL SESSIONS' VALUES($1, $2);`, [
+            dayjs().toISOString(),
+            sessionList.body.items.length,
+          ]);
+
+          await client.query(`INSERT INTO 'GLOBAL WORKSPACES' VALUES($1, $2);`, [
+            dayjs().toISOString(),
+            workspaceList.body.items.length,
+          ]);
+
           for (const session of sessionList.body.items) {
             for (const podMetric of metrics.items) {
               if (podMetric.metadata?.name.includes(session.metadata?.uid)) {
-                // Matched podMetric with session
-                // Update Database
                 const tableName = session.metadata.name;
-                console.log('podMetric', podMetric);
-                console.log('session', session);
+                const createTable = await client.query(
+                  `CREATE TABLE IF NOT EXISTS '${tableName}' (ts TIMESTAMP, cpu STRING, memory STRING) timestamp(ts);`
+                );
+                console.log(createTable);
+
+                let totalCpuUsage = 0;
+                let totalMemoryUsage = 0;
+                let cpuUnit = '';
+                let memoryUnit = '';
+                for (const container of podMetric.containers) {
+                  const matchesMemoryString = container.usage.memory.match(/(\d*)(\D*)/);
+                  const matchesCPUString = container.usage.cpu.match(/(\d*)(\D*)/);
+                  if (matchesMemoryString && matchesMemoryString[2]) {
+                    memoryUnit = matchesMemoryString[2];
+                  }
+                  if (matchesCPUString && matchesCPUString[2]) {
+                    cpuUnit = matchesCPUString[2];
+                  }
+                  if (matchesMemoryString && matchesMemoryString[1]) {
+                    totalMemoryUsage = totalMemoryUsage + Number(matchesMemoryString[1]);
+                  }
+                  if (matchesCPUString && matchesCPUString[1]) {
+                    totalCpuUsage = totalCpuUsage + Number(matchesCPUString[1]);
+                  }
+                }
+
+                const insertData = await client.query(`INSERT INTO '${tableName}' VALUES($1, $2, $3);`, [
+                  dayjs().toISOString(),
+                  totalCpuUsage + cpuUnit,
+                  totalMemoryUsage + memoryUnit,
+                ]);
+                console.log(insertData);
+
+                globalCPUUsage = globalCPUUsage + totalCpuUsage;
+                globalMemoryUsage = globalMemoryUsage + totalMemoryUsage;
+
+                /* console.log('podMetric', podMetric);
+                console.log('session', session); */
               }
             }
           }
-        }, 10000);
+          // TODO: Figure out calculation of metrics units
+          const insertData = await client.query(`INSERT INTO 'GLOBAL USAGE' VALUES($1, $2, $3);`, [
+            dayjs().toISOString(),
+            globalCPUUsage + 'n',
+            globalMemoryUsage + 'Ki',
+          ]);
+          await client.query('COMMIT');
+        }, 60000);
         return res.status(200).json('Started fetching metrics at 1s interval');
       } else if (req.body['stop'] && intervalId !== undefined) {
         clearInterval(intervalId);
