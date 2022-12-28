@@ -105,6 +105,71 @@ const Sessions = () => {
     retry: false,
   });
 
+  const startMetricFetchingResult = useQuery({
+    queryKey: ['admin/metrics/gatherStatistics/start'],
+    queryFn: () =>
+      fetch('/api/admin/metrics/gatherStatistics', {
+        headers: {
+          Authorization: `Bearer ${keycloak.token}`,
+          'Content-Type': 'application/json',
+        },
+        method: 'POST',
+        body: JSON.stringify({ start: true }),
+      }).then((res) => {
+        if (!res.ok) {
+          toast.error('There was an error starting fetching interval of metrics. Please try again later.');
+        }
+        return res.json();
+      }),
+    enabled: false,
+    staleTime: Infinity,
+    retry: false,
+  });
+
+  const stopMetricFetchingResult = useQuery({
+    queryKey: ['admin/metrics/gatherStatistics/stop'],
+    queryFn: () =>
+      fetch('/api/admin/metrics/gatherStatistics', {
+        headers: {
+          Authorization: `Bearer ${keycloak.token}`,
+          'Content-Type': 'application/json',
+        },
+        method: 'POST',
+        body: JSON.stringify({ stop: true }),
+      }).then((res) => {
+        if (!res.ok) {
+          toast.error('There was an error stopping fetching interval of metrics. Please try again later.');
+        }
+        return res.json();
+      }),
+    enabled: false,
+    staleTime: Infinity,
+    retry: false,
+  });
+
+  const printMetricsResult = useQuery({
+    queryKey: ['admin/metrics/gatherStatistics/print'],
+    queryFn: async () =>
+      fetch('/api/admin/metrics/gatherStatistics', {
+        headers: {
+          Authorization: `Bearer ${keycloak.token}`,
+          'Content-Type': 'application/json',
+        },
+        method: 'GET',
+      }).then((res) => {
+        if (!res.ok) {
+          toast.error('There was an error stopping fetching interval of metrics. Please try again later.');
+        }
+        return res.json();
+      }),
+    enabled: false,
+    onSettled: () => {
+      console.log(printMetricsResult.data);
+    },
+    staleTime: Infinity,
+    retry: false,
+  });
+
   const columns: GridColDef[] = [
     { field: 'name', headerName: 'Session Name', width: XLCol },
     { field: 'creationTimestamp', headerName: 'Creation Timestamp', width: XLCol },
@@ -185,6 +250,7 @@ const Sessions = () => {
                   totalCpuUsage = totalCpuUsage + Number(matchesCPUString[1]);
                 }
               }
+              console.log(session.uid);
               const row: SessionRow = {
                 id: session.name,
                 creationTimestamp: dayjs(session.creationTimestamp).toString(),
@@ -233,6 +299,24 @@ const Sessions = () => {
       <div className='flex py-4 px-5 shadow-sm h-20 items-center justify-between'>
         <span className='text-xl text-gray-600'>Sessions</span>
         <span className='flex gap-2 flex-wrap justify-end'>
+          <TheiaButton
+            text='Print Metrics'
+            onClick={() => {
+              printMetricsResult.refetch();
+            }}
+          />
+          <TheiaButton
+            text='Start Metric Fetching'
+            onClick={() => {
+              startMetricFetchingResult.refetch();
+            }}
+          />
+          <TheiaButton
+            text='Stop Metric Fetching'
+            onClick={() => {
+              stopMetricFetchingResult.refetch();
+            }}
+          />
           <TheiaButton
             text='Create Session'
             icon={<PlusIcon />}
