@@ -2,9 +2,9 @@
   "name": "theia-cloud-lab",
   "version": "0.1.0",
   "scripts": {
-    "dev": "next dev",
+    "dev": "node --require ./server-preload.js ./node_modules/.bin/next dev",
     "build": "next build",
-    "start": "next start",
+    "start": "node --require ./server-preload.js ./node_modules/.bin/next start",
     "lint": "next lint"
   },
   "dependencies": {
