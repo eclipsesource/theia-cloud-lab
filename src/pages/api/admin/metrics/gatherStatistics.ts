@@ -27,7 +27,7 @@ const globalWorkspaces = 'GLOBAL WORKSPACES';
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method === 'POST') {
     try {
-      if (req.body['start'] && intervalId === undefined) {
+      if (req.body['start'] === true && intervalId === undefined) {
         await client.query(
           `CREATE TABLE IF NOT EXISTS '${globalUsage}' (ts TIMESTAMP, cpu STRING, memory STRING) timestamp(ts);`
         );
@@ -107,9 +107,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             globalMemoryUsage + 'Ki',
           ]);
           await client.query('COMMIT');
-        }, 60000);
+        }, 5000);
         return res.status(200).json('Started fetching metrics at 1s interval');
-      } else if (req.body['stop'] && intervalId !== undefined) {
+      } else if (req.body['stop'] === true && intervalId !== undefined) {
         clearInterval(intervalId);
         intervalId = undefined;
         return res.status(200).json('Stopped fetching metrics');
@@ -121,8 +121,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
   } else if (req.method === 'GET') {
     try {
-      const metrics = await metricsClient.getPodMetrics('theiacloud');
-      return res.status(200).json(metrics.items);
+      if (intervalId === undefined) {
+        return res.status(200).json({ status: false });
+      } else {
+        return res.status(200).json({ status: true });
+      }
     } catch (error: any) {
       return res.status(400).json({ error: error.message });
     }

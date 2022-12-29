@@ -1,19 +1,16 @@
 import { Switch } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
-import { useContext, useEffect, useState } from 'react';
+import { useContext } from 'react';
 import { toast } from 'react-toastify';
 import Spinner from '../../components/icons/Spinner';
 import { Context } from '../../context/Context';
 
-const label = { inputProps: { 'aria-label': 'Switch demo' } };
-
 const Settings = () => {
-  const [checked, setChecked] = useState(false);
   const { keycloak } = useContext(Context);
 
   const startMetricFetchingResult = useQuery({
     queryKey: ['admin/metrics/gatherStatistics/start'],
-    queryFn: () =>
+    queryFn: async () =>
       fetch('/api/admin/metrics/gatherStatistics', {
         headers: {
           Authorization: `Bearer ${keycloak.token}`,
@@ -30,11 +27,14 @@ const Settings = () => {
     enabled: false,
     staleTime: Infinity,
     retry: false,
+    onSettled: () => {
+      getMetricFetchingStatusResult.refetch();
+    },
   });
 
   const stopMetricFetchingResult = useQuery({
     queryKey: ['admin/metrics/gatherStatistics/stop'],
-    queryFn: () =>
+    queryFn: async () =>
       fetch('/api/admin/metrics/gatherStatistics', {
         headers: {
           Authorization: `Bearer ${keycloak.token}`,
@@ -51,16 +51,29 @@ const Settings = () => {
     enabled: false,
     staleTime: Infinity,
     retry: false,
+    onSettled: () => {
+      getMetricFetchingStatusResult.refetch();
+    },
   });
 
-  useEffect(() => {
-    if (checked) {
-      startMetricFetchingResult.refetch();
-    } else if (startMetricFetchingResult.data && !checked) {
-      stopMetricFetchingResult.refetch();
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [checked]);
+  const getMetricFetchingStatusResult = useQuery({
+    queryKey: ['admin/metrics/gatherStatistics/getStatus'],
+    queryFn: async (): Promise<{ status: boolean }> =>
+      fetch('/api/admin/metrics/gatherStatistics', {
+        headers: {
+          Authorization: `Bearer ${keycloak.token}`,
+          'Content-Type': 'application/json',
+        },
+        method: 'GET',
+      }).then((res) => {
+        if (!res.ok) {
+          toast.error('There was an error getting status of fetching interval of metrics. Please try again later.');
+        }
+        return res.json();
+      }),
+    retry: false,
+    initialData: { status: false },
+  });
 
   return (
     <>
@@ -68,26 +81,30 @@ const Settings = () => {
         <span className='text-xl text-gray-600'>Settings</span>
       </div>
 
-      {startMetricFetchingResult.isFetching || stopMetricFetchingResult.isFetching ? (
-        <div className='flex h-[calc(100vh-5rem)] items-center justify-center'>
-          <Spinner />
-        </div>
-      ) : (
-        <div className='flex px-5 py-4'>
-          <div className='flex items-center'>
-            <span>Do you want to collect resource usage statistics?</span>
-            <div className='flex items-center ml-4'>
-              <span className='text-gray-400'>Off</span>
-              <Switch
-                {...label}
-                onChange={(e) => setChecked(e.target.checked)}
-                checked={checked}
-              />
-              On
-            </div>
+      <div className='flex px-5 py-4'>
+        <div className='flex items-center'>
+          <span>Log cluster-wide metrics to database?</span>
+          <div className='flex items-center ml-4'>
+            <span className='text-gray-400'>Off</span>
+            <Switch
+              onChange={(e) => {
+                if (e.target.checked) {
+                  startMetricFetchingResult.refetch();
+                } else {
+                  stopMetricFetchingResult.refetch();
+                }
+              }}
+              checked={getMetricFetchingStatusResult.data.status}
+              disabled={
+                getMetricFetchingStatusResult.isFetching ||
+                startMetricFetchingResult.isFetching ||
+                stopMetricFetchingResult.isFetching
+              }
+            />
+            On
           </div>
         </div>
-      )}
+      </div>
     </>
   );
 };

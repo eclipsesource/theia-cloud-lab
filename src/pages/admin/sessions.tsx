@@ -105,29 +105,6 @@ const Sessions = () => {
     retry: false,
   });
 
-  const printMetricsResult = useQuery({
-    queryKey: ['admin/metrics/gatherStatistics/print'],
-    queryFn: async () =>
-      fetch('/api/admin/metrics/gatherStatistics', {
-        headers: {
-          Authorization: `Bearer ${keycloak.token}`,
-          'Content-Type': 'application/json',
-        },
-        method: 'GET',
-      }).then((res) => {
-        if (!res.ok) {
-          toast.error('There was an error stopping fetching interval of metrics. Please try again later.');
-        }
-        return res.json();
-      }),
-    enabled: false,
-    onSettled: () => {
-      console.log(printMetricsResult.data);
-    },
-    staleTime: Infinity,
-    retry: false,
-  });
-
   const columns: GridColDef[] = [
     { field: 'name', headerName: 'Session Name', width: XLCol },
     { field: 'creationTimestamp', headerName: 'Creation Timestamp', width: XLCol },
@@ -257,12 +234,6 @@ const Sessions = () => {
       <div className='flex py-4 px-5 shadow-sm h-20 items-center justify-between'>
         <span className='text-xl text-gray-600'>Sessions</span>
         <span className='flex gap-2 flex-wrap justify-end'>
-          <TheiaButton
-            text='Print Metrics'
-            onClick={() => {
-              printMetricsResult.refetch();
-            }}
-          />
           <TheiaButton
             text='Create Session'
             icon={<PlusIcon />}
