@@ -2,7 +2,6 @@ import { Switch } from '@mui/material';
 import { useQuery } from '@tanstack/react-query';
 import { useContext } from 'react';
 import { toast } from 'react-toastify';
-import Spinner from '../../components/icons/Spinner';
 import { Context } from '../../context/Context';
 
 const Settings = () => {

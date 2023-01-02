@@ -26,25 +26,72 @@ export default async function handler(req, res) {
           const sessionList = await k8s.getSessionList();
           const workspaceList = await k8s.getWorkspaceList();
 
+          // TODO: Add data retention policy for global tables
           await questdbClient.query(`INSERT INTO '${globalSessions}' VALUES($1, $2);`, [
             dayjs().toISOString(),
             sessionList.body.items.length,
           ]);
-
           await questdbClient.query(`INSERT INTO '${globalWorkspaces}' VALUES($1, $2);`, [
             dayjs().toISOString(),
             workspaceList.body.items.length,
           ]);
 
+          // Check if any workspaces have been deleted
+          // If so, update the isDeleted column to true
+          // and drop the workspace's table
+          const selectTable = await questdbClient.query(`SELECT * FROM 'GLOBAL WORKSPACE LIST';`);
+          for (const row of selectTable.rows) {
+            let isMatched = false;
+            for (const workspace of workspaceList.body.items) {
+              if (row.name === workspace.metadata?.name) {
+                isMatched = true;
+                console.log('Workspace already exists in table');
+                break;
+              }
+            }
+            if (!isMatched) {
+              await questdbClient.query(
+                `UPDATE 'GLOBAL WORKSPACE LIST' SET isDeleted = true WHERE name = '${row.name}';`
+              );
+              await questdbClient.query(`DROP TABLE IF EXISTS '${row.name}';`);
+            }
+          }
+
+          // For each session matched with its metrics
+          // create a table for the workspace
           for (const session of sessionList.body.items) {
             for (const podMetric of metrics.items) {
               if (podMetric.metadata?.name.includes(session.metadata?.uid)) {
-                const tableName = session.metadata.name;
-                const createTable = await questdbClient.query(
-                  `CREATE TABLE IF NOT EXISTS '${tableName}' (ts TIMESTAMP, cpu STRING, memory STRING) timestamp(ts);`
+                const tableName = session.spec?.workspace;
+                await questdbClient.query(
+                  `CREATE TABLE IF NOT EXISTS '${tableName}' (ts TIMESTAMP, cpu STRING, memory STRING) timestamp(ts) PARTITION BY DAY;`
                 );
-                console.log(createTable);
 
+                // Check if workspace is already in Global Workspace List table
+                // else, add it to the table
+                const globalWorkspaceList = await questdbClient.query(
+                  `SELECT * FROM 'GLOBAL WORKSPACE LIST' WHERE isDeleted = false;`
+                );
+                let isMatched = false;
+                for (const row of globalWorkspaceList.rows) {
+                  if (row.name === tableName) {
+                    isMatched = true;
+                    break;
+                  }
+                }
+                if (!isMatched) {
+                  await questdbClient.query(
+                    `INSERT INTO 'GLOBAL WORKSPACE LIST' VALUES(now(), '${tableName}', '${session.spec?.user}', false);`
+                  );
+                }
+
+                // For a workspace table, drop rows older than 1 day
+                await questdbClient.query(
+                  `ALTER TABLE '${tableName}' DROP PARTITION WHERE ts < dateadd('d', -1, now());`
+                );
+
+                // Calculate total CPU and Memory usage
+                // and insert into workspace table
                 let totalCpuUsage = 0;
                 let totalMemoryUsage = 0;
                 let cpuUnit = '';
@@ -65,31 +112,28 @@ export default async function handler(req, res) {
                     totalCpuUsage = totalCpuUsage + Number(matchesCPUString[1]);
                   }
                 }
-
-                const insertData = await questdbClient.query(`INSERT INTO '${tableName}' VALUES($1, $2, $3);`, [
+                await questdbClient.query(`INSERT INTO '${tableName}' VALUES($1, $2, $3);`, [
                   dayjs().toISOString(),
                   totalCpuUsage + cpuUnit,
                   totalMemoryUsage + memoryUnit,
                 ]);
 
-                console.log(insertData);
-
+                // Add to global CPU and memory usage for GLOBAL USAGE table
                 globalCPUUsage = globalCPUUsage + totalCpuUsage;
                 globalMemoryUsage = globalMemoryUsage + totalMemoryUsage;
-
-                /* console.log('podMetric', podMetric);
-                console.log('session', session); */
               }
             }
           }
+          // Gather global CPU and memory usage
+          // and insert into GLOBAL USAGE table
           // TODO: Figure out calculation of metrics units
-          const insertData = await questdbClient.query(`INSERT INTO '${globalUsage}' VALUES($1, $2, $3);`, [
+          await questdbClient.query(`INSERT INTO '${globalUsage}' VALUES($1, $2, $3);`, [
             dayjs().toISOString(),
             globalCPUUsage + 'n',
             globalMemoryUsage + 'Ki',
           ]);
           await questdbClient.query('COMMIT');
-        }, 60000);
+        }, 5000);
         return res.status(200).json('Started fetching metrics at 1s interval');
       } else if (req.body['stop'] === true && loggingIntervalId !== undefined) {
         clearInterval(loggingIntervalId);

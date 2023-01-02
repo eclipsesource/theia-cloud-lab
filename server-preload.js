@@ -25,19 +25,24 @@ const initDb = async () => {
   console.log('Connected to QuestDB!');
 
   const isGlobalUsageCreated = await global.questdbClient.query(
-    `CREATE TABLE IF NOT EXISTS 'GLOBAL USAGE' (ts TIMESTAMP, cpu STRING, memory STRING) timestamp(ts);`
+    `CREATE TABLE IF NOT EXISTS 'GLOBAL USAGE' (ts TIMESTAMP, cpu STRING, memory STRING) timestamp(ts) PARTITION BY DAY;`
   );
   console.log('Table GLOBAL USAGE: ', isGlobalUsageCreated.command);
 
   const isGlobalSessionsCreated = await global.questdbClient.query(
-    `CREATE TABLE IF NOT EXISTS 'GLOBAL SESSIONS' (ts TIMESTAMP, number INT) timestamp(ts);`
+    `CREATE TABLE IF NOT EXISTS 'GLOBAL SESSIONS' (ts TIMESTAMP, number INT) timestamp(ts) PARTITION BY DAY;`
   );
   console.log('Table GLOBAL SESSIONS: ', isGlobalSessionsCreated.command);
 
   const isGlobalWorkspacesCreated = await global.questdbClient.query(
-    `CREATE TABLE IF NOT EXISTS 'GLOBAL WORKSPACES' (ts TIMESTAMP, number INT) timestamp(ts);`
+    `CREATE TABLE IF NOT EXISTS 'GLOBAL WORKSPACES' (ts TIMESTAMP, number INT) timestamp(ts) PARTITION BY DAY;`
   );
   console.log('Table GLOBAL WORKSPACES: ', isGlobalWorkspacesCreated.command);
+
+  const isGlobalWorkspaceListCreated = await global.questdbClient.query(
+    `CREATE TABLE IF NOT EXISTS 'GLOBAL WORKSPACE LIST' (ts TIMESTAMP, name STRING, userId STRING, isDeleted BOOLEAN) timestamp(ts) PARTITION BY DAY;`
+  );
+  console.log('Table GLOBAL WORKSPACE LIST: ', isGlobalWorkspaceListCreated.command);
 
   console.log('Database initialized!');
 };
