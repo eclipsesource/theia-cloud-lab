@@ -133,7 +133,7 @@ export default async function handler(req, res) {
             globalMemoryUsage + 'Ki',
           ]);
           await questdbClient.query('COMMIT');
-        }, 5000);
+        }, 60000);
         return res.status(200).json('Started fetching metrics at 1s interval');
       } else if (req.body['stop'] === true && loggingIntervalId !== undefined) {
         clearInterval(loggingIntervalId);

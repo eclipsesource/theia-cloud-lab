@@ -39,6 +39,7 @@
   },
   "devDependencies": {
     "@types/jsonwebtoken": "^8.5.9",
+    "@types/pg": "^8.6.6",
     "autoprefixer": "^10.4.13",
     "postcss": "^8.4.19",
     "prettier": "2.7.1",
