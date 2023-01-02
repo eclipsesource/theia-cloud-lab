@@ -26,7 +26,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         const workspaceList = await questdbClient.query(`SELECT * FROM '${globalWorkspaces}'`);
 
         const rows = [sessionList.rows, usageList.rows, workspaceList.rows];
-        console.log(rows, 'rows');
         return res.status(200).json({ rows });
       } catch (error) {
         return res.status(400).json('Error getting statistics');
