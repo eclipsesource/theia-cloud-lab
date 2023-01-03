@@ -21,7 +21,7 @@ export default function Layout({ children }: any) {
         <div className={`${isSidebarClosed ? 'w-screen' : 'w-[calc(100vw-15rem)]'} h-screen`}>
           <main
             role='main'
-            className='h-full'
+            className='h-full overflow-y-scroll	'
           >
             {children}
           </main>
