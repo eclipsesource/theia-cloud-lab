@@ -86,9 +86,13 @@ export default async function handler(req, res) {
                 }
 
                 // For a workspace table, drop rows older than 1 day
-                await questdbClient.query(
-                  `ALTER TABLE '${tableName}' DROP PARTITION WHERE ts < dateadd('d', -1, now());`
-                );
+                try {
+                  await questdbClient.query(
+                    `ALTER TABLE '${tableName}' DROP PARTITION WHERE ts < dateadd('d', -1, now());`
+                  );
+                } catch (error) {
+                  console.log('No partitions to drop');
+                }
 
                 // Calculate total CPU and Memory usage
                 // and insert into workspace table
