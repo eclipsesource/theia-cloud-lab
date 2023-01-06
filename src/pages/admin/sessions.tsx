@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react';
-import { DataGrid, GridColDef, GridRenderCellParams, GridRowId } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRenderCellParams, GridRowId, GridToolbar } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
 import RefreshIcon from '../../components/icons/RefreshIcon';
 import DeleteIcon from '../../components/icons/DeleteIcon';
@@ -318,25 +318,28 @@ const Sessions = () => {
     );
   };
   return (
-    <DataGrid
-      sx={{ height: '100%', width: '100%', borderRadius: 0 }}
-      rows={setTableData()}
-      columns={columns}
-      checkboxSelection
-      disableSelectionOnClick
-      experimentalFeatures={{ newEditingApi: true }}
-      getRowClassName={() => 'text-xs'}
-      loading={fetchResults[0].isFetching && fetchResults[0].data?.length === 0}
-      components={{
-        Toolbar: SessionsTableHeader,
-      }}
-      getRowHeight={() => 'auto'}
-      onSelectionModelChange={(ids) => {
-        const selectedIDs = new Set(ids);
-        const selectedRowData = setTableData().filter((row) => selectedIDs.has(row.id.toString()));
-        setSelectedRows(selectedRowData);
-      }}
-    />
+    <>
+      <SessionsTableHeader />
+      <DataGrid
+        sx={{ height: 'calc(100% - 5rem)', width: '100%', borderRadius: 0 }}
+        rows={setTableData()}
+        columns={columns}
+        checkboxSelection
+        disableSelectionOnClick
+        experimentalFeatures={{ newEditingApi: true }}
+        getRowClassName={() => 'text-xs'}
+        loading={fetchResults[0].isFetching && fetchResults[0].data?.length === 0}
+        components={{
+          Toolbar: GridToolbar,
+        }}
+        getRowHeight={() => 'auto'}
+        onSelectionModelChange={(ids) => {
+          const selectedIDs = new Set(ids);
+          const selectedRowData = setTableData().filter((row) => selectedIDs.has(row.id.toString()));
+          setSelectedRows(selectedRowData);
+        }}
+      />
+    </>
   );
 };
 

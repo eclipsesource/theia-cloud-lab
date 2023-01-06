@@ -18,7 +18,13 @@ export default async function handler(req, res) {
   if (req.method === 'POST') {
     try {
       if (req.body['start'] === true && loggingIntervalId === undefined) {
+        console.log('Started logging metrics');
         loggingIntervalId = setInterval(async () => {
+          try {
+            await questdbClient.connect();
+          } catch (error) {
+            console.log(error.message);
+          }
           let globalCPUUsage = 0;
           let globalMemoryUsage = 0;
 
@@ -44,8 +50,8 @@ export default async function handler(req, res) {
             let isMatched = false;
             for (const workspace of workspaceList.body.items) {
               if (row.name === workspace.metadata?.name) {
+                // Workspace still exists
                 isMatched = true;
-                console.log('Workspace already exists in table');
                 break;
               }
             }
@@ -136,12 +142,14 @@ export default async function handler(req, res) {
             globalCPUUsage + 'n',
             globalMemoryUsage + 'Ki',
           ]);
+
           await questdbClient.query('COMMIT');
         }, 60000);
         return res.status(200).json('Started fetching metrics at 1s interval');
       } else if (req.body['stop'] === true && loggingIntervalId !== undefined) {
         clearInterval(loggingIntervalId);
         loggingIntervalId = undefined;
+        console.log('Stopped logging metrics');
         return res.status(200).json('Stopped fetching metrics');
       } else {
         return res.status(400).json('Bad request');

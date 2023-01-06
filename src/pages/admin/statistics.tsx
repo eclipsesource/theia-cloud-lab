@@ -168,6 +168,9 @@ const Statistics = () => {
       <Accordion
         expanded={props.expanded}
         onChange={props.onChange}
+        sx={{
+          margin: 0,
+        }}
       >
         <AccordionSummary
           expandIcon={<ChevronDownIcon />}
@@ -191,7 +194,7 @@ const Statistics = () => {
           disabled={getStatisticsResult.isFetching}
         />
       </div>
-      <div className='ml-5 mt-5 mr-5'>
+      <div className='p-5 flex gap-5 flex-col'>
         <Collapsible
           title='Sessions'
           expanded={isSessionsExpanded}
@@ -201,8 +204,6 @@ const Statistics = () => {
         >
           <LineChartForSessions />
         </Collapsible>
-      </div>
-      <div className='ml-5 mt-5 mr-5'>
         <Collapsible
           title='Workspaces'
           expanded={isWorkspacesExpanded}
@@ -212,8 +213,6 @@ const Statistics = () => {
         >
           <LineChartForWorkspaces />
         </Collapsible>
-      </div>
-      <div className='ml-5 mt-5 mr-5'>
         <Collapsible
           title='Resource Consumption'
           expanded={isResourcesExpanded}
