@@ -43,9 +43,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   } else if (req.method === 'DELETE') {
     try {
       await Promise.all(
-        req.body.toBeDeletedWorkspaces.map(async (workspace: AdminWorkspaceCRData) => {
-          await theiaService.deleteUserWorkspace(appConfig.appId, workspace.user, workspace.name);
-        })
+        req.body.toBeDeletedWorkspaces.map(
+          async (workspace: AdminWorkspaceCRData) =>
+            await theiaService.deleteUserWorkspace(appConfig.appId, workspace.user, workspace.name)
+        )
       );
 
       // const toBeDeletedWorkspaceNamesArr = req.body.toBeDeletedWorkspaces;

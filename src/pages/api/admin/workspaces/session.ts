@@ -1,4 +1,3 @@
-import { KubernetesClient } from '../../../../../utils/k8s/k8s_client';
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { AdminWorkspaceCRData } from '../../../../../types/AdminWorkspaceCRData';
 import appConfig from '../../../../../configs/app_config';
@@ -17,7 +16,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
             workspace.name,
             workspace.appDefinition
           );
-          // await k8s.createSession(`ns-${name}`, name);
         })
       );
       return res.status(201).send({});

@@ -2,7 +2,7 @@ import { useContext, useState } from 'react';
 import TheiaButton from '../../components/TheiaButton';
 import DeleteIcon from '../../components/icons/DeleteIcon';
 import RestartIcon from '../../components/icons/RestartIcon';
-import { GridRowId, DataGrid, GridColDef } from '@mui/x-data-grid';
+import { GridRowId, DataGrid, GridColDef, GridToolbar } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
 import RefreshIcon from '../../components/icons/RefreshIcon';
 import PlusIcon from '../../components/icons/PlusIcon';
@@ -219,25 +219,28 @@ const Workspaces = () => {
   };
 
   return (
-    <DataGrid
-      sx={{ height: '100%', width: '100%', borderRadius: 0 }}
-      rows={setTableData()}
-      columns={columns}
-      checkboxSelection
-      disableSelectionOnClick
-      experimentalFeatures={{ newEditingApi: true }}
-      getRowClassName={() => 'text-xs'}
-      loading={fetchWorkspacesResult.isFetching && fetchWorkspacesResult.data.length === 0}
-      components={{
-        Toolbar: WorkspacesTableHeader,
-      }}
-      getRowHeight={() => 'auto'}
-      onSelectionModelChange={(ids) => {
-        const selectedIDs = new Set(ids);
-        const selectedRowData = setTableData().filter((row) => selectedIDs.has(row.id.toString()));
-        setSelectedRows(selectedRowData);
-      }}
-    />
+    <>
+      <WorkspacesTableHeader />
+      <DataGrid
+        sx={{ height: 'calc(100% - 5rem)', width: '100%', borderRadius: 0 }}
+        rows={setTableData()}
+        columns={columns}
+        checkboxSelection
+        disableSelectionOnClick
+        experimentalFeatures={{ newEditingApi: true }}
+        getRowClassName={() => 'text-xs'}
+        loading={fetchWorkspacesResult.isFetching && fetchWorkspacesResult.data.length === 0}
+        components={{
+          Toolbar: GridToolbar,
+        }}
+        getRowHeight={() => 'auto'}
+        onSelectionModelChange={(ids) => {
+          const selectedIDs = new Set(ids);
+          const selectedRowData = setTableData().filter((row) => selectedIDs.has(row.id.toString()));
+          setSelectedRows(selectedRowData);
+        }}
+      />
+    </>
   );
 };
 

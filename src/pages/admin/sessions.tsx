@@ -1,5 +1,5 @@
 import { useContext, useState } from 'react';
-import { DataGrid, GridColDef, GridRenderCellParams, GridRowId } from '@mui/x-data-grid';
+import { DataGrid, GridColDef, GridRenderCellParams, GridRowId, GridToolbar } from '@mui/x-data-grid';
 import dayjs from 'dayjs';
 import RefreshIcon from '../../components/icons/RefreshIcon';
 import DeleteIcon from '../../components/icons/DeleteIcon';
@@ -100,71 +100,6 @@ const Sessions = () => {
     onSettled() {
       fetchResults[0].refetch();
       fetchResults[1].refetch();
-    },
-    staleTime: Infinity,
-    retry: false,
-  });
-
-  const startMetricFetchingResult = useQuery({
-    queryKey: ['admin/metrics/gatherStatistics/start'],
-    queryFn: () =>
-      fetch('/api/admin/metrics/gatherStatistics', {
-        headers: {
-          Authorization: `Bearer ${keycloak.token}`,
-          'Content-Type': 'application/json',
-        },
-        method: 'POST',
-        body: JSON.stringify({ start: true }),
-      }).then((res) => {
-        if (!res.ok) {
-          toast.error('There was an error starting fetching interval of metrics. Please try again later.');
-        }
-        return res.json();
-      }),
-    enabled: false,
-    staleTime: Infinity,
-    retry: false,
-  });
-
-  const stopMetricFetchingResult = useQuery({
-    queryKey: ['admin/metrics/gatherStatistics/stop'],
-    queryFn: () =>
-      fetch('/api/admin/metrics/gatherStatistics', {
-        headers: {
-          Authorization: `Bearer ${keycloak.token}`,
-          'Content-Type': 'application/json',
-        },
-        method: 'POST',
-        body: JSON.stringify({ stop: true }),
-      }).then((res) => {
-        if (!res.ok) {
-          toast.error('There was an error stopping fetching interval of metrics. Please try again later.');
-        }
-        return res.json();
-      }),
-    enabled: false,
-    staleTime: Infinity,
-    retry: false,
-  });
-
-  const printMetricsResult = useQuery({
-    queryKey: ['admin/metrics/gatherStatistics/print'],
-    queryFn: async () =>
-      fetch('/api/admin/metrics/gatherStatistics', {
-        headers: {
-          Authorization: `Bearer ${keycloak.token}`,
-          'Content-Type': 'application/json',
-        },
-        method: 'GET',
-      }).then((res) => {
-        if (!res.ok) {
-          toast.error('There was an error stopping fetching interval of metrics. Please try again later.');
-        }
-        return res.json();
-      }),
-    enabled: false,
-    onSettled: () => {
-      console.log(printMetricsResult.data);
     },
     staleTime: Infinity,
     retry: false,
@@ -300,24 +235,6 @@ const Sessions = () => {
         <span className='text-xl text-gray-600'>Sessions</span>
         <span className='flex gap-2 flex-wrap justify-end'>
           <TheiaButton
-            text='Print Metrics'
-            onClick={() => {
-              printMetricsResult.refetch();
-            }}
-          />
-          <TheiaButton
-            text='Start Metric Fetching'
-            onClick={() => {
-              startMetricFetchingResult.refetch();
-            }}
-          />
-          <TheiaButton
-            text='Stop Metric Fetching'
-            onClick={() => {
-              stopMetricFetchingResult.refetch();
-            }}
-          />
-          <TheiaButton
             text='Create Session'
             icon={<PlusIcon />}
             onClick={() => {
@@ -401,25 +318,28 @@ const Sessions = () => {
     );
   };
   return (
-    <DataGrid
-      sx={{ height: '100%', width: '100%', borderRadius: 0 }}
-      rows={setTableData()}
-      columns={columns}
-      checkboxSelection
-      disableSelectionOnClick
-      experimentalFeatures={{ newEditingApi: true }}
-      getRowClassName={() => 'text-xs'}
-      loading={fetchResults[0].isFetching && fetchResults[0].data?.length === 0}
-      components={{
-        Toolbar: SessionsTableHeader,
-      }}
-      getRowHeight={() => 'auto'}
-      onSelectionModelChange={(ids) => {
-        const selectedIDs = new Set(ids);
-        const selectedRowData = setTableData().filter((row) => selectedIDs.has(row.id.toString()));
-        setSelectedRows(selectedRowData);
-      }}
-    />
+    <>
+      <SessionsTableHeader />
+      <DataGrid
+        sx={{ height: 'calc(100% - 5rem)', width: '100%', borderRadius: 0 }}
+        rows={setTableData()}
+        columns={columns}
+        checkboxSelection
+        disableSelectionOnClick
+        experimentalFeatures={{ newEditingApi: true }}
+        getRowClassName={() => 'text-xs'}
+        loading={fetchResults[0].isFetching && fetchResults[0].data?.length === 0}
+        components={{
+          Toolbar: GridToolbar,
+        }}
+        getRowHeight={() => 'auto'}
+        onSelectionModelChange={(ids) => {
+          const selectedIDs = new Set(ids);
+          const selectedRowData = setTableData().filter((row) => selectedIDs.has(row.id.toString()));
+          setSelectedRows(selectedRowData);
+        }}
+      />
+    </>
   );
 };
 
