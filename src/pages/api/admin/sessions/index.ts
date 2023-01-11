@@ -19,8 +19,6 @@ export type SessionCRData = {
 export default async function handler(req: NextApiRequest, res: NextApiResponse<any>) {
   const theiaService = new TheiaServiceClient(req.headers['x-access-token']);
   const k8s = new KubernetesClient();
-  const userTypeInformation = req.headers['x-access-type'];
-  console.log(userTypeInformation);
   // Handle get request
   if (req.method === 'GET') {
     try {
