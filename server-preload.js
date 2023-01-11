@@ -3,7 +3,7 @@
 
 // This file is loaded in the server process(Node.js) before any other server - side modules are loaded.
 
-// Here we set the global.loggingIntervalId to undefined so that it can be used in "api/admin/metrics/gatherStatistics.js" globally.
+// Here we set the global.loggingIntervalId to undefined so that it can be used in "api/admin/statistics/gatherStatistics.js" globally.
 // This essentially turns that API endpoint to a single global one.
 global.loggingIntervalId = undefined;
 console.log('loggingIntervalId', global.loggingIntervalId);

@@ -10,7 +10,7 @@ const Settings = () => {
   const startMetricFetchingResult = useQuery({
     queryKey: ['admin/metrics/gatherStatistics/start'],
     queryFn: async () =>
-      fetch('/api/admin/metrics/gatherStatistics', {
+      fetch('/api/admin/statistics/gatherStatistics', {
         headers: {
           Authorization: `Bearer ${keycloak.token}`,
           'Content-Type': 'application/json',
@@ -34,7 +34,7 @@ const Settings = () => {
   const stopMetricFetchingResult = useQuery({
     queryKey: ['admin/metrics/gatherStatistics/stop'],
     queryFn: async () =>
-      fetch('/api/admin/metrics/gatherStatistics', {
+      fetch('/api/admin/statistics/gatherStatistics', {
         headers: {
           Authorization: `Bearer ${keycloak.token}`,
           'Content-Type': 'application/json',
@@ -58,7 +58,7 @@ const Settings = () => {
   const getMetricFetchingStatusResult = useQuery({
     queryKey: ['admin/metrics/gatherStatistics/getStatus'],
     queryFn: async (): Promise<{ status: boolean }> =>
-      fetch('/api/admin/metrics/gatherStatistics', {
+      fetch('/api/admin/statistics/gatherStatistics', {
         headers: {
           Authorization: `Bearer ${keycloak.token}`,
           'Content-Type': 'application/json',
