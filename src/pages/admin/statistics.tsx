@@ -10,7 +10,7 @@ import {
   Legend,
 } from 'chart.js';
 import { useQuery } from '@tanstack/react-query';
-import React, { Children, useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Context } from '../../context/Context';
 import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
@@ -22,11 +22,6 @@ import { AccordionDetails, AccordionSummary } from '@mui/material';
 import ChevronDownIcon from '../../components/icons/ChevronDownIcon';
 
 dayjs.extend(localizedFormat);
-
-type SessionWorkspaceRow = {
-  ts: Date;
-  number: number;
-};
 
 const Statistics = () => {
   // Registering the chart.js plugins
@@ -53,7 +48,7 @@ const Statistics = () => {
         }
         return res.json();
       }),
-    initialData: [],
+    initialData: {},
     retry: false,
     refetchInterval: 60000,
   });
@@ -61,7 +56,7 @@ const Statistics = () => {
   // Getting the data for the session chart from the statistics data
   const getDataForSessionChart = (type: string) => {
     const { data } = getStatisticsResult;
-    if (data.length === 0) return { labels: [], dataSets: [] };
+    if (!data.hasOwnProperty('rows') || data.rows.length === 0) return { labels: [], dataSets: [] };
 
     //If the type is sessions, we want to get the data for the sessions chart,
     // else we want to get the data for the workspaces chart
@@ -76,12 +71,10 @@ const Statistics = () => {
 
   const getDataForResourceConsumptionChart = () => {
     const { data } = getStatisticsResult;
-    if (data.length === 0) return { labels: [], dataSets: [] };
+    if (!data.hasOwnProperty('rows') || data.rows.length === 0) return { labels: [], dataSets: [] };
     const regex = /(\d*)(\D*)/;
 
     const arr = data.rows[1];
-
-    console.log(arr);
 
     const labels = arr.map((session: any) => dayjs(session.ts).format('lll'));
     const cpuDataSet = arr.map((session: any) => session.cpu.match(regex)[1]);
