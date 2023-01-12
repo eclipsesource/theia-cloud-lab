@@ -153,7 +153,7 @@ const Workspaces = () => {
     { field: 'user', headerName: 'User', width: 200 },
     { field: 'appDefinition', headerName: 'App Definition', width: 120 },
     { field: 'label', headerName: 'Label', width: XLCol },
-    { field: 'storage', headerName: 'Storage', width: XLCol },
+    { field: 'storage', headerName: 'PVC Name', width: XLCol },
     { field: 'pvStorageCapacity', headerName: 'PV Capacity', width: 120 },
     { field: 'uid', headerName: 'UID', width: XLCol },
   ];
