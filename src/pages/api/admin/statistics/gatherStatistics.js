@@ -2,6 +2,7 @@
 import { KubeConfig, Metrics } from '@kubernetes/client-node';
 import { KubernetesClient } from '../../../../../utils/k8s/k8s_client';
 import dayjs from 'dayjs';
+import { Client } from 'pg';
 
 // This API has to be a .js file, since we are using Node.js global variables.
 
@@ -20,11 +21,15 @@ export default async function handler(req, res) {
       if (req.body['start'] === true && loggingIntervalId === undefined) {
         console.log('Started logging metrics');
         loggingIntervalId = setInterval(async () => {
-          try {
-            await questdbClient.connect();
-          } catch (error) {
-            console.log(error.message);
-          }
+          const questdbClient = new Client({
+            database: 'qdb',
+            host: '127.0.0.1',
+            password: 'quest',
+            port: 8812,
+            user: 'admin',
+          });
+          await questdbClient.connect();
+
           let globalCPUUsage = 0;
           let globalMemoryUsage = 0;
 
@@ -144,6 +149,7 @@ export default async function handler(req, res) {
           ]);
 
           await questdbClient.query('COMMIT');
+          await questdbClient.end();
         }, 60000);
         return res.status(200).json('Started fetching metrics at 1s interval');
       } else if (req.body['stop'] === true && loggingIntervalId !== undefined) {
