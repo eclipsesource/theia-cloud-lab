@@ -45,14 +45,14 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
             });
         }
 
-        let result = [];
+        let allWorkspaceList = [];
 
         for (const workspace of workspaceListFromK8sArray) {
           const res = await questdbClient.query(`SELECT * FROM '${workspace}'`);
-          result.push({ workspace, data: res.rows });
+          allWorkspaceList.push({ workspace, data: res.rows });
         }
 
-        const rows = [sessionList.rows, usageList.rows, workspaceList.rows, result];
+        const rows = [sessionList.rows, usageList.rows, workspaceList.rows, allWorkspaceList];
         return res.status(200).json({ rows });
       } catch (error) {
         return res.status(400).json('Error getting statistics');
