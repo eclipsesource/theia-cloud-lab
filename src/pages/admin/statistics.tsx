@@ -20,17 +20,19 @@ import RefreshIcon from '../../components/icons/RefreshIcon';
 import Accordion from '@mui/material/Accordion';
 import { AccordionDetails, AccordionSummary } from '@mui/material';
 import ChevronDownIcon from '../../components/icons/ChevronDownIcon';
+import annotationPlugin from 'chartjs-plugin-annotation';
 
 dayjs.extend(localizedFormat);
 
 const Statistics = () => {
   // Registering the chart.js plugins
-  ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+  ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, annotationPlugin);
 
   const { keycloak } = useContext(Context);
   const [isSessionsExpanded, setIsSessionsExpanded] = useState(false);
   const [isWorkspacesExpanded, setIsWorkspacesExpanded] = useState(false);
-  const [isResourcesExpanded, setIsResourcesExpanded] = useState(false);
+  const [isCPUExpanded, setIsCPUExpanded] = useState(false);
+  const [isMemoryExpanded, setIsMemoryExpanded] = useState(false);
 
   // Fetching the statistics from the backend
   const getStatisticsResult = useQuery({
@@ -77,17 +79,66 @@ const Statistics = () => {
     const arr = data.rows[1];
 
     const labels = arr.map((session: any) => dayjs(session.ts).format('lll'));
-    const cpuDataSet = arr.map((session: any) => session.cpu.match(regex)[1]);
-    const memoryDataSet = arr.map((session: any) => session.memory.match(regex)[1]);
+    const cpuDataSet = arr.map((session: any) => {
+      if (session.cpu.match(regex)[1]) {
+        return ((session.cpu.match(regex)[1] / 10 ** 9) * 10 ** 2).toFixed(3);
+      }
+    });
+    const memoryDataSet = arr.map((session: any) => {
+      if (session.memory.match(regex)[1]) {
+        return (session.memory.match(regex)[1] / 1024).toFixed(3);
+      }
+    });
 
     // Returning the labels and dataSets for the chart
     return { labels, cpuDataSet, memoryDataSet };
   };
 
-  const LineChartForGlobalResourceConsumption = () => {
+  const average = (ctx: any) => {
+    const values = ctx.chart.data.datasets[0].data;
+    return values.reduce((a: string, b: string) => Number(a) + Number(b), 0) / values.length;
+  };
+
+  const getAverageAnnotation = (type: string) => {
+    const append = type === 'cpu' ? '%' : 'MiB';
+    return {
+      borderColor: 'black',
+      borderDash: [6, 6],
+      borderDashOffset: 0,
+      borderWidth: 2,
+      label: {
+        content: (ctx: any) => `Average: ${average(ctx).toFixed(2)} ${append}`,
+        position: 'end',
+        backgroundColor: 'red',
+        display: true,
+      },
+      scaleID: 'y',
+      value: (ctx: any) => average(ctx),
+    };
+  };
+
+  const LineChartForGlobalCPUConsumption = () => {
     return (
       <Line
         datasetIdKey='id'
+        options={{
+          scales: {
+            y: {
+              ticks: {
+                callback: function (value, index, ticks) {
+                  return value + ' %';
+                },
+              },
+            },
+          },
+          plugins: {
+            annotation: {
+              annotations: {
+                averageAnnotation: getAverageAnnotation('cpu'),
+              },
+            },
+          },
+        }}
         data={{
           labels: getDataForResourceConsumptionChart()['labels'],
           datasets: [
@@ -98,6 +149,37 @@ const Statistics = () => {
               fill: false,
               borderColor: 'rgb(0, 0, 255)',
             },
+          ],
+        }}
+      />
+    );
+  };
+
+  const LineChartForGlobalMemoryConsumption = () => {
+    return (
+      <Line
+        datasetIdKey='id'
+        options={{
+          scales: {
+            y: {
+              ticks: {
+                callback: function (value, index, ticks) {
+                  return value + ' MiB';
+                },
+              },
+            },
+          },
+          plugins: {
+            annotation: {
+              annotations: {
+                averageAnnotation: getAverageAnnotation('memory'),
+              },
+            },
+          },
+        }}
+        data={{
+          labels: getDataForResourceConsumptionChart()['labels'],
+          datasets: [
             {
               label: 'Memory Usage',
               data: getDataForResourceConsumptionChart()['memoryDataSet'],
@@ -207,13 +289,22 @@ const Statistics = () => {
           <LineChartForWorkspaces />
         </Collapsible>
         <Collapsible
-          title='Resource Consumption'
-          expanded={isResourcesExpanded}
+          title='CPU Consumption'
+          expanded={isCPUExpanded}
           onChange={(event, expanded) => {
-            setIsResourcesExpanded(expanded);
+            setIsCPUExpanded(expanded);
           }}
         >
-          <LineChartForGlobalResourceConsumption />
+          <LineChartForGlobalCPUConsumption />
+        </Collapsible>
+        <Collapsible
+          title='Memory Consumption'
+          expanded={isMemoryExpanded}
+          onChange={(event, expanded) => {
+            setIsMemoryExpanded(expanded);
+          }}
+        >
+          <LineChartForGlobalMemoryConsumption />
         </Collapsible>
       </div>
     </>
