@@ -1,9 +1,12 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { Client } from 'pg';
+import { AdminWorkspaceCRData } from '../../../../../types/AdminWorkspaceCRData';
+import { KubernetesClient } from '../../../../../utils/k8s/k8s_client';
 
 const globalUsage = 'GLOBAL USAGE';
 const globalSessions = 'GLOBAL SESSIONS';
 const globalWorkspaces = 'GLOBAL WORKSPACES';
+const globalWorkspaceList = 'GLOBAL WORKSPACE LIST';
 
 const questdbClient = new Client({
   database: 'qdb',
@@ -15,6 +18,8 @@ const questdbClient = new Client({
 
 questdbClient.connect();
 
+const k8s = new KubernetesClient();
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse<any>) {
   const { method } = req;
 
@@ -25,7 +30,29 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         const usageList = await questdbClient.query(`SELECT * FROM '${globalUsage}'`);
         const workspaceList = await questdbClient.query(`SELECT * FROM '${globalWorkspaces}'`);
 
-        const rows = [sessionList.rows, usageList.rows, workspaceList.rows];
+        // get workspace list from global workspaces list from database
+        const workspaces = await questdbClient.query(`SELECT * FROM '${globalWorkspaceList}' WHERE isDeleted = false`);
+        const workspaceListFromK8s = await k8s.getWorkspaceList();
+        let workspaceListFromK8sArray: string[] = [];
+
+        for (const row of workspaces.rows) {
+          workspaceListFromK8s.body.items &&
+            workspaceListFromK8s.body.items.forEach((each: any) => {
+              const name = each.metadata?.name;
+              if (name === row.name) {
+                workspaceListFromK8sArray.push(name);
+              }
+            });
+        }
+
+        let result = [];
+
+        for (const workspace of workspaceListFromK8sArray) {
+          const res = await questdbClient.query(`SELECT * FROM '${workspace}'`);
+          result.push({ workspace, data: res.rows });
+        }
+
+        const rows = [sessionList.rows, usageList.rows, workspaceList.rows, result];
         return res.status(200).json({ rows });
       } catch (error) {
         return res.status(400).json('Error getting statistics');

@@ -55,6 +55,8 @@ const Statistics = () => {
     refetchInterval: 60000,
   });
 
+  console.log(getStatisticsResult.data);
+
   // Getting the data for the session chart from the statistics data
   const getDataForSessionChart = (type: string) => {
     const { data } = getStatisticsResult;
