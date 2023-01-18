@@ -22,6 +22,8 @@ export default function App({ Component, pageProps }: AppProps) {
   });
   const [adminCreateSessionIsFetching, setAdminCreateSessionIsFetching] = useState(false);
   const [adminCreateWorkspaceIsFetching, setAdminCreateWorkspaceIsFetching] = useState(false);
+  const [userCreateWorkspaceIsFetching, setUserCreateWorkspaceIsFetching] = useState(false);
+
   const [userType, setUserType] = useState('');
   const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
@@ -117,6 +119,8 @@ export default function App({ Component, pageProps }: AppProps) {
               setAdminCreateSessionIsFetching,
               adminCreateWorkspaceIsFetching,
               setAdminCreateWorkspaceIsFetching,
+              userCreateWorkspaceIsFetching,
+              setUserCreateWorkspaceIsFetching,
             }}
           >
             <TheiaModal

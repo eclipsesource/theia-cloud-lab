@@ -1,9 +1,9 @@
 import TheiaButton from '../TheiaButton';
 import CancelIcon from '../icons/CancelIcon';
 import ExclamationIcon from '../icons/ExclamationIcon';
-import DeleteIcon from '../icons/DeleteIcon';
 import { Dispatch, SetStateAction } from 'react';
 import { WorkspaceRow } from '../../pages/admin/workspaces';
+import CheckIcon from '../icons/CheckIcon';
 
 export type AdminDeleteWorkspaceModalContentProps = {
   refetch: () => void;
@@ -13,15 +13,19 @@ export type AdminDeleteWorkspaceModalContentProps = {
 
 const AdminDeleteWorkspaceModalContent = (props: AdminDeleteWorkspaceModalContentProps) => {
   return (
-    <div className='w-full h-full flex flex-col gap-5 items-center'>
+    <div className='w-full h-full flex flex-col gap-10 items-center'>
       <ExclamationIcon className='w-16 h-16' />
       <div className='w-full font-normal'>
-        You are trying to delete {props.selectedRows.length} workspace{props.selectedRows.length > 1 && 's'}. This
-        action cannot be undone.{' '}
-        {props.selectedRows.length > 1
-          ? 'If they have running sessions, they will be deleted too.'
-          : 'If there is a running session, it will be deleted too.'}
-        {' Are you sure?'}
+        <div>
+          You are trying to delete {props.selectedRows.length} workspace{props.selectedRows.length > 1 && 's'}. This
+          action cannot be undone.
+        </div>
+        <div>
+          {props.selectedRows.length > 1
+            ? 'If they have running sessions, they will be deleted as well.'
+            : 'If there is a running session, It will be deleted as well.'}
+        </div>
+        <div>Are you sure?</div>
       </div>
       <div className='flex justify-between w-full'>
         <TheiaButton
@@ -33,8 +37,8 @@ const AdminDeleteWorkspaceModalContent = (props: AdminDeleteWorkspaceModalConten
         />
         <TheiaButton
           className='bg-red-500 hover:bg-red-700'
-          text='Delete Workspace'
-          icon={<DeleteIcon className='w-6 h-6 stroke-white' />}
+          text={props.selectedRows.length > 1 ? 'Delete Workspace' : 'Delete Workspaces'}
+          icon={<CheckIcon className='w-6 h-6 stroke-white' />}
           onClick={() => {
             props.refetch();
             props.setIsModalOpen(false);
