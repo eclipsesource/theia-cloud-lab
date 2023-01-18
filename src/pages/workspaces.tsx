@@ -5,14 +5,16 @@ import UserWorkspaceCard, { UserWorkspaceCardProps } from '../components/UserWor
 import { Context } from '../context/Context';
 import CircularProgress from '@mui/material/CircularProgress';
 import PlusIcon from '../components/icons/PlusIcon';
-import { useQueries, useQuery } from '@tanstack/react-query';
+import { useQueries } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
 import { UserSessionCRData } from '../../types/UserSessionCRData';
 import { UserWorkspaceCRData } from '../../types/UserWorkspaceCRData';
+import UserCreateWorkspaceModalContent from '../components/TheiaModalContents/UserCreateWorkspaceModalContent';
 
 const Workspaces = () => {
-  const { keycloak } = useContext(Context);
+  const { keycloak, setModalContent, setIsModalOpen, userCreateWorkspaceIsFetching } = useContext(Context);
+
   const [parent, enableAnimations] = useAutoAnimate<HTMLDivElement>({
     duration: 100,
     easing: 'ease-in-out',
@@ -74,31 +76,6 @@ const Workspaces = () => {
     ],
   });
 
-  const createUserWorkspaceResult = useQuery({
-    queryKey: ['user/createWorkspace'],
-    queryFn: () =>
-      fetch('/api/user/workspaces', {
-        headers: {
-          Authorization: `Bearer ${keycloak.token}`,
-          'Content-Type': 'application/json',
-        },
-        method: 'POST',
-        body: JSON.stringify({ appDefinition: 'theia-cloud-demo' }),
-      }).then((res) => {
-        if (!res.ok) {
-          toast.error('There was an error creating workspace. Please try again later.');
-        }
-        return res.json();
-      }),
-    enabled: false,
-    onSettled() {
-      results[0].refetch();
-      results[1].refetch();
-    },
-    staleTime: Infinity,
-    retry: false,
-  });
-
   const renderWorkspaceCards = () => {
     if (results[0].data && results[1].data && results[0].data.length > 0) {
       const cardsData: UserWorkspaceCardProps[] = [];
@@ -144,7 +121,7 @@ const Workspaces = () => {
           }}
         />
       ));
-    } else if (results[0].isFetching || results[1].isFetching || createUserWorkspaceResult.isFetching) {
+    } else if (results[0].isFetching || results[1].isFetching) {
       return (
         <div className='flex justify-center items-center w-full h-full'>
           <CircularProgress />
@@ -176,20 +153,27 @@ const Workspaces = () => {
             text='Create Workspace'
             icon={<PlusIcon />}
             onClick={() => {
-              createUserWorkspaceResult.refetch();
+              setModalContent({
+                function: UserCreateWorkspaceModalContent,
+                props: {
+                  refresh: () => {
+                    results[0].refetch();
+                    results[1].refetch();
+                  },
+                  setIsModalOpen,
+                  keycloak,
+                },
+              });
+              setIsModalOpen(true);
             }}
-            disabled={results[0].isFetching || results[1].isFetching || createUserWorkspaceResult.isFetching}
           />
           <TheiaButton
             className='lg:w-32'
-            text={
-              results[0].isFetching || results[1].isFetching || createUserWorkspaceResult.isFetching ? '' : 'Refresh'
-            }
+            text={results[0].isFetching || results[1].isFetching || userCreateWorkspaceIsFetching ? '' : 'Refresh'}
             icon={
               <RefreshIcon
                 className={`w-6 h-6 ${
-                  (results[0].isFetching || results[1].isFetching || createUserWorkspaceResult.isFetching) &&
-                  'animate-spin'
+                  (results[0].isFetching || results[1].isFetching || userCreateWorkspaceIsFetching) && 'animate-spin'
                 }`}
               />
             }
@@ -197,7 +181,7 @@ const Workspaces = () => {
               results[0].refetch();
               results[1].refetch();
             }}
-            disabled={results[0].isFetching || results[1].isFetching || createUserWorkspaceResult.isFetching}
+            disabled={results[0].isFetching || results[1].isFetching || userCreateWorkspaceIsFetching}
           />
         </span>
       </div>

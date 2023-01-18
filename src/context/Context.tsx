@@ -26,4 +26,6 @@ export const Context = createContext({
   setAdminCreateSessionIsFetching: (() => undefined) as Dispatch<SetStateAction<boolean>>,
   adminCreateWorkspaceIsFetching: false,
   setAdminCreateWorkspaceIsFetching: (() => undefined) as Dispatch<SetStateAction<boolean>>,
+  userCreateWorkspaceIsFetching: false,
+  setUserCreateWorkspaceIsFetching: (() => undefined) as Dispatch<SetStateAction<boolean>>,
 });
