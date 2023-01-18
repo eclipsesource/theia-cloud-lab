@@ -20,7 +20,7 @@ export default function Layout({ children }: any) {
       <div className={`${isSidebarClosed ? 'w-[calc(100vw-1.5rem)]' : 'w-[calc(100vw-20rem)]'} h-screen`}>
         <main
           role='main'
-          className='h-full w-full'
+          className='h-full w-full overflow-y-auto'
         >
           {children}
         </main>

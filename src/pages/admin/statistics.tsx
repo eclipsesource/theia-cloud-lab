@@ -14,37 +14,35 @@ const Statistics = () => {
   const [isResourcesExpanded, setIsResourcesExpanded] = useState(false);
 
   return (
-    <>
-      <div className='p-5 flex gap-5 flex-col'>
-        <Collapsible
-          title='Sessions'
-          expanded={isSessionsExpanded}
-          onChange={(event, expanded) => {
-            setIsSessionsExpanded(expanded);
-          }}
-        >
-          <GlobalSessionsGraph />
-        </Collapsible>
-        <Collapsible
-          title='Workspaces'
-          expanded={isWorkspacesExpanded}
-          onChange={(event, expanded) => {
-            setIsWorkspacesExpanded(expanded);
-          }}
-        >
-          <GlobalWorkspacesGraph />
-        </Collapsible>
-        <Collapsible
-          title='Resource Consumption'
-          expanded={isResourcesExpanded}
-          onChange={(event, expanded) => {
-            setIsResourcesExpanded(expanded);
-          }}
-        >
-          <GlobalResourceUsageGraph />
-        </Collapsible>
-      </div>
-    </>
+    <div className='p-5 flex gap-5 flex-col'>
+      <Collapsible
+        title='Sessions'
+        expanded={isSessionsExpanded}
+        onChange={(event, expanded) => {
+          setIsSessionsExpanded(expanded);
+        }}
+      >
+        <GlobalSessionsGraph />
+      </Collapsible>
+      <Collapsible
+        title='Workspaces'
+        expanded={isWorkspacesExpanded}
+        onChange={(event, expanded) => {
+          setIsWorkspacesExpanded(expanded);
+        }}
+      >
+        <GlobalWorkspacesGraph />
+      </Collapsible>
+      <Collapsible
+        title='Resource Consumption'
+        expanded={isResourcesExpanded}
+        onChange={(event, expanded) => {
+          setIsResourcesExpanded(expanded);
+        }}
+      >
+        <GlobalResourceUsageGraph />
+      </Collapsible>
+    </div>
   );
 };
 export default Statistics;
