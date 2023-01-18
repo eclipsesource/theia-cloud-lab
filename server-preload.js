@@ -6,7 +6,13 @@
 // Here we set the global.loggingIntervalId to undefined so that it can be used in "api/admin/statistics/gatherStatistics.js" globally.
 // This essentially turns that API endpoint to a single global one.
 global.loggingIntervalId = undefined;
-console.log('loggingIntervalId', global.loggingIntervalId);
+console.log('loggingIntervalId = ', global.loggingIntervalId);
+
+// Set the global and workspace specific data retention window to 1 day.
+global.globalDataRetentionWindow = 1;
+global.workspaceDataRetentionWindow = 1;
+console.log('globalDataRetentionWindow = ', global.globalDataRetentionWindow);
+console.log('workspaceDataRetentionWindow = ', global.workspaceDataRetentionWindow);
 
 // Create a global database client object.
 const { Client } = require('pg');
