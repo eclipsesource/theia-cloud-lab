@@ -138,7 +138,7 @@ const Statistics = () => {
     return userArray;
   };
 
-  //Get label and data for Memory Consumption Per User Chart using getDataForResourceConsumptionChartByUserAndWorkspace() result
+  //Get label and data for Memory Consumption Per User Chart using getDataForResourceConsumptionChartByUserAndWorkspace()
   const getDataForMemoryConsumptionPerUserChart = () => {
     const data = getDataForResourceConsumptionChartByUserAndWorkspace();
     if (data.length === 0) return [];
@@ -155,11 +155,28 @@ const Statistics = () => {
     }
   };
 
+  //Get label and data for CPU Consumption Per User Chart using getDataForResourceConsumptionChartByUserAndWorkspace()
+  const getDataForCPUConsumptionPerUserChart = () => {
+    const data = getDataForResourceConsumptionChartByUserAndWorkspace();
+    if (data.length === 0) return [];
+    else {
+      let allUsers: any[] = [];
+      for (const each of data) {
+        const userId = each[3];
+        const labels = `CPU Consumption Per User: ${userId}`;
+        const dataSets = each[1];
+        //const workspaceName = each[4];
+        allUsers.push({ label: labels, data: dataSets, tension: 0.4, fill: false, borderColor: 'rgb(75, 192, 192)' });
+      }
+      return allUsers;
+    }
+  };
+
   // const getRandomBorderColor = () => {
-  //   var num = Math.round(0xffffff * Math.random());
-  //   var r = num >> 16;
-  //   var g = num >> 8 & 255;
-  //   var b = num & 255;
+  //   const num = Math.round(0xffffff * Math.random());
+  //   const r = num >> 16;
+  //   const g = num >> 8 & 255;
+  //   const b = num & 255;
   //   return 'rgb(' + r + ', ' + g + ', ' + b + ')';
   // }
 
@@ -289,6 +306,31 @@ const Statistics = () => {
     );
   };
 
+  const LineChartForCPUConsumptionPerUser = () => {
+    return (
+      <Line
+        datasetIdKey='id'
+        options={{
+          scales: {
+            y: {
+              ticks: {
+                callback: function (value, index, ticks) {
+                  return value + ' %';
+                },
+              },
+            },
+          },
+        }}
+        data={{
+          labels: getDataForResourceConsumptionChartByUserAndWorkspace()
+            .map((each: any) => each[0])
+            .flat(1),
+          datasets: getDataForCPUConsumptionPerUserChart(),
+        }}
+      />
+    );
+  };
+
   const LineChartForSessions = () => {
     return (
       <Line
@@ -409,7 +451,7 @@ const Statistics = () => {
             setIsCPUPerUserExpanded(expanded);
           }}
         >
-          <LineChartForGlobalMemoryConsumption />
+          <LineChartForCPUConsumptionPerUser />
         </Collapsible>
         <Collapsible
           title='Memory Consumption per User'
