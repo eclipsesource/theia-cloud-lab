@@ -2,7 +2,6 @@
 import { KubernetesClient } from '../../../../../utils/k8s/k8s_client';
 import { AdminWorkspaceCRData } from '../../../../../types/AdminWorkspaceCRData';
 import type { NextApiRequest, NextApiResponse } from 'next';
-import { randomUUID } from 'crypto';
 import { TheiaServiceClient } from '../../../../../utils/theiaservice/theiaservice_client';
 import appConfig from '../../../../../configs/app_config';
 
@@ -49,12 +48,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         )
       );
 
-      // const toBeDeletedWorkspaceNamesArr = req.body.toBeDeletedWorkspaces;
-      // await Promise.all(
-      //   toBeDeletedWorkspaceNamesArr.map(async (name: string) => {
-      //     await k8s.deleteWorkspace(name);
-      //   })
-      // );
       return res.status(204).send({});
     } catch (error) {
       return res.status(500).send(error);
@@ -67,9 +60,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         req.body.userId,
         req.body.appDefinition
       );
-      // const randomId = randomUUID();
-      // const wsName = randomId; //req.body.toBeCreatedWorkspace
-      // const data = await k8s.createWorkspaceAndPersistentVolume(wsName);
+
       return res.status(201).send(createdWorkspace);
     } catch (error) {
       return res.status(400).send(error);
