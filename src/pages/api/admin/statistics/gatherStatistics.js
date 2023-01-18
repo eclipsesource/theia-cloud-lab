@@ -65,21 +65,21 @@ export default async function handler(req, res) {
               `ALTER TABLE '${globalSessions}' DROP PARTITION WHERE ts < dateadd('d', -${globalDataRetentionWindow}, now());`
             );
           } catch (error) {
-            console.log(`No partitions to drop for ${globalSessions}`);
+            // No partitions to drop for global sessions table
           }
           try {
             await questdbClient.query(
               `ALTER TABLE '${globalWorkspaces}' DROP PARTITION WHERE ts < dateadd('d', -${globalDataRetentionWindow}, now());`
             );
           } catch (error) {
-            console.log(`No partitions to drop for ${globalWorkspaces}`);
+            // No partitions to drop for global workspaces table
           }
           try {
             await questdbClient.query(
               `ALTER TABLE '${globalUsage}' DROP PARTITION WHERE ts < dateadd('d', -${globalDataRetentionWindow}, now());`
             );
           } catch (error) {
-            console.log(`No partitions to drop for ${globalUsage}`);
+            // No partitions to drop for global usage table
           }
 
           // Check if any workspaces have been deleted
