@@ -7,6 +7,7 @@ import {
 } from '@kubernetes/client-node';
 import http from 'http';
 import { CustomResourceObj } from './k8s_types';
+import wsHostConfig from '../../configs/ws_config';
 
 export class KubernetesClient {
   group: string;
@@ -185,37 +186,23 @@ export class KubernetesClient {
   }
 
   // in the ticket it is suggest to read this fields from a document
-  async createAppDefinition(
-    // appDefName: string,
-    // port: number,
-    // requestsCPU: string,
-    // requestsMemory: string,
-    // image: string,
-    // ingressname: string,
-    // host: string
-  ): Promise<any> {
+  async createAppDefinition(appDefName: string, image: string): Promise<any> {
+    console.log('me hereee')
     // create clients
     const customObjectsApi = this.createCustomObjectsApiClient();
-    // Session Object
+    // App Definition Object
     const toBeCreatedAppDefObj: CustomResourceObj = {
       kind: 'AppDefinition',
       apiVersion: `${this.group}/${this.apiBetaVersionV3}`,
       metadata: {
-        name: 'coffee-editor', // `${appDefName}`,
+        name:`${appDefName}`,// 'coffee-editor'
         namespace: this.namespace,
       },
       spec: {
-        // name: `${appDefName}`,
-        // requestsCpu: requestsCPU,
-        // requestsMemory: requestsMemory,
-        // port: port,
-        // image: image,
-        // host: host,
-        // ingressname: ingressname,
-        name: 'cdt-cloud-demo',
-        host: 'ws.192.168.59.100.nip.io',
-        image: 'eu.gcr.io/kubernetes-238012/coffee-editor:v0.7.12',
-        ingressname: 'theia-cloud-demo-ws-ingress',
+        name: 'cdt-cloud-demo', // will be changed, this part im confused how to config
+        host: wsHostConfig.hostUrl,
+        image: `${image}`, // 'eu.gcr.io/kubernetes-238012/coffee-editor:v0.7.14',
+        ingressname: 'theia-cloud-demo-ws-ingress', // will be changed, this part im confused how to config
         limitsMemory: '1200M',
         limitsCpu: '2',
         port: 3000,
@@ -231,7 +218,7 @@ export class KubernetesClient {
         },
       },
     };
-    // create session and bind with workspace
+    // create app definition
     return await customObjectsApi.createNamespacedCustomObject(
       this.group,
       `${this.apiBetaVersionV3}`,
@@ -241,63 +228,55 @@ export class KubernetesClient {
     );
   }
 
-  //  // in the ticket it is suggest to read this fields from a document
-  //  async editAppDefinition(
-  //   appDefName: string,
-  //   port: number,
-  //   requestsCPU: string,
-  //   requestsMemory: string,
-  //   image: string,
-  //   limitsMemory: string,
-  //   limitsCpu: string
-  //   // ingressname: string, ?
-  // ): Promise<any> {
-  //   // create clients
-  //   const customObjectsApi = this.createCustomObjectsApiClient();
-  //   // Session Object
-  //   const toBeCreatedAppDefObj: CustomResourceObj = {
-  //     kind: 'AppDefinition',
-  //     apiVersion: `${this.group}/${this.apiBetaVersionV3}`,
-  //     metadata: {
-  //       name: 'coffee-editor', // `${appDefName}`,
-  //       namespace: this.namespace,
-  //     },
-  //     spec: {
-  //       // name: `${appDefName}`,
-  //       // requestsCpu: requestsCPU,
-  //       // requestsMemory: requestsMemory,
-  //       // port: port,
-  //       // image: image,
-  //       // host: host,
-  //       // ingressname: ingressname,
-  //       name: 'cdt-cloud-demo',
-  //       host: 'ws.192.168.59.100.nip.io',
-  //       image: 'eu.gcr.io/kubernetes-238012/coffee-editor:v0.7.14',
-  //       ingressname: 'theia-cloud-demo-ws-ingress',
-  //       limitsMemory: '1200M',
-  //       limitsCpu: '2',
-  //       port: 3000,
-  //       requestsCpu: '100m',
-  //       requestsMemory: '1000M',
-  //       maxInstances: 10,
-  //       minInstances: 0,
-  //       mountPath: '/home/project/persisted',
-  //       uplinkLimit: 30000,
-  //       timeout: {
-  //         limit: 30,
-  //         strategy: 'FIXEDTIME',
-  //       },
-  //     },
-  //   };
-  //   // create session and bind with workspace
-  //   return await customObjectsApi.createNamespacedCustomObject(
-  //     this.group,
-  //     `${this.apiBetaVersionV3}`,
-  //     this.namespace,
-  //     this.pluralAD,
-  //     toBeCreatedAppDefObj
-  //   );
-  // }
+  // in the ticket it is suggest to read this fields from a document???
+  async editAppDefinition(
+    appDefName: string,
+    image: string,
+    port: number,
+    requestsCPU: string,
+    requestsMemory: string,
+    limitsMemory: string,
+    limitsCpu: string,
+    timeout: number
+    // ingressname: string, ?
+  ): Promise<any> {
+    // create clients
+    const customObjectsApi = this.createCustomObjectsApiClient();
+    // find the app def CR to be edited
+    // DO I EVEN NEED TO FIND IT THEN??? THIS CAN BE REMOVED
+    const objToFound: any = await customObjectsApi.getNamespacedCustomObject(
+      this.group,
+      `${this.apiBetaVersionV3}`,
+      this.namespace,
+      this.pluralAD,
+      appDefName
+    );
+    const newBody = objToFound.body;
+    newBody.spec.image = image;
+    newBody.spec.port = port;
+    newBody.spec.requestsCPU = requestsCPU;
+    newBody.spec.requestsMemory = requestsMemory;
+    newBody.spec.limitsMemory = limitsMemory;
+    newBody.spec.limitsCpu = limitsCpu;
+    newBody.spec.timeout.limit = timeout;
+    console.log('newBody 2', newBody)
+    
+    const options = { "headers": { "Content-type": "application/merge-patch+json"}};
+    console.log(options)
+    // edit the cr
+    return await customObjectsApi.patchNamespacedCustomObject(
+      this.group,
+      `${this.apiBetaVersionV3}`,
+      this.namespace,
+      this.pluralAD,
+      appDefName,
+      newBody,
+      undefined,
+      undefined,
+      undefined,
+      options
+    );
+  }
 
   async createSession(sessionName: string, workspaceName: string): Promise<any> {
     // create clients
