@@ -46,38 +46,49 @@ const GlobalResourceUsageGraph = () => {
   });
 
   return (
-    <Line
-      datasetIdKey='global-usage-table'
-      data={{
-        labels: queryGlobalUsageTable.data.map((row) => dayjs(row.ts).format('lll')),
-        datasets: [
-          {
-            label: 'CPU Usage',
-            data: queryGlobalUsageTable.data.map((row) => {
-              const match = row.cpu.match(/(\d*)(\D*)/);
-              if (match) {
-                return match[1];
-              }
-            }),
-            tension: 0.4,
-            fill: false,
-            borderColor: 'rgb(0, 0, 255)',
-          },
-          {
-            label: 'Memory Usage',
-            data: queryGlobalUsageTable.data.map((row) => {
-              const match = row.memory.match(/(\d*)(\D*)/);
-              if (match) {
-                return match[1];
-              }
-            }),
-            tension: 0.4,
-            fill: false,
-            borderColor: 'rgb(75, 192, 192)',
-          },
-        ],
-      }}
-    />
+    <>
+      {' '}
+      <Line
+        datasetIdKey='global-cpu-usage-table'
+        data={{
+          labels: queryGlobalUsageTable.data.map((row) => dayjs(row.ts).format('lll')),
+          datasets: [
+            {
+              label: 'CPU Usage (CPU)',
+              data: queryGlobalUsageTable.data.map((row) => {
+                const match = row.cpu.match(/(\d*)(\D*)/);
+                if (match) {
+                  return Number(match[1]) * 0.000000001;
+                }
+              }),
+              tension: 0.4,
+              fill: false,
+              borderColor: 'rgb(0, 0, 255)',
+            },
+          ],
+        }}
+      />
+      <Line
+        datasetIdKey='global-memory-usage-table'
+        data={{
+          labels: queryGlobalUsageTable.data.map((row) => dayjs(row.ts).format('lll')),
+          datasets: [
+            {
+              label: 'Memory Usage (MB)',
+              data: queryGlobalUsageTable.data.map((row) => {
+                const match = row.memory.match(/(\d*)(\D*)/);
+                if (match) {
+                  return Number(match[1]) * 0.001024;
+                }
+              }),
+              tension: 0.4,
+              fill: false,
+              borderColor: 'rgb(75, 192, 192)',
+            },
+          ],
+        }}
+      />
+    </>
   );
 };
 

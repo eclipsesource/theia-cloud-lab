@@ -14,6 +14,7 @@ const Collapsible = (props: {
       sx={{
         margin: 0,
       }}
+      TransitionProps={{ unmountOnExit: true }}
     >
       <AccordionSummary
         expandIcon={<ChevronDownIcon />}
