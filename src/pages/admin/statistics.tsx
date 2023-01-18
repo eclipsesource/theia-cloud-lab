@@ -297,9 +297,15 @@ const Statistics = () => {
           },
         }}
         data={{
-          labels: getDataForResourceConsumptionChartByUserAndWorkspace()
-            .map((each: any) => each[0])
-            .flat(1),
+          labels: [
+            ...Array.from(
+              new Set(
+                getDataForResourceConsumptionChartByUserAndWorkspace()
+                  .map((each: any) => each[0])
+                  .flat(1)
+              )
+            ),
+          ],
           datasets: getDataForMemoryConsumptionPerUserChart(),
         }}
       />
@@ -322,9 +328,15 @@ const Statistics = () => {
           },
         }}
         data={{
-          labels: getDataForResourceConsumptionChartByUserAndWorkspace()
-            .map((each: any) => each[0])
-            .flat(1),
+          labels: [
+            ...Array.from(
+              new Set(
+                getDataForResourceConsumptionChartByUserAndWorkspace()
+                  .map((each: any) => each[0])
+                  .flat(1)
+              )
+            ),
+          ],
           datasets: getDataForCPUConsumptionPerUserChart(),
         }}
       />
