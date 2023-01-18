@@ -13,20 +13,18 @@ export default function Layout({ children }: any) {
 
   return (
     <div className='flex'>
-      <>
-        <SidebarMenu
-          isSidebarClosed={isSidebarClosed}
-          setIsSidebarClosed={setIsSidebarClosed}
-        />
-        <div className={`${isSidebarClosed ? 'w-screen' : 'w-[calc(100vw-15rem)]'} h-screen`}>
-          <main
-            role='main'
-            className='h-full overflow-y-scroll	'
-          >
-            {children}
-          </main>
-        </div>
-      </>
+      <SidebarMenu
+        isSidebarClosed={isSidebarClosed}
+        setIsSidebarClosed={setIsSidebarClosed}
+      />
+      <div className={`${isSidebarClosed ? 'w-[calc(100vw-1.5rem)]' : 'w-[calc(100vw-20rem)]'} h-screen`}>
+        <main
+          role='main'
+          className='h-full w-full'
+        >
+          {children}
+        </main>
+      </div>
     </div>
   );
 }
