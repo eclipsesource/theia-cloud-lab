@@ -20,6 +20,11 @@ questdbClient.connect();
 
 const k8s = new KubernetesClient();
 
+type WorkspaceList = {
+  name: string;
+  user: string;
+};
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse<any>) {
   const { method } = req;
 
@@ -33,24 +38,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         // get workspace list from global workspaces list from database
         const workspaces = await questdbClient.query(`SELECT * FROM '${globalWorkspaceList}' WHERE isDeleted = false`);
         const workspaceListFromK8s = await k8s.getWorkspaceList();
-        let workspaceListFromK8sArray: string[] = [];
+        let workspaceListFromK8sArray: WorkspaceList[] = [];
 
         for (const row of workspaces.rows) {
           workspaceListFromK8s.body.items &&
             workspaceListFromK8s.body.items.forEach((each: any) => {
               const name = each.metadata?.name;
               if (name === row.name) {
-                workspaceListFromK8sArray.push(name);
+                workspaceListFromK8sArray.push({ name, user: row.userId });
               }
             });
         }
 
         let allWorkspaceList = [];
 
-        for (const workspace of workspaceListFromK8sArray) {
-          const res = await questdbClient.query(`SELECT * FROM '${workspace}'`);
-          allWorkspaceList.push({ workspace, data: res.rows });
+        for (const each of workspaceListFromK8sArray) {
+          const res = await questdbClient.query(`SELECT * FROM '${each.name}'`);
+          allWorkspaceList.push({ workspace: each.name, user: each.user, data: res.rows });
         }
+
+        console.log(allWorkspaceList);
 
         const rows = [sessionList.rows, usageList.rows, workspaceList.rows, allWorkspaceList];
         return res.status(200).json({ rows });
