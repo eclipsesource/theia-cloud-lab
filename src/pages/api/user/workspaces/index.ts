@@ -33,6 +33,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     try {
       const mySessions = await theiaService.getSessionsList(appConfig.appId, userId);
       let createdWorkspace;
+      console.log(req.body.appDefinition)
       if (mySessions.length > 0) {
         createdWorkspace = await theiaService.createUserWorkspace(appConfig.appId, userId, req.body.appDefinition);
       } else {

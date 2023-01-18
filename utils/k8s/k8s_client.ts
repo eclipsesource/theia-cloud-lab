@@ -14,24 +14,28 @@ export class KubernetesClient {
   apiBetaVersion: string;
   namespace: string;
   pluralWS: string;
+  pluralAD: string;
   pluralSes: string;
   storage: string;
   accessModes: [string];
   kc: KubeConfig;
   appDef: string;
   apiBetaVersionV2: string;
+  apiBetaVersionV3: string;
 
   constructor() {
     this.group = 'theia.cloud';
     this.apiVersion = 'v1';
     this.apiBetaVersion = 'v1beta';
     this.apiBetaVersionV2 = 'v2beta';
+    this.apiBetaVersionV3 = 'v3beta';
     this.namespace = 'theiacloud';
     this.pluralWS = 'workspaces';
+    this.pluralAD = 'appdefinitions';
     this.pluralSes = 'sessions';
     this.storage = '250Mi';
     this.accessModes = ['ReadWriteOnce'];
-    this.appDef = 'theia-cloud-demo';
+    this.appDef = 'coffee-editor'; // this part will be changed
     this.kc = new KubeConfig();
     this.kc.loadFromDefault();
   }
@@ -55,6 +59,17 @@ export class KubernetesClient {
       this.apiBetaVersion,
       this.namespace,
       this.pluralWS
+    );
+    return data;
+  }
+
+  async getAppDefinitionsList(): Promise<any> {
+    const customObjectsApi = this.createCustomObjectsApiClient();
+    const data = await customObjectsApi.listNamespacedCustomObject(
+      this.group,
+      this.apiBetaVersionV3,
+      this.namespace,
+      this.pluralAD
     );
     return data;
   }
@@ -168,6 +183,121 @@ export class KubernetesClient {
     // delete the PVC binded to the workspace
     return await coreV1Api.deleteNamespacedPersistentVolumeClaim(toBeDeletedWS.body.spec.storage, this.namespace);
   }
+
+  // in the ticket it is suggest to read this fields from a document
+  async createAppDefinition(
+    // appDefName: string,
+    // port: number,
+    // requestsCPU: string,
+    // requestsMemory: string,
+    // image: string,
+    // ingressname: string,
+    // host: string
+  ): Promise<any> {
+    // create clients
+    const customObjectsApi = this.createCustomObjectsApiClient();
+    // Session Object
+    const toBeCreatedAppDefObj: CustomResourceObj = {
+      kind: 'AppDefinition',
+      apiVersion: `${this.group}/${this.apiBetaVersionV3}`,
+      metadata: {
+        name: 'coffee-editor', // `${appDefName}`,
+        namespace: this.namespace,
+      },
+      spec: {
+        // name: `${appDefName}`,
+        // requestsCpu: requestsCPU,
+        // requestsMemory: requestsMemory,
+        // port: port,
+        // image: image,
+        // host: host,
+        // ingressname: ingressname,
+        name: 'cdt-cloud-demo',
+        host: 'ws.192.168.59.100.nip.io',
+        image: 'eu.gcr.io/kubernetes-238012/coffee-editor:v0.7.12',
+        ingressname: 'theia-cloud-demo-ws-ingress',
+        limitsMemory: '1200M',
+        limitsCpu: '2',
+        port: 3000,
+        requestsCpu: '100m',
+        requestsMemory: '1000M',
+        maxInstances: 10,
+        minInstances: 0,
+        mountPath: '/home/project/persisted',
+        uplinkLimit: 30000,
+        timeout: {
+          limit: 30,
+          strategy: 'FIXEDTIME',
+        },
+      },
+    };
+    // create session and bind with workspace
+    return await customObjectsApi.createNamespacedCustomObject(
+      this.group,
+      `${this.apiBetaVersionV3}`,
+      this.namespace,
+      this.pluralAD,
+      toBeCreatedAppDefObj
+    );
+  }
+
+  //  // in the ticket it is suggest to read this fields from a document
+  //  async editAppDefinition(
+  //   appDefName: string,
+  //   port: number,
+  //   requestsCPU: string,
+  //   requestsMemory: string,
+  //   image: string,
+  //   limitsMemory: string,
+  //   limitsCpu: string
+  //   // ingressname: string, ?
+  // ): Promise<any> {
+  //   // create clients
+  //   const customObjectsApi = this.createCustomObjectsApiClient();
+  //   // Session Object
+  //   const toBeCreatedAppDefObj: CustomResourceObj = {
+  //     kind: 'AppDefinition',
+  //     apiVersion: `${this.group}/${this.apiBetaVersionV3}`,
+  //     metadata: {
+  //       name: 'coffee-editor', // `${appDefName}`,
+  //       namespace: this.namespace,
+  //     },
+  //     spec: {
+  //       // name: `${appDefName}`,
+  //       // requestsCpu: requestsCPU,
+  //       // requestsMemory: requestsMemory,
+  //       // port: port,
+  //       // image: image,
+  //       // host: host,
+  //       // ingressname: ingressname,
+  //       name: 'cdt-cloud-demo',
+  //       host: 'ws.192.168.59.100.nip.io',
+  //       image: 'eu.gcr.io/kubernetes-238012/coffee-editor:v0.7.14',
+  //       ingressname: 'theia-cloud-demo-ws-ingress',
+  //       limitsMemory: '1200M',
+  //       limitsCpu: '2',
+  //       port: 3000,
+  //       requestsCpu: '100m',
+  //       requestsMemory: '1000M',
+  //       maxInstances: 10,
+  //       minInstances: 0,
+  //       mountPath: '/home/project/persisted',
+  //       uplinkLimit: 30000,
+  //       timeout: {
+  //         limit: 30,
+  //         strategy: 'FIXEDTIME',
+  //       },
+  //     },
+  //   };
+  //   // create session and bind with workspace
+  //   return await customObjectsApi.createNamespacedCustomObject(
+  //     this.group,
+  //     `${this.apiBetaVersionV3}`,
+  //     this.namespace,
+  //     this.pluralAD,
+  //     toBeCreatedAppDefObj
+  //   );
+  // }
 
   async createSession(sessionName: string, workspaceName: string): Promise<any> {
     // create clients

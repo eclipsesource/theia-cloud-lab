@@ -54,6 +54,23 @@ const Workspaces = () => {
         initialData: [],
         retry: false,
       },
+      {
+        queryKey: ['user/appdefinitions'],
+        queryFn: async (): Promise<UserSessionCRData[]> =>
+          fetch('/api/user/appdefinitions', {
+            headers: {
+              Authorization: `Bearer ${keycloak.token}`,
+            },
+            method: 'GET',
+          }).then((res) => {
+            if (!res.ok) {
+              toast.error('There was an error fetching sessions. Please try again later.');
+            }
+            return res.json();
+          }),
+        initialData: [],
+        retry: false,
+      },
     ],
   });
 

@@ -51,6 +51,10 @@ const SidebarMenu = ({ isSidebarClosed, setIsSidebarClosed }: Props) => {
               {userType === 'admin' ? (
                 <>
                   <SidebarMenuButton
+                    href='/admin/appdefinitions'
+                    text='App Definitions'
+                  />
+                  <SidebarMenuButton
                     href='/admin/statistics'
                     text='Statistics'
                   />
