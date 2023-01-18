@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { TextField } from '@mui/material';
+import { MenuItem, TextField } from '@mui/material';
 import TheiaButton from '../TheiaButton';
 import CancelIcon from '../icons/CancelIcon';
 import { Context } from '../../context/Context';
@@ -44,7 +44,7 @@ const UserCreateWorkspaceModalContent = (props: UserCreateWorkspaceModalContentP
 
   const fetchAppDefinitions = useQuery({
     queryKey: ['user/appDefinitions'],
-    queryFn: () =>
+    queryFn: async (): Promise<{ value: string; label: string }[]> =>
       fetch('/api/user/appDefinitions', {
         headers: {
           Authorization: `Bearer ${props.keycloak.token}`,
@@ -67,8 +67,31 @@ const UserCreateWorkspaceModalContent = (props: UserCreateWorkspaceModalContentP
   }, [createUserWorkspaceResult.isFetching]);
 
   return (
-    <div className='w-full h-full flex flex-col gap-5 items-center'>
-      <div className='w-full font-normal'>Select App Definition</div>
+    <div className='w-full h-full flex flex-col gap-10 items-center'>
+      <div className='w-full flex items-center'>
+        <span className='font-bold mr-5'>App Definition:</span>
+        <TextField
+          id='appDefinition-select'
+          select
+          InputLabelProps={{
+            shrink: true,
+          }}
+          value={selectedAppDefinition}
+          style={{ width: 200 }}
+          onChange={(e) => setSelectedAppDefinition(e.target.value)}
+          defaultValue={fetchAppDefinitions.data.length > 0 ? fetchAppDefinitions.data[0].value : ''}
+          size='small'
+        >
+          {fetchAppDefinitions.data.map((option) => (
+            <MenuItem
+              key={option.value}
+              value={option.value}
+            >
+              {option.label}
+            </MenuItem>
+          ))}
+        </TextField>
+      </div>
       <div className='flex justify-between w-full'>
         <TheiaButton
           text='Cancel'
