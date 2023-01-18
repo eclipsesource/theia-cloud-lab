@@ -41,5 +41,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     } catch (error: any) {
       return res.status(400).send(error.message);
     }
+  } else if (req.method === 'DELETE') {
+    try {
+      const toBeDeletedAppDefinition = await k8sService.deleteAppDefinition(req.body.name);
+      return res.status(204).send(toBeDeletedAppDefinition);
+    } catch (error: any) {
+      return res.status(500).send(error.message);
+    }
   }
 }

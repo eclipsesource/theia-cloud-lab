@@ -187,7 +187,6 @@ export class KubernetesClient {
 
   // in the ticket it is suggest to read this fields from a document
   async createAppDefinition(appDefName: string, image: string): Promise<any> {
-    console.log('me hereee')
     // create clients
     const customObjectsApi = this.createCustomObjectsApiClient();
     // App Definition Object
@@ -195,7 +194,7 @@ export class KubernetesClient {
       kind: 'AppDefinition',
       apiVersion: `${this.group}/${this.apiBetaVersionV3}`,
       metadata: {
-        name:`${appDefName}`,// 'coffee-editor'
+        name: `${appDefName}`, // 'coffee-editor'
         namespace: this.namespace,
       },
       spec: {
@@ -259,10 +258,8 @@ export class KubernetesClient {
     newBody.spec.limitsMemory = limitsMemory;
     newBody.spec.limitsCpu = limitsCpu;
     newBody.spec.timeout.limit = timeout;
-    console.log('newBody 2', newBody)
-    
-    const options = { "headers": { "Content-type": "application/merge-patch+json"}};
-    console.log(options)
+
+    const options = { headers: { 'Content-type': 'application/merge-patch+json' } };
     // edit the cr
     return await customObjectsApi.patchNamespacedCustomObject(
       this.group,
@@ -307,6 +304,16 @@ export class KubernetesClient {
     );
   }
 
+  async deleteAppDefinition(name: string): Promise<any> {
+    const customObjectsApi = this.createCustomObjectsApiClient();
+    return await customObjectsApi.deleteNamespacedCustomObject(
+      this.group,
+      this.apiBetaVersionV3,
+      this.namespace,
+      this.pluralAD,
+      name
+    );
+  }
   async deleteSession(name: string): Promise<any> {
     const customObjectsApi = this.createCustomObjectsApiClient();
     return await customObjectsApi.deleteNamespacedCustomObject(
