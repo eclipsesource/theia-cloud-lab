@@ -53,10 +53,22 @@ const GlobalWorkspacesGraph = () => {
         datasets: [
           {
             label: 'Number of Workspaces',
-            data: queryGlobalWorkspacesTable.data.map((row) => row.number),
-            tension: 0.4,
-            fill: false,
+            data: queryGlobalWorkspacesTable.data.map((row, i) => {
+              if (i === 0) {
+                return row.number;
+              } else if (i === queryGlobalWorkspacesTable.data.length - 1) {
+                return row.number;
+              } else if (queryGlobalWorkspacesTable.data[i + 1].number !== row.number) {
+                return row.number;
+              } else if (queryGlobalWorkspacesTable.data[i - 1].number === row.number) {
+                return null;
+              } else {
+                return row.number;
+              }
+            }),
+            tension: 0,
             borderColor: 'rgb(75, 192, 192)',
+            spanGaps: true,
           },
         ],
       }}

@@ -53,10 +53,22 @@ const GlobalSessionsGraph = () => {
         datasets: [
           {
             label: 'Number of Sessions',
-            data: queryGlobalSessionsTable.data.map((row) => row.number),
-            tension: 0.4,
-            fill: false,
             borderColor: 'rgb(75, 192, 192)',
+            data: queryGlobalSessionsTable.data.map((row, i) => {
+              if (i === 0) {
+                return row.number;
+              } else if (i === queryGlobalSessionsTable.data.length - 1) {
+                return row.number;
+              } else if (queryGlobalSessionsTable.data[i + 1].number !== row.number) {
+                return row.number;
+              } else if (queryGlobalSessionsTable.data[i - 1].number === row.number) {
+                return null;
+              } else {
+                return row.number;
+              }
+            }),
+            tension: 0,
+            spanGaps: true,
           },
         ],
       }}

@@ -16,6 +16,7 @@ import { toast } from 'react-toastify';
 import { useQuery } from '@tanstack/react-query';
 import { memo, useContext } from 'react';
 import { Context } from '../../context/Context';
+import { isNonNullChain } from 'typescript';
 
 dayjs.extend(localizedFormat);
 
@@ -47,7 +48,6 @@ const GlobalResourceUsageGraph = () => {
 
   return (
     <>
-      {' '}
       <Line
         datasetIdKey='global-cpu-usage-table'
         data={{
@@ -55,15 +55,42 @@ const GlobalResourceUsageGraph = () => {
           datasets: [
             {
               label: 'CPU Usage (CPU)',
-              data: queryGlobalUsageTable.data.map((row) => {
-                const match = row.cpu.match(/(\d*)(\D*)/);
-                if (match) {
-                  return Number(match[1]) * 0.000000001;
+              borderColor: 'rgb(0, 0, 255)',
+              data: queryGlobalUsageTable.data.map((row, i) => {
+                let currentValue;
+                let nextValue;
+                let lastValue;
+
+                const currentValueMatch = row.cpu.match(/(\d*)(\D*)/);
+                if (currentValueMatch) {
+                  currentValue = (Number(currentValueMatch[1]) * 0.000000001).toFixed(3);
+                }
+                if (i === 0) {
+                  return currentValue;
+                } else if (i === queryGlobalUsageTable.data.length - 1) {
+                  return currentValue;
+                }
+
+                const nextValueMatch = queryGlobalUsageTable.data[i + 1].cpu.match(/(\d*)(\D*)/);
+                if (nextValueMatch) {
+                  nextValue = (Number(nextValueMatch[1]) * 0.000000001).toFixed(3);
+                }
+
+                const lastValueMatch = queryGlobalUsageTable.data[i - 1].cpu.match(/(\d*)(\D*)/);
+                if (lastValueMatch) {
+                  lastValue = (Number(lastValueMatch[1]) * 0.000000001).toFixed(3);
+                }
+
+                if (nextValue !== currentValue) {
+                  return currentValue;
+                } else if (lastValue === currentValue) {
+                  return null;
+                } else {
+                  return currentValue;
                 }
               }),
-              tension: 0.4,
-              fill: false,
-              borderColor: 'rgb(0, 0, 255)',
+              tension: 0,
+              spanGaps: true,
             },
           ],
         }}
@@ -75,15 +102,42 @@ const GlobalResourceUsageGraph = () => {
           datasets: [
             {
               label: 'Memory Usage (MB)',
-              data: queryGlobalUsageTable.data.map((row) => {
-                const match = row.memory.match(/(\d*)(\D*)/);
-                if (match) {
-                  return Number(match[1]) * 0.001024;
+              borderColor: 'rgb(75, 192, 192)',
+              data: queryGlobalUsageTable.data.map((row, i) => {
+                let currentValue;
+                let nextValue;
+                let lastValue;
+
+                const currentValueMatch = row.memory.match(/(\d*)(\D*)/);
+                if (currentValueMatch) {
+                  currentValue = Math.ceil(Number(currentValueMatch[1]) * 0.001024);
+                }
+                if (i === 0) {
+                  return currentValue;
+                } else if (i === queryGlobalUsageTable.data.length - 1) {
+                  return currentValue;
+                }
+
+                const nextValueMatch = queryGlobalUsageTable.data[i + 1].memory.match(/(\d*)(\D*)/);
+                if (nextValueMatch) {
+                  nextValue = Math.ceil(Number(nextValueMatch[1]) * 0.001024);
+                }
+
+                const lastValueMatch = queryGlobalUsageTable.data[i - 1].memory.match(/(\d*)(\D*)/);
+                if (lastValueMatch) {
+                  lastValue = Math.ceil(Number(lastValueMatch[1]) * 0.001024);
+                }
+
+                if (nextValue !== currentValue) {
+                  return currentValue;
+                } else if (lastValue === currentValue) {
+                  return null;
+                } else {
+                  return currentValue;
                 }
               }),
-              tension: 0.4,
-              fill: false,
-              borderColor: 'rgb(75, 192, 192)',
+              tension: 0,
+              spanGaps: true,
             },
           ],
         }}
