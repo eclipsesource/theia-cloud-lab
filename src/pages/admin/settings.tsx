@@ -112,7 +112,9 @@ const Settings = () => {
           </div>
           <div className='ml-5'>
             <div className='flex flex-row items-center '>
-              <span className='ml-5'>Data retention for global tables in number of days: </span>
+              <span className={`ml-5 ${getMetricFetchingStatusResult.data.status ? 'text-gray-400' : ''}`}>
+                Data retention for global tables in number of days:
+              </span>
               <span className='ml-5'>
                 <TextField
                   disabled={getMetricFetchingStatusResult.data.status}
@@ -144,7 +146,9 @@ const Settings = () => {
               </span>
             </div>
             <div className='flex flex-row items-center '>
-              <span className='ml-5'>Data retention for workspace specific tables in number of days: </span>
+              <span className={`ml-5 ${getMetricFetchingStatusResult.data.status ? 'text-gray-400' : ''}`}>
+                Data retention for workspace specific tables in number of days:{' '}
+              </span>
               <span className='ml-5'>
                 <TextField
                   disabled={getMetricFetchingStatusResult.data.status}
