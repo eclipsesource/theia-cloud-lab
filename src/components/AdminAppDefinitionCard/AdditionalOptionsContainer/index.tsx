@@ -3,7 +3,7 @@ import DeleteIcon from '../../icons/DeleteIcon';
 import PlusIcon from '../../icons/PlusIcon';
 import AdditionalOptionsItem from './AdditionalOptionsItem';
 import { Context } from '../../../context/Context';
-import UserDeleteWorkspaceModalContent from '../../TheiaModalContents/UserDeleteWorkspaceModalContent'; // to be changed
+import AdminCreateAppDefinitionModalContent from '../../TheiaModalContents/AdminCreateAppDefinitionModalContent'; // to be changed
 
 type AdditionalOptionProps = {
   isRunning: boolean;
@@ -22,7 +22,11 @@ function AdditionalOptions(props: AdditionalOptionProps) {
             className='w-full h-8 hover:bg-gray-300 cursor-pointer p-1 rounded-md font-normal'
             text='Create App Definition'
             onClick={() => {
-              props.createAdminAppDefinition && props.createAdminAppDefinition();
+              setModalContent({
+                function: AdminCreateAppDefinitionModalContent,
+                props: { refetch: props.deleteAdminAppDefinition, setIsModalOpen },
+              });
+              setIsModalOpen(true);
               props.closeAdditionalOptions();
             }}
             icon={<PlusIcon className='w-6 h-6' />}
@@ -35,7 +39,7 @@ function AdditionalOptions(props: AdditionalOptionProps) {
             text='Delete App Definition'
             onClick={() => {
               setModalContent({
-                function: UserDeleteWorkspaceModalContent,
+                function: AdminCreateAppDefinitionModalContent,
                 props: { refetch: props.deleteAdminAppDefinition, setIsModalOpen },
               });
               setIsModalOpen(true);
