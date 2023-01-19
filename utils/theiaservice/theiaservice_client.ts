@@ -66,7 +66,7 @@ export class TheiaServiceClient {
         JSON.stringify({
           appId: appId,
           user: user,
-          appDefinition: 'coffee-editor',
+          appDefinition: appDefinition,
         })
       );
       const response = await axios(requestBase);
@@ -106,7 +106,7 @@ export class TheiaServiceClient {
         JSON.stringify({
           appId: appId,
           user: user,
-          appDefinition: 'coffee-editor',
+          appDefinition: appDefinition,
           kind: 'launchRequest',
           serviceUrl: this.apiUrl,
           ephemeral: false,
@@ -138,7 +138,7 @@ export class TheiaServiceClient {
           serviceUrl: this.apiUrl,
           user: user,
           workspaceName: workspaceName,
-          appDefinition: 'coffee-editor',
+          appDefinition: appDefinition,
           timeout: 5,
         })
       );

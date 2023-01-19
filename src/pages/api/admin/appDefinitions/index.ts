@@ -10,6 +10,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   if (req.method === 'GET') {
     try {
       const appDefsList = await k8sService.getAppDefinitionsList();
+      await Promise.all(
+        appDefsList.body.items.map(async (item: any) => {
+          item.value = item.metadata.name;
+          item.label = item.metadata.name;
+          item.name = item.metadata.name;
+          item.image = item.spec.image;
+          item.port = item.spec.port;
+          item.requestsCpu = item.spec.requestsCpu;
+          item.requestsMemory = item.spec.requestsMemory;
+          item.limitsMemory = item.spec.limitsMemory;
+          item.limitsCpu = item.spec.limitsCpu;
+          item.timeout = item.spec.timeout.limit;
+          item.maxInstances = item.spec.maxInstances;
+          item.minInstances = item.spec.minInstances;
+        })
+      );
       return res.status(200).send(appDefsList.body.items);
     } catch (error: any) {
       return res.status(500).send(error.message);

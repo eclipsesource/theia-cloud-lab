@@ -20,7 +20,7 @@ export class KubernetesClient {
   pluralAD: string;
   pluralSes: string;
   kc: KubeConfig;
-  appDef: string;
+  // appDef: string;
   apiBetaVersionV2: string;
   apiBetaVersionV3: string;
 
@@ -34,8 +34,8 @@ export class KubernetesClient {
     this.pluralWS = 'workspaces';
     this.pluralAD = 'appdefinitions';
     this.pluralSes = 'sessions';
-    this.appDef = 'theia-cloud-demo';
-    this.appDef = 'coffee-editor'; // this part will be changed
+    // this.appDef = 'theia-cloud-demo';
+    // this.appDef = 'coffee-editor'; // this part will be changed
     this.kc = new KubeConfig();
     this.kc.loadFromDefault();
   }
@@ -281,7 +281,7 @@ export class KubernetesClient {
     );
   }
 
-  async createSession(sessionName: string, workspaceName: string): Promise<any> {
+  async createSession(sessionName: string, workspaceName: string, appDefinition: string): Promise<any> {
     // create clients
     const customObjectsApi = this.createCustomObjectsApiClient();
     // Session Object
@@ -294,7 +294,7 @@ export class KubernetesClient {
         workspace: workspaceName,
       },
       spec: {
-        appDefinition: this.appDef,
+        appDefinition: appDefinition,
         namespace: 'theiacloud',
         name: `${sessionName}`,
         workspace: workspaceName,
