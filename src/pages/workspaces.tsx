@@ -166,6 +166,7 @@ const Workspaces = () => {
               });
               setIsModalOpen(true);
             }}
+            disabled={results[0].isFetching || results[1].isFetching || userCreateWorkspaceIsFetching}
           />
           <TheiaButton
             className='lg:w-32'
