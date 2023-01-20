@@ -4,6 +4,9 @@ import { useContext, useState } from 'react';
 import OptionsIcon from '../icons/OptionsIcon';
 import OutsideClickHandler from '../OutsideClickHandler';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
+import NewTabIcon from '../icons/NewTabIcon';
+import AdditionalOptionsContainer from './AdditionalOptionsContainer'
+import { AdminSessionCRData } from '../../../types/AdminSessionCRData';
 import { AdminAppDefinitionCRData } from '../../../types/AdminAppDefinitionCRData';
 import { useQuery } from '@tanstack/react-query';
 import { Context } from '../../context/Context';
@@ -11,6 +14,8 @@ import { toast } from 'react-toastify';
 
 export type AdminAppDefinitionCardProps = {
   adminAppDefinitionCRData: AdminAppDefinitionCRData;
+  adminSessionCRData: AdminSessionCRData;
+
   refetch: () => void;
 };
 
@@ -76,6 +81,19 @@ export default function AdminAppDefinitionCard(props: AdminAppDefinitionCardProp
         <div className='absolute z-50 bg-gray-100 bg-opacity-75 w-full h-full top-0 left-0 rounded-lg'></div>
       )}
       <div className='flex justify-between'>
+      {props.adminSessionCRData ? (
+          <a
+            href={'//' + props.adminSessionCRData.url + '/'}
+            target='_blank'
+            className='flex text-lg cursor-pointer font-medium h-fit w-fit hover:underline text-blue-500 items-center'
+            rel='noreferrer'
+          >
+            {props.adminAppDefinitionCRData.name} <NewTabIcon className='w-5 h-5' />
+          </a>
+        ) : (
+          <span className='text-lg font-medium'>{props.adminAppDefinitionCRData.name}</span>
+        )}
+      
         <OutsideClickHandler onClickOutside={() => setIsOptionsShown(false)}>
           <div
             ref={parent}
@@ -92,6 +110,20 @@ export default function AdminAppDefinitionCard(props: AdminAppDefinitionCardProp
                 }`}
               />
             </button>
+            {isOptionsShown &&
+              /*(props.adminAppDefinitionCRData ? (
+                <AdditionalOptionsContainer
+                  isRunning={true}
+                  closeAdditionalOptions={() => setIsOptionsShown(false)}
+                />
+              ) :*/ (
+                <AdditionalOptionsContainer
+                  isRunning={false}
+                  deleteAppDefinition={() => deleteAdminAppDefinitionResult.refetch()}
+                  editAppDefinition={() => editAdminAppDefinitionResult.refetch()}
+                  closeAdditionalOptions={() => setIsOptionsShown(false)}
+                />
+              )}
           </div>
         </OutsideClickHandler>
       </div>

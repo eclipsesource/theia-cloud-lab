@@ -22,6 +22,7 @@ export default function App({ Component, pageProps }: AppProps) {
   });
   const [adminCreateSessionIsFetching, setAdminCreateSessionIsFetching] = useState(false);
   const [adminCreateWorkspaceIsFetching, setAdminCreateWorkspaceIsFetching] = useState(false);
+  const [adminEditWorkspaceIsFetching, setAdminEditWorkspaceIsFetching] = useState(false);
   const [userCreateWorkspaceIsFetching, setUserCreateWorkspaceIsFetching] = useState(false);
 
   const [userType, setUserType] = useState('');
@@ -75,7 +76,7 @@ export default function App({ Component, pageProps }: AppProps) {
         .init({
           onLoad: 'login-required',
           checkLoginIframe: false,
-          redirectUri: 'http://localhost:3000',
+          redirectUri: 'http://localhost:3001',
         })
         .then((auth) => {
           if (!auth) {
@@ -120,6 +121,7 @@ export default function App({ Component, pageProps }: AppProps) {
               adminCreateWorkspaceIsFetching,
               setAdminCreateWorkspaceIsFetching,
               userCreateWorkspaceIsFetching,
+              setAdminEditWorkspaceIsFetching,
               setUserCreateWorkspaceIsFetching,
             }}
           >

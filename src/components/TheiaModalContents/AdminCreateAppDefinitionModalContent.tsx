@@ -90,7 +90,7 @@ const AdminCreateWorkspaceModalContent = (props: AdminCreateApDefinitionModalCon
         />
         <TheiaButton
           className='bg-green-500 hover:bg-green-700'
-          text='Create Workspace'
+          text='Create AppDefinition'
           icon={<CheckIcon />}
           onClick={() => {
             createWorkspacesResult.refetch();
