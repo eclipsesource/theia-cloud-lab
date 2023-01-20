@@ -76,7 +76,7 @@ export default function App({ Component, pageProps }: AppProps) {
         .init({
           onLoad: 'login-required',
           checkLoginIframe: false,
-          redirectUri: 'http://localhost:3001',
+          redirectUri: 'http://localhost:3000',
         })
         .then((auth) => {
           if (!auth) {
