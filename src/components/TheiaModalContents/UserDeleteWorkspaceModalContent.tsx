@@ -2,7 +2,7 @@ import { Dispatch, SetStateAction } from 'react';
 import TheiaButton from '../TheiaButton';
 import CancelIcon from '../icons/CancelIcon';
 import ExclamationIcon from '../icons/ExclamationIcon';
-import DeleteIcon from '../icons/DeleteIcon';
+import CheckIcon from '../icons/CheckIcon';
 
 export type UserDeleteWorkspaceModalContentProps = {
   refetch?: () => void;
@@ -11,10 +11,14 @@ export type UserDeleteWorkspaceModalContentProps = {
 
 const UserDeleteWorkspaceModalContent = (props: UserDeleteWorkspaceModalContentProps) => {
   return (
-    <div className='w-full h-full flex flex-col gap-5 items-center'>
+    <div className='w-full h-full flex flex-col gap-10 items-center'>
       <ExclamationIcon className='w-16 h-16' />
       <div className='w-full font-normal'>
-        You are trying to delete a workspace. This action cannot be undone. Are you sure?
+        <div>
+          You are trying to delete a workspace. All data related to the workspace will be lost. This action cannot be
+          undone.
+        </div>
+        <div>Are you sure?</div>
       </div>
       <div className='flex justify-between w-full'>
         <TheiaButton
@@ -27,7 +31,7 @@ const UserDeleteWorkspaceModalContent = (props: UserDeleteWorkspaceModalContentP
         <TheiaButton
           className='bg-red-500 hover:bg-red-700'
           text='Delete Workspace'
-          icon={<DeleteIcon className='w-6 h-6 stroke-white' />}
+          icon={<CheckIcon className='w-6 h-6 stroke-white' />}
           onClick={() => {
             props.refetch && props.refetch();
             props.setIsModalOpen(false);

@@ -2,6 +2,7 @@
 import { KubeConfig, Metrics } from '@kubernetes/client-node';
 import { KubernetesClient } from '../../../../../utils/k8s/k8s_client';
 import dayjs from 'dayjs';
+import { Client } from 'pg';
 
 // This API has to be a .js file, since we are using Node.js global variables.
 
@@ -17,14 +18,29 @@ const globalWorkspaces = 'GLOBAL WORKSPACES';
 export default async function handler(req, res) {
   if (req.method === 'POST') {
     try {
-      if (req.body['start'] === true && loggingIntervalId === undefined) {
+      if (
+        req.body['start'] === true &&
+        loggingIntervalId === undefined &&
+        Number(req.body.globalDataRetentionWindow) > 0 &&
+        Number(req.body.globalDataRetentionWindow) < 16 &&
+        Number(req.body.workspaceDataRetentionWindow) > 0 &&
+        Number(req.body.workspaceDataRetentionWindow) < 16
+      ) {
         console.log('Started logging metrics');
+        globalDataRetentionWindow = Number(req.body.globalDataRetentionWindow);
+        workspaceDataRetentionWindow = Number(req.body.workspaceDataRetentionWindow);
+        console.log('globalDataRetentionWindow = ', globalDataRetentionWindow);
+        console.log('workspaceDataRetentionWindow = ', workspaceDataRetentionWindow);
         loggingIntervalId = setInterval(async () => {
-          try {
-            await questdbClient.connect();
-          } catch (error) {
-            console.log(error.message);
-          }
+          const questdbClient = new Client({
+            database: 'qdb',
+            host: '127.0.0.1',
+            password: 'quest',
+            port: 8812,
+            user: 'admin',
+          });
+          await questdbClient.connect();
+
           let globalCPUUsage = 0;
           let globalMemoryUsage = 0;
 
@@ -32,7 +48,7 @@ export default async function handler(req, res) {
           const sessionList = await k8s.getSessionList();
           const workspaceList = await k8s.getWorkspaceList();
 
-          // TODO: Add data retention policy for global tables
+          // Log number of sessions and workspaces to their respective tables
           await questdbClient.query(`INSERT INTO '${globalSessions}' VALUES($1, $2);`, [
             dayjs().toISOString(),
             sessionList.body.items.length,
@@ -41,6 +57,30 @@ export default async function handler(req, res) {
             dayjs().toISOString(),
             workspaceList.body.items.length,
           ]);
+
+          // Data retention policy for global tables
+          // TODO: Add data retention policy for global workspace list table(costly operation)
+          try {
+            await questdbClient.query(
+              `ALTER TABLE '${globalSessions}' DROP PARTITION WHERE ts < dateadd('d', -${globalDataRetentionWindow}, now());`
+            );
+          } catch (error) {
+            // No partitions to drop for global sessions table
+          }
+          try {
+            await questdbClient.query(
+              `ALTER TABLE '${globalWorkspaces}' DROP PARTITION WHERE ts < dateadd('d', -${globalDataRetentionWindow}, now());`
+            );
+          } catch (error) {
+            // No partitions to drop for global workspaces table
+          }
+          try {
+            await questdbClient.query(
+              `ALTER TABLE '${globalUsage}' DROP PARTITION WHERE ts < dateadd('d', -${globalDataRetentionWindow}, now());`
+            );
+          } catch (error) {
+            // No partitions to drop for global usage table
+          }
 
           // Check if any workspaces have been deleted
           // If so, update the isDeleted column to true
@@ -91,13 +131,13 @@ export default async function handler(req, res) {
                   );
                 }
 
-                // For a workspace table, drop rows older than 1 day
+                // For a workspace table, drop rows older than 'workspaceDataRetentionWindow' days
                 try {
                   await questdbClient.query(
-                    `ALTER TABLE '${tableName}' DROP PARTITION WHERE ts < dateadd('d', -1, now());`
+                    `ALTER TABLE '${tableName}' DROP PARTITION WHERE ts < dateadd('d', -${workspaceDataRetentionWindow}, now());`
                   );
                 } catch (error) {
-                  console.log('No partitions to drop');
+                  // No partition to drop
                 }
 
                 // Calculate total CPU and Memory usage
@@ -144,11 +184,14 @@ export default async function handler(req, res) {
           ]);
 
           await questdbClient.query('COMMIT');
+          await questdbClient.end();
         }, 60000);
         return res.status(200).json('Started fetching metrics at 1s interval');
       } else if (req.body['stop'] === true && loggingIntervalId !== undefined) {
         clearInterval(loggingIntervalId);
         loggingIntervalId = undefined;
+        globalDataRetentionWindow = 1;
+        workspaceDataRetentionWindow = 1;
         console.log('Stopped logging metrics');
         return res.status(200).json('Stopped fetching metrics');
       } else {
@@ -160,9 +203,9 @@ export default async function handler(req, res) {
   } else if (req.method === 'GET') {
     try {
       if (loggingIntervalId === undefined) {
-        return res.status(200).json({ status: false });
+        return res.status(200).json({ status: false, globalDataRetentionWindow, workspaceDataRetentionWindow });
       } else {
-        return res.status(200).json({ status: true });
+        return res.status(200).json({ status: true, globalDataRetentionWindow, workspaceDataRetentionWindow });
       }
     } catch (error) {
       return res.status(400).json({ error: error.message });
