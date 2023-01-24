@@ -5,7 +5,6 @@ import Collapsible from '../../components/Collapsible';
 import GlobalResourceUsageGraph from '../../components/Graphs/GlobalResourceUsageGraph';
 import GlobalWorkspacesGraph from '../../components/Graphs/GlobalWorkspacesGraph';
 import GlobalSessionsGraph from '../../components/Graphs/GlobalSessionsGraph';
-import annotationPlugin from 'chartjs-plugin-annotation';
 import PerUserResourceUsageGraph from '../../components/Graphs/PerUserResourceUsageGraph';
 
 dayjs.extend(localizedFormat);

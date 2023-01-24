@@ -11,7 +11,6 @@ type WorkspaceList = {
 };
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<any>) {
-  console.log(req.method);
   if (
     req.method === 'POST' &&
     req.body &&
@@ -45,30 +44,26 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         user: 'admin',
       });
       await questdbClient.connect();
-      const globalWorkspaceList = await questdbClient.query(
-        `SELECT * FROM '${DB_TABLE_NAMES.GLOBAL_WORKSPACE_LIST}' WHERE isDeleted = false`
-      );
+
       const workspaceListFromK8s = await k8s.getWorkspaceList();
+      let allWorkspaceList: any = [];
 
-      let workspaceListFromK8sArray: WorkspaceList[] = [];
+      workspaceListFromK8s.body.items &&
+        workspaceListFromK8s.body.items.forEach((each: any) => {
+          const name = each.metadata?.name;
+          allWorkspaceList.push({ workspace: name, user: each.spec?.user, data: [] });
+        });
 
-      for (const row of globalWorkspaceList.rows) {
-        workspaceListFromK8s.body.items &&
-          workspaceListFromK8s.body.items.forEach((each: any) => {
-            const name = each.metadata?.name;
-            if (name === row.name) {
-              workspaceListFromK8sArray.push({ name, user: row.userId });
-            }
-          });
+      for (const each of allWorkspaceList) {
+        try {
+          const selectWorkspace = await questdbClient.query(`SELECT * FROM '${each.workspace}'`);
+          if (selectWorkspace.rows.length > 0) {
+            each.data = selectWorkspace.rows;
+          }
+        } catch (error) {
+          console.log('No Table Found');
+        }
       }
-
-      let allWorkspaceList = [];
-
-      for (const each of workspaceListFromK8sArray) {
-        const res = await questdbClient.query(`SELECT * FROM '${each.name}'`);
-        allWorkspaceList.push({ workspace: each.name, user: each.user, data: res.rows });
-      }
-
       await questdbClient.end();
 
       return res.status(200).send(allWorkspaceList);

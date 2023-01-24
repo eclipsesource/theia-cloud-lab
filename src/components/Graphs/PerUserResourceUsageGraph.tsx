@@ -20,7 +20,7 @@ import annotationPlugin from 'chartjs-plugin-annotation';
 
 dayjs.extend(localizedFormat);
 
-const GlobalResourceUsageGraph = () => {
+const PerUserResourceUsageGraph = () => {
   const { keycloak } = useContext(Context);
   // Registering the chart.js plugins
   ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, annotationPlugin);
@@ -55,28 +55,30 @@ const GlobalResourceUsageGraph = () => {
     let userArray: any[] = [];
 
     for (const each of data) {
-      const data = each.data;
+      const dataArr = each.data;
 
-      //get labels from workspace list
-      const labels: string[] = data.map((each: any) => dayjs(each.ts).format('lll'));
+      if (dataArr.length !== 0) {
+        //get labels from workspace list
+        const labels: string[] = dataArr.map((each: any) => dayjs(each.ts).format('lll'));
 
-      //get cpu and memory data from workspace list
-      const cpuDataSet = data.map((each: any) => {
-        if (each.cpu.match(regex)[1]) {
-          return ((each.cpu.match(regex)[1] / 10 ** 9) * 10 ** 2).toFixed(3);
-        }
-      });
+        //get cpu and memory data from workspace list
+        const cpuDataSet = dataArr.map((each: any) => {
+          if (each.cpu.match(regex)[1]) {
+            return ((each.cpu.match(regex)[1] / 10 ** 9) * 10 ** 2).toFixed(3);
+          }
+        });
 
-      const memoryDataSet = data.map((each: any) => {
-        if (each.memory.match(regex)[1]) {
-          return (each.memory.match(regex)[1] / 1024).toFixed(3);
-        }
-      });
+        const memoryDataSet = dataArr.map((each: any) => {
+          if (each.memory.match(regex)[1]) {
+            return (each.memory.match(regex)[1] / 1024).toFixed(3);
+          }
+        });
 
-      const userId = each.user;
-      const workspaceName = each.workspace;
+        const userId = each.user;
+        const workspaceName = each.workspace;
 
-      userArray.push([labels, cpuDataSet, memoryDataSet, userId, workspaceName]);
+        userArray.push([labels, cpuDataSet, memoryDataSet, userId, workspaceName]);
+      }
     }
 
     // Returning the labels and dataSets, userId and workspaceName for the chart
@@ -254,4 +256,4 @@ const GlobalResourceUsageGraph = () => {
   );
 };
 
-export default memo(GlobalResourceUsageGraph);
+export default memo(PerUserResourceUsageGraph);
