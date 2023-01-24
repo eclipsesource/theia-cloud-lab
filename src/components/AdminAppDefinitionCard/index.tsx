@@ -14,9 +14,10 @@ import { toast } from 'react-toastify';
 
 export type AdminAppDefinitionCardProps = {
   adminAppDefinitionCRData: AdminAppDefinitionCRData;
-  adminSessionCRData: AdminSessionCRData;
+  //adminSessionCRData: AdminSessionCRData;
 
   refetch: () => void;
+
 };
 
 export default function AdminAppDefinitionCard(props: AdminAppDefinitionCardProps) {
@@ -28,6 +29,7 @@ export default function AdminAppDefinitionCard(props: AdminAppDefinitionCardProp
   });
 
   const deleteAdminAppDefinitionResult = useQuery({
+    
     queryKey: [`admin/appDefinitions/${props.adminAppDefinitionCRData.name}}`],
     queryFn: () =>
       fetch('/api/admin/appDefinitions', {
@@ -36,7 +38,7 @@ export default function AdminAppDefinitionCard(props: AdminAppDefinitionCardProp
           'Content-Type': 'application/json',
         },
         method: 'DELETE',
-        body: JSON.stringify({ toBeDeletedAppDefinitions: [props.adminAppDefinitionCRData.name] }),
+        body: JSON.stringify({ toBeDeletedAppDefinition: [props.adminAppDefinitionCRData.name] }),
       }).then((res) => {
         if (!res.ok) {
           toast.error('There was an error deleting app definitions. Please try again later.');
@@ -52,7 +54,7 @@ export default function AdminAppDefinitionCard(props: AdminAppDefinitionCardProp
   });
 
   const editAdminAppDefinitionResult = useQuery({
-    queryKey: [`admin/editAppDefinition/${props.adminAppDefinitionCRData.name}}`],
+    queryKey: [`admin/appDefinitions/${props.adminAppDefinitionCRData.name}}`],
     queryFn: () =>
       fetch('/api/admin/appDefinitions', {
         headers: {
@@ -60,10 +62,10 @@ export default function AdminAppDefinitionCard(props: AdminAppDefinitionCardProp
           'Content-Type': 'application/json',
         },
         method: 'PATCH',
-        body: JSON.stringify({ appDefinition: props.adminAppDefinitionCRData.name }),
+        body: JSON.stringify({ toBeEditedAppDefinition: props.adminAppDefinitionCRData.name }),
       }).then((res) => {
         if (!res.ok) {
-          toast.error('There was an error restarting app definitions. Please try again later.');
+          toast.error('There was an error editing app definitions. Please try again later.');
         }
         return res;
       }),
@@ -81,18 +83,9 @@ export default function AdminAppDefinitionCard(props: AdminAppDefinitionCardProp
         <div className='absolute z-50 bg-gray-100 bg-opacity-75 w-full h-full top-0 left-0 rounded-lg'></div>
       )}
       <div className='flex justify-between'>
-      {props.adminSessionCRData ? (
-          <a
-            href={'//' + props.adminSessionCRData.url + '/'}
-            target='_blank'
-            className='flex text-lg cursor-pointer font-medium h-fit w-fit hover:underline text-blue-500 items-center'
-            rel='noreferrer'
-          >
-            {props.adminAppDefinitionCRData.name} <NewTabIcon className='w-5 h-5' />
-          </a>
-        ) : (
+      
           <span className='text-lg font-medium'>{props.adminAppDefinitionCRData.name}</span>
-        )}
+        
       
         <OutsideClickHandler onClickOutside={() => setIsOptionsShown(false)}>
           <div

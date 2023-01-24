@@ -5,6 +5,7 @@ import Collapsible from '../../components/Collapsible';
 import GlobalResourceUsageGraph from '../../components/Graphs/GlobalResourceUsageGraph';
 import GlobalWorkspacesGraph from '../../components/Graphs/GlobalWorkspacesGraph';
 import GlobalSessionsGraph from '../../components/Graphs/GlobalSessionsGraph';
+import GlobalAppDefUsageGraph from '../../components/Graphs/GlobalAppDefUsageGraph';
 
 dayjs.extend(localizedFormat);
 
@@ -12,6 +13,7 @@ const Statistics = () => {
   const [isSessionsExpanded, setIsSessionsExpanded] = useState(false);
   const [isWorkspacesExpanded, setIsWorkspacesExpanded] = useState(false);
   const [isResourcesExpanded, setIsResourcesExpanded] = useState(false);
+  const [isAppDefExpanded, setIsAppDefExpanded] = useState(false);
 
   return (
     <div className='p-5 flex gap-5 flex-col'>
@@ -41,6 +43,15 @@ const Statistics = () => {
         }}
       >
         <GlobalResourceUsageGraph />
+      </Collapsible>
+      <Collapsible
+        title='App Definitions'
+        expanded={isAppDefExpanded}
+        onChange={(event, expanded) => {
+          setIsAppDefExpanded(expanded);
+        }}
+      >
+        <GlobalAppDefUsageGraph />
       </Collapsible>
     </div>
   );

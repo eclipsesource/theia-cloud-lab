@@ -14,7 +14,7 @@ export type AdminCreateApDefinitionModalContentProps = {
   setIsModalOpen: Dispatch<SetStateAction<boolean>>;
 };
 
-const AdminCreateWorkspaceModalContent = (props: AdminCreateApDefinitionModalContentProps) => {
+const AdminCreateAppDefinitionModalContent = (props: AdminCreateApDefinitionModalContentProps) => {
   const { setAdminCreateWorkspaceIsFetching: setAdminCreateAppDefinitionIsFetching } = useContext(Context);
   const [appDefName, setAppDefName] = useState('');
   const [appDefImage, setAppDefImage] = useState('');
@@ -102,4 +102,4 @@ const AdminCreateWorkspaceModalContent = (props: AdminCreateApDefinitionModalCon
   );
 };
 
-export default AdminCreateWorkspaceModalContent;
+export default AdminCreateAppDefinitionModalContent;

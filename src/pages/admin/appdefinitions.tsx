@@ -8,9 +8,10 @@ import { useQueries, useQuery } from '@tanstack/react-query';
 import { toast } from 'react-toastify';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
 import { AdminAppDefinitionCRData } from '../../../types/AdminAppDefinitionCRData';
+import AdminCreateAppDefinitionModalContent from '../../components/TheiaModalContents/AdminCreateAppDefinitionModalContent';
 
 const AppDefinitions = () => {
-  const { keycloak } = useContext(Context);
+  const { keycloak, setModalContent, setIsModalOpen } = useContext(Context);
   const [parent, enableAnimations] = useAutoAnimate<HTMLDivElement>({
     duration: 100,
     easing: 'ease-in-out',
@@ -80,7 +81,20 @@ const AppDefinitions = () => {
           <TheiaButton
             text='Create App Definition'
             icon={<PlusIcon />}
-            onClick={() => {}}
+            onClick={() => {
+              setModalContent({
+                function: AdminCreateAppDefinitionModalContent,
+                props: {
+                refresh: () => {
+                results[0].refetch();
+                },
+                setIsModalOpen,
+                keycloak,
+                },
+                });
+                setIsModalOpen(true);
+
+            }}
             disabled={results[0].isFetching}
           />
           <TheiaButton

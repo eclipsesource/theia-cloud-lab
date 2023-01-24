@@ -9,8 +9,8 @@ import AdminDeleteAppDefinitionModalContent from '../../TheiaModalContents/Admin
 // this is a try commit
 type AdditionalOptionProps = {
   isRunning: boolean;
-  deleteAdminAppDefinition?: () => void;
-  editAdminAppDefinition?: () => void;
+  deleteAppDefinition?: () => void;
+  editAppDefinition?: () => void;
   closeAdditionalOptions: () => void;
   createAdminAppDefinition?: () => void;
 };
@@ -23,15 +23,15 @@ function AdditionalOptions(props: AdditionalOptionProps) {
         <>
           <AdditionalOptionsItem
             className='w-full h-8 hover:bg-gray-300 cursor-pointer p-1 rounded-md font-normal'
-            text='Edit App Definition'
+            text='Edit App Def'
             onClick={() => {
               setModalContent({
                 function: AdminEditAppDefinitionModalContent,
-                props: { refetch: props.editAdminAppDefinition, setIsModalOpen },
+                props: { refetch: props.editAppDefinition, setIsModalOpen },
               });
               setIsModalOpen(true);
               props.closeAdditionalOptions();
-              props.editAdminAppDefinition && props.editAdminAppDefinition();
+              //props.editAppDefinition && props.editAppDefinition();
               props.closeAdditionalOptions();
             }}
             icon={<PlusIcon className='w-6 h-6' />}
@@ -41,14 +41,14 @@ function AdditionalOptions(props: AdditionalOptionProps) {
         <>
           <AdditionalOptionsItem
             className='w-full h-8 hover:bg-gray-300 cursor-pointer p-1 rounded-md text-red-500 font-normal'
-            text='Delete App Definition'
+            text='Delete App Def'
             onClick={() => {
               setModalContent({
                 function: AdminDeleteAppDefinitionModalContent,
-                props: { refetch: props.deleteAdminAppDefinition, setIsModalOpen },
+                props: { refetch: props.deleteAppDefinition, setIsModalOpen },
               });
               setIsModalOpen(true);
-              props.deleteAdminAppDefinition && props.deleteAdminAppDefinition();
+              //props.deleteAppDefinition && props.deleteAppDefinition();
               props.closeAdditionalOptions();
               
             }}
