@@ -11,7 +11,7 @@ import {
 } from 'chart.js';
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
-import { DB_TABLE_NAMES, DB_TABLE_ROW_TYPES } from '../../../types/Database';
+import { DB_TABLE_NAMES } from '../../../types/Database';
 import { toast } from 'react-toastify';
 import { useQuery } from '@tanstack/react-query';
 import { memo, useContext } from 'react';
@@ -23,7 +23,6 @@ dayjs.extend(localizedFormat);
 interface Props {
   isSortByCPUUsage: boolean;
 }
-
 const PerUserResourceUsageGraph = ({ isSortByCPUUsage }: Props) => {
   const { keycloak } = useContext(Context);
   // Registering the chart.js plugins
@@ -49,6 +48,20 @@ const PerUserResourceUsageGraph = ({ isSortByCPUUsage }: Props) => {
     retry: false,
     refetchInterval: 60000,
   });
+
+  //     const getRandomBorderColor = () => {
+  //     const num = Math.round(0xffffff * Math.random());
+  //     const r = num >> 16;
+  //     const g = num >> 8 & 255;
+  //     const b = num & 255;
+  //     return 'rgb(' + r + ', ' + g + ', ' + b + ')';
+  //   }
+
+  const getRandomColor = () => {
+    const num = Math.floor(Math.random() * (235 - 52 + 1) + 52);
+    const b = num & 255;
+    return `rgb(${num}, ${num}, ${num})`;
+  };
 
   const getDataForResourceConsumptionChartByUserAndWorkspace = () => {
     const { data } = queryPerUserUsageTable;
@@ -120,7 +133,6 @@ const PerUserResourceUsageGraph = ({ isSortByCPUUsage }: Props) => {
           data: distributeData(dataSets),
           tension: 0.4,
           fill: false,
-          borderColor: 'rgb(75, 192, 192)',
         });
       }
       return allUsers;
@@ -144,7 +156,6 @@ const PerUserResourceUsageGraph = ({ isSortByCPUUsage }: Props) => {
           spanGaps: true,
           tension: 0.4,
           fill: false,
-          borderColor: 'rgb(75, 192, 192)',
         });
       }
       return allUsers;
