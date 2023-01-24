@@ -6,6 +6,8 @@ import GlobalResourceUsageGraph from '../../components/Graphs/GlobalResourceUsag
 import GlobalWorkspacesGraph from '../../components/Graphs/GlobalWorkspacesGraph';
 import GlobalSessionsGraph from '../../components/Graphs/GlobalSessionsGraph';
 import PerUserResourceUsageGraph from '../../components/Graphs/PerUserResourceUsageGraph';
+import TheiaButton from '../../components/TheiaButton';
+import { Switch } from '@mui/material';
 
 dayjs.extend(localizedFormat);
 
@@ -14,6 +16,7 @@ const Statistics = () => {
   const [isWorkspacesExpanded, setIsWorkspacesExpanded] = useState(false);
   const [isResourcesExpanded, setIsResourcesExpanded] = useState(false);
   const [isResourceUsagePerUserExpanded, setIsResourceUsagePerUserExpanded] = useState(false);
+  const [isSortByCPUUsage, setIsSortByCPUUsage] = useState(true);
 
   // const getRandomBorderColor = () => {
   //   const num = Math.round(0xffffff * Math.random());
@@ -59,7 +62,23 @@ const Statistics = () => {
           setIsResourceUsagePerUserExpanded(expanded);
         }}
       >
-        <PerUserResourceUsageGraph />
+        <>
+          <div className='flex justify-end items-center'>
+            <span className='text-gray-400'>Sort by CPU Usage</span>
+            <Switch
+              onChange={(e) => {
+                if (e.target.checked) {
+                  setIsSortByCPUUsage(false);
+                } else {
+                  setIsSortByCPUUsage(true);
+                }
+              }}
+            />
+            <span className='text-gray-400'>Sort by Memory Usage</span>
+          </div>
+
+          <PerUserResourceUsageGraph isSortByCPUUsage={isSortByCPUUsage} />
+        </>
       </Collapsible>
     </div>
   );

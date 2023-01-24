@@ -20,7 +20,11 @@ import annotationPlugin from 'chartjs-plugin-annotation';
 
 dayjs.extend(localizedFormat);
 
-const PerUserResourceUsageGraph = () => {
+interface Props {
+  isSortByCPUUsage: boolean;
+}
+
+const PerUserResourceUsageGraph = ({ isSortByCPUUsage }: Props) => {
   const { keycloak } = useContext(Context);
   // Registering the chart.js plugins
   ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, annotationPlugin);
@@ -48,7 +52,22 @@ const PerUserResourceUsageGraph = () => {
 
   const getDataForResourceConsumptionChartByUserAndWorkspace = () => {
     const { data } = queryPerUserUsageTable;
+
+    if (isSortByCPUUsage) {
+      //sort data by total cpu usage
+      data.sort((a: any, b: any) => b.totalCPUUsage - a.totalCPUUsage);
+    } else {
+      //sort data by total memory usage
+      data.sort((a: any, b: any) => b.totalMemoryUsage - a.totalMemoryUsage);
+    }
+
+    console.log(data);
+
     if (data.length === 0) return [];
+
+    //get top 3 data
+    if (data.length > 3) data.length = 3;
+
     const regex = /(\d*)(\D*)/;
 
     //create empty array for each user data

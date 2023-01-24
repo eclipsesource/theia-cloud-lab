@@ -51,21 +51,36 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       workspaceListFromK8s.body.items &&
         workspaceListFromK8s.body.items.forEach((each: any) => {
           const name = each.metadata?.name;
-          allWorkspaceList.push({ workspace: name, user: each.spec?.user, data: [] });
+          allWorkspaceList.push({
+            workspace: name,
+            user: each.spec?.user,
+            data: [],
+            totalCPUUsage: 0,
+            totalMemoryUsage: 0,
+          });
         });
 
+      const regex = /(\d*)(\D*)/;
       for (const each of allWorkspaceList) {
         try {
           const selectWorkspace = await questdbClient.query(`SELECT * FROM '${each.workspace}'`);
           if (selectWorkspace.rows.length > 0) {
             each.data = selectWorkspace.rows;
+            each.totalCPUUsage = selectWorkspace.rows.reduce(
+              (a: any, b: any) => Number(a) + Number(b.cpu.match(regex)[1]),
+              0
+            );
+            each.totalMemoryUsage = selectWorkspace.rows.reduce(
+              (a: any, b: any) => Number(a) + Number(b.memory.match(regex)[1]),
+              0
+            );
           }
         } catch (error) {
           console.log('No Table Found');
         }
       }
-      await questdbClient.end();
 
+      await questdbClient.end();
       return res.status(200).send(allWorkspaceList);
     } catch (error) {
       console.log(error);
