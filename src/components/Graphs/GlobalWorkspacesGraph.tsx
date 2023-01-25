@@ -33,7 +33,7 @@ const GlobalWorkspacesGraph = () => {
           'Content-Type': 'application/json',
         },
         method: 'POST',
-        body: JSON.stringify({ tableName: DB_TABLE_NAMES.GLOBAL_WORKSPACES }),
+        body: JSON.stringify({ tableName: DB_TABLE_NAMES.GLOBAL_WORKSPACES, isPerUser: false }),
       }).then((res) => {
         if (!res.ok) {
           toast.error('There was an error getting global workspace statistics. Please try again later.');

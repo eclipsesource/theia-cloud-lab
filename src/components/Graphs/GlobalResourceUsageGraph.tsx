@@ -16,14 +16,15 @@ import { toast } from 'react-toastify';
 import { useQuery } from '@tanstack/react-query';
 import { memo, useContext } from 'react';
 import { Context } from '../../context/Context';
-import { isNonNullChain } from 'typescript';
+import { getAverageAnnotation } from './utils';
+import annotationPlugin from 'chartjs-plugin-annotation';
 
 dayjs.extend(localizedFormat);
 
 const GlobalResourceUsageGraph = () => {
   const { keycloak } = useContext(Context);
   // Registering the chart.js plugins
-  ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+  ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, annotationPlugin);
 
   const queryGlobalUsageTable = useQuery({
     queryKey: ['admin/statistics/global/usage'],
@@ -34,7 +35,7 @@ const GlobalResourceUsageGraph = () => {
           'Content-Type': 'application/json',
         },
         method: 'POST',
-        body: JSON.stringify({ tableName: DB_TABLE_NAMES.GLOBAL_USAGE }),
+        body: JSON.stringify({ tableName: DB_TABLE_NAMES.GLOBAL_USAGE, isPerUser: false }),
       }).then((res) => {
         if (!res.ok) {
           toast.error('There was an error getting global usage statistics. Please try again later.');
@@ -50,6 +51,24 @@ const GlobalResourceUsageGraph = () => {
     <>
       <Line
         datasetIdKey='global-cpu-usage-table'
+        options={{
+          scales: {
+            y: {
+              ticks: {
+                callback: function (value, index, ticks) {
+                  return value + ' %';
+                },
+              },
+            },
+          },
+          plugins: {
+            annotation: {
+              annotations: {
+                averageAnnotation: getAverageAnnotation('cpu'),
+              },
+            },
+          },
+        }}
         data={{
           labels: queryGlobalUsageTable.data.map((row) => dayjs(row.ts).format('lll')),
           datasets: [
@@ -97,6 +116,24 @@ const GlobalResourceUsageGraph = () => {
       />
       <Line
         datasetIdKey='global-memory-usage-table'
+        options={{
+          scales: {
+            y: {
+              ticks: {
+                callback: function (value, index, ticks) {
+                  return value + ' MiB';
+                },
+              },
+            },
+          },
+          plugins: {
+            annotation: {
+              annotations: {
+                averageAnnotation: getAverageAnnotation('memory'),
+              },
+            },
+          },
+        }}
         data={{
           labels: queryGlobalUsageTable.data.map((row) => dayjs(row.ts).format('lll')),
           datasets: [
