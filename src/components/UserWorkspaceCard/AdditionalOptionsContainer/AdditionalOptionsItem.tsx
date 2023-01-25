@@ -3,6 +3,7 @@ type AdditionalOptionsItemProps = {
   text: string;
   icon?: React.ReactNode;
   onClick?: () => void;
+  disabled?: boolean;
 };
 
 function AdditionalOptionsItem(props: AdditionalOptionsItemProps) {
@@ -10,6 +11,7 @@ function AdditionalOptionsItem(props: AdditionalOptionsItemProps) {
     <button
       className={props.className}
       onClick={props.onClick}
+      disabled={props.disabled}
     >
       <span className='flex gap-2 h-full'>
         <span className='h-full w-6'>{props.icon && props.icon}</span>
