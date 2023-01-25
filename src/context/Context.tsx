@@ -13,6 +13,8 @@ export type ModalContent = {
     refresh?: () => void;
     keycloak?: Keycloak;
     selectedRows?: WorkspaceRow[] | SessionRow[];
+    workspaceName?: string;
+    appDefinition?: string;
   };
 };
 
@@ -28,4 +30,6 @@ export const Context = createContext({
   setAdminCreateWorkspaceIsFetching: (() => undefined) as Dispatch<SetStateAction<boolean>>,
   userCreateWorkspaceIsFetching: false,
   setUserCreateWorkspaceIsFetching: (() => undefined) as Dispatch<SetStateAction<boolean>>,
+  userSwitchWorkspaceFromTo: [] as string[],
+  setUserSwitchWorkspaceFromTo: (() => undefined) as Dispatch<SetStateAction<string[]>>,
 });

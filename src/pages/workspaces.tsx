@@ -76,6 +76,7 @@ const Workspaces = () => {
                 results[0].refetch();
                 results[1].refetch();
               },
+              numberOfSessions: results[1].data.length,
             };
             cardsData.push(cardData);
             break;
@@ -90,6 +91,7 @@ const Workspaces = () => {
               results[0].refetch();
               results[1].refetch();
             },
+            numberOfSessions: results[1].data.length,
           };
           cardsData.push(cardData);
         }
@@ -149,6 +151,7 @@ const Workspaces = () => {
               });
               setIsModalOpen(true);
             }}
+            disabled={results[0].isFetching || results[1].isFetching || userCreateWorkspaceIsFetching}
           />
           <TheiaButton
             className='lg:w-32'
@@ -170,7 +173,7 @@ const Workspaces = () => {
       </div>
       <div
         ref={parent}
-        className='flex p-5 w-full h-[calc(100vh-5rem)] flex-col gap-6'
+        className='flex p-5 pb-16 w-full h-[calc(100vh-5rem)] flex-col gap-6 overflow-y-auto'
       >
         {renderWorkspaceCards()}
       </div>

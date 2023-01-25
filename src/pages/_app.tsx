@@ -23,6 +23,7 @@ export default function App({ Component, pageProps }: AppProps) {
   const [adminCreateSessionIsFetching, setAdminCreateSessionIsFetching] = useState(false);
   const [adminCreateWorkspaceIsFetching, setAdminCreateWorkspaceIsFetching] = useState(false);
   const [userCreateWorkspaceIsFetching, setUserCreateWorkspaceIsFetching] = useState(false);
+  const [userSwitchWorkspaceFromTo, setUserSwitchWorkspaceFromTo] = useState(['', '']);
 
   const [userType, setUserType] = useState('');
   const [isMounted, setIsMounted] = useState(false);
@@ -121,12 +122,11 @@ export default function App({ Component, pageProps }: AppProps) {
               setAdminCreateWorkspaceIsFetching,
               userCreateWorkspaceIsFetching,
               setUserCreateWorkspaceIsFetching,
+              userSwitchWorkspaceFromTo,
+              setUserSwitchWorkspaceFromTo,
             }}
           >
-            <TheiaModal
-              isModalOpen={isModalOpen}
-              modalContent={modalContent}
-            />
+            <TheiaModal />
             <Layout>
               <Component {...pageProps} />
             </Layout>
