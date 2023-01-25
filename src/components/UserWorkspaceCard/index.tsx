@@ -5,13 +5,13 @@ import AdditionalOptionsContainer from './AdditionalOptionsContainer';
 import NewTabIcon from '../icons/NewTabIcon';
 import OptionsIcon from '../icons/OptionsIcon';
 import OutsideClickHandler from '../OutsideClickHandler';
-import { useAutoAnimate } from '@formkit/auto-animate/react';
 import { UserWorkspaceCRData } from '../../../types/UserWorkspaceCRData';
 import { UserSessionCRData } from '../../../types/UserSessionCRData';
 import { useQuery } from '@tanstack/react-query';
 import { Context } from '../../context/Context';
 import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
+import UserSwitchWorkspaceModalContent from '../TheiaModalContents/UserSwitchWorkspaceModalContent';
 
 export type UserWorkspaceCardProps = {
   cpuUsage: 'CPU';
@@ -19,15 +19,12 @@ export type UserWorkspaceCardProps = {
   userWorkspaceCRData: UserWorkspaceCRData;
   userSessionCRData?: UserSessionCRData;
   refetch: () => void;
+  numberOfSessions: number;
 };
 
 export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
-  const { keycloak } = useContext(Context);
+  const { keycloak, setModalContent, setIsModalOpen, userSwitchWorkspaceFromTo } = useContext(Context);
   const [isOptionsShown, setIsOptionsShown] = useState(false);
-  const [parent, enableAnimations] = useAutoAnimate<HTMLDivElement>({
-    duration: 100,
-    easing: 'ease-in-out',
-  });
 
   // TODO: Uncomment when metrics are available
   /* const fetchUserSessionMetrics = useQuery({
@@ -127,7 +124,9 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
     <div className='flex flex-col p-4 w-full shadow-lg rounded-lg bg-gray-100 justify-between whitespace-pre-wrap hover:shadow-xl relative'>
       {(stopUserWorkspaceResult.isFetching ||
         deleteUserWorkspaceResult.isFetching ||
-        restartUserWorkspaceResult.isFetching) && (
+        restartUserWorkspaceResult.isFetching ||
+        userSwitchWorkspaceFromTo[0] === props.userWorkspaceCRData.name ||
+        userSwitchWorkspaceFromTo[1] === props.userWorkspaceCRData.name) && (
         <div className='absolute z-50 bg-gray-100 bg-opacity-75 w-full h-full top-0 left-0 rounded-lg'></div>
       )}
       <div className='flex justify-between'>
@@ -144,10 +143,7 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
           <span className='text-lg font-medium'>{props.userWorkspaceCRData.name}</span>
         )}
         <OutsideClickHandler onClickOutside={() => setIsOptionsShown(false)}>
-          <div
-            ref={parent}
-            className='relative'
-          >
+          <div className='relative'>
             <button
               onClick={() => setIsOptionsShown(!isOptionsShown)}
               disabled={
@@ -176,7 +172,25 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
                 <AdditionalOptionsContainer
                   isRunning={false}
                   deleteUserWorkspace={() => deleteUserWorkspaceResult.refetch()}
-                  restartUserWorkspace={() => restartUserWorkspaceResult.refetch()}
+                  restartUserWorkspace={() => {
+                    if (props.numberOfSessions < 2) {
+                      restartUserWorkspaceResult.refetch();
+                    } else {
+                      setModalContent({
+                        function: UserSwitchWorkspaceModalContent,
+                        props: {
+                          refresh: () => {
+                            props.refetch();
+                          },
+                          setIsModalOpen,
+                          keycloak,
+                          workspaceName: props.userWorkspaceCRData.name,
+                          appDefinition: props.userWorkspaceCRData.appDefinition,
+                        },
+                      });
+                      setIsModalOpen(true);
+                    }
+                  }}
                   closeAdditionalOptions={() => setIsOptionsShown(false)}
                 />
               ))}

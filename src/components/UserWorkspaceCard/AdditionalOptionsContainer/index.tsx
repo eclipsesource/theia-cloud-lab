@@ -15,21 +15,20 @@ type AdditionalOptionProps = {
 };
 
 function AdditionalOptions(props: AdditionalOptionProps) {
-  const { setModalContent, setIsModalOpen } = useContext(Context);
+  const { setModalContent, setIsModalOpen, userCreateWorkspaceIsFetching } = useContext(Context);
+
   return (
     <div className='flex items-center flex-col absolute h-auto w-52 top-0 right-8 z-10 bg-gray-100 shadow-lg rounded-lg border border-black border-solid p-1'>
       {props.isRunning ? (
-        <>
-          <AdditionalOptionsItem
-            className='w-full h-8 hover:bg-gray-300 cursor-pointer p-1 rounded-md font-normal'
-            text='Stop Workspace'
-            onClick={() => {
-              props.stopUserWorkspace && props.stopUserWorkspace();
-              props.closeAdditionalOptions();
-            }}
-            icon={<StopIcon className='w-6 h-6' />}
-          />
-        </>
+        <AdditionalOptionsItem
+          className='w-full h-8 hover:bg-gray-300 cursor-pointer p-1 rounded-md font-normal'
+          text='Stop Workspace'
+          onClick={() => {
+            props.stopUserWorkspace && props.stopUserWorkspace();
+            props.closeAdditionalOptions();
+          }}
+          icon={<StopIcon className='w-6 h-6' />}
+        />
       ) : (
         <>
           <AdditionalOptionsItem
@@ -46,13 +45,16 @@ function AdditionalOptions(props: AdditionalOptionProps) {
             icon={<DeleteIcon className='w-6 h-6 stroke-red-500' />}
           />
           <AdditionalOptionsItem
-            className='w-full h-8 hover:bg-gray-300 cursor-pointer p-1 rounded-md font-normal'
+            className={`w-full h-8 p-1 rounded-md font-normal ${
+              userCreateWorkspaceIsFetching ? 'text-gray-400' : 'hover:bg-gray-300 cursor-pointer'
+            }`}
             text='Restart Workspace'
             onClick={() => {
               props.restartUserWorkspace && props.restartUserWorkspace();
               props.closeAdditionalOptions();
             }}
             icon={<RefreshIcon className='w-6 h-6' />}
+            disabled={userCreateWorkspaceIsFetching}
           />
         </>
       )}

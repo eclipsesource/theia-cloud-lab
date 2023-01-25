@@ -33,7 +33,7 @@ const GlobalSessionsGraph = () => {
           'Content-Type': 'application/json',
         },
         method: 'POST',
-        body: JSON.stringify({ tableName: DB_TABLE_NAMES.GLOBAL_SESSIONS }),
+        body: JSON.stringify({ tableName: DB_TABLE_NAMES.GLOBAL_SESSIONS, isPerUser: false }),
       }).then((res) => {
         if (!res.ok) {
           toast.error('There was an error getting global sessions statistics. Please try again later.');
