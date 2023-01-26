@@ -4,7 +4,7 @@ const average = (ctx: any) => {
 };
 
 export const getAverageAnnotation = (type: string) => {
-  const append = type === 'cpu' ? '%' : 'MiB';
+  const append = type === 'cpu' ? '%' : 'MB';
   return {
     borderColor: 'black',
     borderDash: [6, 6],
