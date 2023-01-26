@@ -14,6 +14,7 @@ const k8s = new KubernetesClient();
 const globalUsage = 'GLOBAL USAGE';
 const globalSessions = 'GLOBAL SESSIONS';
 const globalWorkspaces = 'GLOBAL WORKSPACES';
+const globalAppDefs = 'GLOBAL APP DEFINITIONS';
 
 export default async function handler(req, res) {
   if (req.method === 'POST') {
@@ -47,6 +48,7 @@ export default async function handler(req, res) {
           const metrics = await metricsClient.getPodMetrics('theiacloud');
           const sessionList = await k8s.getSessionList();
           const workspaceList = await k8s.getWorkspaceList();
+          const appDefinitionList = await k8s.getAppDefinitionsList();
 
           // Log number of sessions and workspaces to their respective tables
           await questdbClient.query(`INSERT INTO '${globalSessions}' VALUES($1, $2);`, [
@@ -81,7 +83,13 @@ export default async function handler(req, res) {
           } catch (error) {
             // No partitions to drop for global usage table
           }
-
+          try {
+            await questdbClient.query(
+              `ALTER TABLE '${globalAppDefs}' DROP PARTITION WHERE ts < dateadd('d', -${globalDataRetentionWindow}, now());`
+            );
+          } catch (error) {
+            // No partitions to drop for global usage table
+          }
           // Check if any workspaces have been deleted
           // If so, update the isDeleted column to true
           // and drop the workspace's table
@@ -183,6 +191,31 @@ export default async function handler(req, res) {
             globalMemoryUsage + 'Ki',
           ]);
 
+          // Gather number of ws, CPU and memory usage for each app definition
+          // and insert into GLOBAL APP DEFINITIONS table
+          let sessionCountObj = getAppDefCountsAsObj(sessionList);
+          let workspaceCountObj = getAppDefCountsAsObj(workspaceList);
+          for (const item of appDefinitionList.body.items) {
+            let appDefName = item.metadata.name;
+            let sessionCount = 0;
+            let workspaceCount = 0;
+            if (workspaceCountObj[appDefName]) {
+              workspaceCount = workspaceCountObj[appDefName].length;
+            }
+            if (sessionCountObj[appDefName]) {
+              sessionCount = sessionCountObj[appDefName].length;
+            }
+            let metricsObj = getCPUConsumptionOfAnAppDefinition(appDefName, metrics);
+            await questdbClient.query(`INSERT INTO '${globalAppDefs}' VALUES($1, $2, $3, $4, $5, $6);`, [
+              dayjs().toISOString(),
+              appDefName,
+              workspaceCount,
+              sessionCount,
+              metricsObj.appDefCPU,
+              metricsObj.appDefMemory,
+            ]);
+          }
+
           await questdbClient.query('COMMIT');
           await questdbClient.end();
         }, 60000);
@@ -211,4 +244,46 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: error.message });
     }
   }
+}
+
+function getAppDefCountsAsObj(list) {
+  let returnObj = {};
+  list.body.items.forEach((item) => {
+    item.appDefinition = item.spec.appDefinition;
+    if (!returnObj[item['appDefinition']]) {
+      returnObj[item['appDefinition']] = [];
+    }
+    returnObj[item['appDefinition']].push({ ...item.metadata, ...item.spec });
+  });
+  return returnObj;
+}
+
+function getCPUConsumptionOfAnAppDefinition(appDefinition, metrics) {
+  let metricsObj = {
+    appDefCPU: 0,
+    appDefMemory: 0,
+  };
+  metrics.items.forEach((element) => {
+    element.containers.forEach((ctn) => {
+      if (ctn.name === appDefinition) {
+        metricsObj.appDefCPU = metricsObj.appDefCPU + parseCPUInteger(ctn.usage.cpu);
+        metricsObj.appDefMemory = metricsObj.appDefMemory + parseMemoryInteger(ctn.usage.memory);
+      }
+    });
+  });
+  return metricsObj;
+}
+
+function parseCPUInteger(str) {
+  if (str[str.length - 1] === 'n') {
+    return parseInt(str.slice(0, -1));
+  }
+  return 0;
+}
+
+function parseMemoryInteger(str) {
+  if (str.slice(-2) === 'Ki') {
+    return parseInt(str.slice(0, -2));
+  }
+  return 0;
 }

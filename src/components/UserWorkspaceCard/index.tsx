@@ -81,7 +81,7 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
           'Content-Type': 'application/json',
         },
         method: 'POST',
-        body: JSON.stringify({ appDefinition: 'theia-cloud-demo', workspaceName: props.userWorkspaceCRData.name }),
+        body: JSON.stringify({ appDefinition: 'theia-cloud-demo', workspaceName: props.userWorkspaceCRData.name }), //THIS SHOULD BE SELECTED APP DEF
       }).then((res) => {
         if (!res.ok) {
           toast.error('There was an error restarting workspace. Please try again later.');

@@ -6,6 +6,7 @@ import {
   V1CustomResourceDefinitionList,
   V1PersistentVolumeClaim,
   V1PersistentVolume,
+  Metrics,
 } from '@kubernetes/client-node';
 import http from 'http';
 import { CustomResourceObj } from './k8s_types';
@@ -52,6 +53,10 @@ export class KubernetesClient {
     return this.kc.makeApiClient(ApiextensionsV1Api);
   }
 
+  createMetricsApiClient(): Metrics {
+    return new Metrics(this.kc);
+  }
+
   async getWorkspaceList(): Promise<any> {
     const customObjectsApi = this.createCustomObjectsApiClient();
     const data = await customObjectsApi.listNamespacedCustomObject(
@@ -71,6 +76,12 @@ export class KubernetesClient {
       this.namespace,
       this.pluralAD
     );
+    return data;
+  }
+
+  async getPodMetrics(): Promise<any> {
+    const metricsClient = this.createMetricsApiClient();
+    const data = metricsClient.getPodMetrics(this.namespace);
     return data;
   }
 
