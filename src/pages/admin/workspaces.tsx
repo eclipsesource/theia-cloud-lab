@@ -16,7 +16,7 @@ import { V1PersistentVolume } from '@kubernetes/client-node';
 
 export type WorkspaceRow = AdminWorkspaceCRData & {
   id: string;
-  pvStorageCapacity?: string;
+  pvStorageCapacity?: number;
 };
 
 const XLCol = 250;
@@ -43,7 +43,10 @@ const Workspaces = () => {
         if (fetchResults[1].data && fetchResults[1].data.length > 0) {
           for (const persistentVolume of fetchResults[1].data) {
             if (persistentVolume.metadata?.name === workspace.storage) {
-              row.pvStorageCapacity = persistentVolume.spec?.capacity?.storage;
+              const matchesCapacityString = persistentVolume.spec?.capacity?.storage.match(/(\d*)\D*/);
+              if (matchesCapacityString && matchesCapacityString[1]) {
+                row.pvStorageCapacity = Number(matchesCapacityString[1]);
+              }
               break;
             }
           }
@@ -154,7 +157,7 @@ const Workspaces = () => {
     { field: 'appDefinition', headerName: 'App Definition', width: 120 },
     { field: 'label', headerName: 'Label', width: XLCol },
     { field: 'storage', headerName: 'PVC Name', width: XLCol },
-    { field: 'pvStorageCapacity', headerName: 'PV Capacity', width: 120 },
+    { field: 'pvStorageCapacity', headerName: 'PV Capacity (MiB)', width: 150 },
     { field: 'uid', headerName: 'UID', width: XLCol },
   ];
 
