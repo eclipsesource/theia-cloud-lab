@@ -85,15 +85,14 @@ const AppDefinitions = () => {
               setModalContent({
                 function: AdminCreateAppDefinitionModalContent,
                 props: {
-                refresh: () => {
-                results[0].refetch();
+                  refresh: () => {
+                    results[0].refetch();
+                  },
+                  setIsModalOpen,
+                  keycloak,
                 },
-                setIsModalOpen,
-                keycloak,
-                },
-                });
-                setIsModalOpen(true);
-
+              });
+              setIsModalOpen(true);
             }}
             disabled={results[0].isFetching}
           />
@@ -110,7 +109,7 @@ const AppDefinitions = () => {
       </div>
       <div
         ref={parent}
-        className='flex p-5 w-full h-[calc(100vh-5rem)] flex-col gap-6'
+        className='flex p-5 pb-16 w-full h-[calc(100vh-5rem)] flex-col gap-6 overflow-y-auto'
       >
         {renderAppDefinitionCards()}
       </div>

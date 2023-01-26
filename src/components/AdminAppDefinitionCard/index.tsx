@@ -3,10 +3,7 @@
 import { useContext, useState } from 'react';
 import OptionsIcon from '../icons/OptionsIcon';
 import OutsideClickHandler from '../OutsideClickHandler';
-import { useAutoAnimate } from '@formkit/auto-animate/react';
-import NewTabIcon from '../icons/NewTabIcon';
-import AdditionalOptionsContainer from './AdditionalOptionsContainer'
-import { AdminSessionCRData } from '../../../types/AdminSessionCRData';
+import AdditionalOptionsContainer from './AdditionalOptionsContainer';
 import { AdminAppDefinitionCRData } from '../../../types/AdminAppDefinitionCRData';
 import { useQuery } from '@tanstack/react-query';
 import { Context } from '../../context/Context';
@@ -15,21 +12,14 @@ import { toast } from 'react-toastify';
 export type AdminAppDefinitionCardProps = {
   adminAppDefinitionCRData: AdminAppDefinitionCRData;
   //adminSessionCRData: AdminSessionCRData;
-
   refetch: () => void;
-
 };
 
 export default function AdminAppDefinitionCard(props: AdminAppDefinitionCardProps) {
   const { keycloak } = useContext(Context);
   const [isOptionsShown, setIsOptionsShown] = useState(false);
-  const [parent, enableAnimations] = useAutoAnimate<HTMLDivElement>({
-    duration: 100,
-    easing: 'ease-in-out',
-  });
 
   const deleteAdminAppDefinitionResult = useQuery({
-    
     queryKey: [`admin/appDefinitions/${props.adminAppDefinitionCRData.name}}`],
     queryFn: () =>
       fetch('/api/admin/appDefinitions', {
@@ -83,15 +73,10 @@ export default function AdminAppDefinitionCard(props: AdminAppDefinitionCardProp
         <div className='absolute z-50 bg-gray-100 bg-opacity-75 w-full h-full top-0 left-0 rounded-lg'></div>
       )}
       <div className='flex justify-between'>
-      
-          <span className='text-lg font-medium'>{props.adminAppDefinitionCRData.name}</span>
-        
-      
+        <span className='text-lg font-medium'>{props.adminAppDefinitionCRData.name}</span>
+
         <OutsideClickHandler onClickOutside={() => setIsOptionsShown(false)}>
-          <div
-            ref={parent}
-            className='relative'
-          >
+          <div className='relative'>
             <button
               onClick={() => setIsOptionsShown(!isOptionsShown)}
               disabled={editAdminAppDefinitionResult.isFetching || deleteAdminAppDefinitionResult.isFetching}
@@ -103,20 +88,19 @@ export default function AdminAppDefinitionCard(props: AdminAppDefinitionCardProp
                 }`}
               />
             </button>
-            {isOptionsShown &&
+            {isOptionsShown && (
               /*(props.adminAppDefinitionCRData ? (
                 <AdditionalOptionsContainer
                   isRunning={true}
                   closeAdditionalOptions={() => setIsOptionsShown(false)}
                 />
-              ) :*/ (
-                <AdditionalOptionsContainer
-                  isRunning={false}
-                  deleteAppDefinition={() => deleteAdminAppDefinitionResult.refetch()}
-                  editAppDefinition={() => editAdminAppDefinitionResult.refetch()}
-                  closeAdditionalOptions={() => setIsOptionsShown(false)}
-                />
-              )}
+              ) :*/ <AdditionalOptionsContainer
+                isRunning={false}
+                deleteAppDefinition={() => deleteAdminAppDefinitionResult.refetch()}
+                editAppDefinition={() => editAdminAppDefinitionResult.refetch()}
+                closeAdditionalOptions={() => setIsOptionsShown(false)}
+              />
+            )}
           </div>
         </OutsideClickHandler>
       </div>
