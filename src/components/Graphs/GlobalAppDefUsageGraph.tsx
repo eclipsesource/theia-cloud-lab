@@ -1,4 +1,4 @@
-import { Line } from 'react-chartjs-2';
+import { Bar, Line } from 'react-chartjs-2';
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -8,6 +8,7 @@ import {
   Title,
   Tooltip,
   Legend,
+  BarElement,
 } from 'chart.js';
 import dayjs from 'dayjs';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
@@ -23,7 +24,7 @@ dayjs.extend(localizedFormat);
 const GlobalAppDefUsageGraph = () => {
   const { keycloak } = useContext(Context);
   // Registering the chart.js plugins
-  ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
+  ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend);
 
   const queryTopTenAppDefsWithMostConsumption = useQuery({
     queryKey: ['admin/statistics/appdefs/topTenAppDefs'],
@@ -45,6 +46,7 @@ const GlobalAppDefUsageGraph = () => {
     retry: false,
     refetchInterval: 60000,
   });
+
   const queryTopTenAppDefsWithMostPopular = useQuery({
     queryKey: ['admin/statistics/appdefs/mostPopularAppDefs'],
     queryFn: async (): Promise<DB_TABLE_ROW_TYPES['GLOBAL_APP_DEFINITIONS'][]> =>
@@ -65,6 +67,7 @@ const GlobalAppDefUsageGraph = () => {
     retry: false,
     refetchInterval: 60000,
   });
+
   const queryTopTenAppDefsWithAverageConsumption = useQuery({
     queryKey: ['admin/statistics/appdefs/averageConsumption'],
     queryFn: async (): Promise<DB_TABLE_ROW_TYPES['GLOBAL_APP_DEFINITIONS'][]> =>
@@ -86,42 +89,98 @@ const GlobalAppDefUsageGraph = () => {
     refetchInterval: 60000,
   });
 
+  // //That's the way u can give dynamic data to chartjs. It looks not pretty.
+  // const getDatasetForTopTenAppDefsWithMostPopular = () => {
+  //   const { data } = queryTopTenAppDefsWithMostPopular;
+  //   if (data.length === 0) return [];
+  //   else {
+  //     let dataset: any[] = [];
+  //     const appDefinitions: string = 'coffee-editor' || 'theia-cloud-demo' || 'cdt-cloud-demo';
+  //     for (const each of data) {
+  //       const labels = each.name;
+  //       const wscount = each.wscount;
+  //       if (appDefinitions.includes(labels) && wscount) {
+  //         dataset.push({
+  //           label: labels,
+  //           data: wscount,
+  //         });
+  //       }
+  //     }
+  //     return dataset;
+  //   }
+  // };
+
+  console.log(queryTopTenAppDefsWithMostConsumption.data);
+
   return (
     <>
-      <Line
+      <Bar
         datasetIdKey='global-cpu-usage-table'
+        options={{
+          scales: {
+            y: {
+              ticks: {
+                callback: function (value, index, ticks) {
+                  return value + ' %';
+                },
+              },
+            },
+          },
+        }}
         data={{
           labels: queryTopTenAppDefsWithMostConsumption.data.map((row) => row.name),
           datasets: [
             {
               label: 'Top 10 App Definitions with Most Resource Consumption',
-              borderColor: 'rgb(0, 0, 255)',
-              data: queryTopTenAppDefsWithMostConsumption.data.map((row, i) => {
-                console.log(row);
-                // THIS PARTTT
-                // THIS CONFUSED ME, it is hard to show. I get top 10 app defs, i think it shouldnt be point graph it can be table like structure. Will be changed!!!
-                return row;
+              data: queryTopTenAppDefsWithMostConsumption.data.map((row: any, i) => {
+                return row.max_sum / 10 ** 7;
               }),
-              tension: 0,
-              spanGaps: true,
-            }
+              backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(255, 159, 64, 0.2)', 'rgba(255, 205, 86, 0.2)'],
+              borderColor: ['rgb(255, 99, 132)', 'rgb(255, 159, 64)', 'rgb(255, 205, 86)'],
+              borderWidth: 1,
+            },
           ],
         }}
       />
       <Line
         datasetIdKey='global-appdefs-usage-table'
         data={{
-          labels: queryTopTenAppDefsWithMostPopular.data.map((row) => dayjs(row.ts).format('lll')),
+          labels: queryTopTenAppDefsWithMostPopular.data
+            .map((row: any) => dayjs(row.minute_ts).format('lll'))
+            .reverse(),
           datasets: [
             {
-              label: "theia-cloud-demo", // I DONT KNOW HOW TO GIVE DYNAMIC LABELS HERE, I WANT TO UPDATE IT WITH EVERY ROWS NAME FIELD
-              borderColor: 'rgb(75, 192, 192)',
+              label: 'theia-cloud-demo',
               data: queryTopTenAppDefsWithMostPopular.data.map((row, i) => {
-                // console.log(row);
-                return row.wscount;
+                if (row.name === 'theia-cloud-demo') {
+                  return row.wscount;
+                }
               }),
               tension: 0,
               spanGaps: true,
+              borderColor: 'rgb(255, 99, 132)',
+            },
+            {
+              label: 'cdt-cloud-demo',
+              data: queryTopTenAppDefsWithMostPopular.data.map((row, i) => {
+                if (row.name === 'cdt-cloud-demo') {
+                  return row.wscount;
+                }
+              }),
+              tension: 0,
+              spanGaps: true,
+              borderColor: 'rgb(255, 159, 64)',
+            },
+            {
+              label: 'coffee-editor',
+              data: queryTopTenAppDefsWithMostPopular.data.map((row, i) => {
+                if (row.name === 'coffee-editor') {
+                  return row.wscount;
+                }
+              }),
+              tension: 0,
+              spanGaps: true,
+              borderColor: 'rgb(255, 205, 86)',
             },
           ],
         }}
@@ -142,15 +201,15 @@ const GlobalAppDefUsageGraph = () => {
               spanGaps: true,
             },
             {
-                label: 'Average CPU Consumption of an App Definition',
-                borderColor: 'rgb(75, 192, 100)',
-                data: queryTopTenAppDefsWithAverageConsumption.data.map((row, i) => {
-                  // console.log(row);
-                  return row.averagecpu;
-                }),
-                tension: 0,
-                spanGaps: true,
-              }
+              label: 'Average CPU Consumption of an App Definition',
+              borderColor: 'rgb(75, 192, 100)',
+              data: queryTopTenAppDefsWithAverageConsumption.data.map((row, i) => {
+                // console.log(row);
+                return row.averagecpu;
+              }),
+              tension: 0,
+              spanGaps: true,
+            },
           ],
         }}
       />
