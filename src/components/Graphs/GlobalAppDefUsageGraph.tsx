@@ -25,16 +25,56 @@ const GlobalAppDefUsageGraph = () => {
   // Registering the chart.js plugins
   ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
-  const queryGlobalUsageTable = useQuery({
-    queryKey: ['admin/statistics/global/usage'],
-    queryFn: async (): Promise<DB_TABLE_ROW_TYPES['GLOBAL_USAGE'][]> =>
-      fetch('/api/admin/statistics/getTableData', {
+  const queryTopTenAppDefsWithMostConsumption = useQuery({
+    queryKey: ['admin/statistics/appdefs/topTenAppDefs'],
+    queryFn: async (): Promise<DB_TABLE_ROW_TYPES['GLOBAL_APP_DEFINITIONS'][]> =>
+      fetch('/api/admin/statistics/getAppDefinitionsData', {
         headers: {
           Authorization: `Bearer ${keycloak.token}`,
           'Content-Type': 'application/json',
         },
         method: 'POST',
-        body: JSON.stringify({ tableName: DB_TABLE_NAMES.GLOBAL_USAGE }),
+        body: JSON.stringify({ graphInfo: 'topTenAppDefs' }),
+      }).then((res) => {
+        if (!res.ok) {
+          toast.error('There was an error getting global usage statistics. Please try again later.');
+        }
+        return res.json();
+      }),
+    initialData: [],
+    retry: false,
+    refetchInterval: 60000,
+  });
+  const queryTopTenAppDefsWithMostPopular = useQuery({
+    queryKey: ['admin/statistics/appdefs/mostPopularAppDefs'],
+    queryFn: async (): Promise<DB_TABLE_ROW_TYPES['GLOBAL_APP_DEFINITIONS'][]> =>
+      fetch('/api/admin/statistics/getAppDefinitionsData', {
+        headers: {
+          Authorization: `Bearer ${keycloak.token}`,
+          'Content-Type': 'application/json',
+        },
+        method: 'POST',
+        body: JSON.stringify({ graphInfo: 'mostPopularAppDefs' }),
+      }).then((res) => {
+        if (!res.ok) {
+          toast.error('There was an error getting global usage statistics. Please try again later.');
+        }
+        return res.json();
+      }),
+    initialData: [],
+    retry: false,
+    refetchInterval: 60000,
+  });
+  const queryTopTenAppDefsWithAverageConsumption = useQuery({
+    queryKey: ['admin/statistics/appdefs/averageConsumption'],
+    queryFn: async (): Promise<DB_TABLE_ROW_TYPES['GLOBAL_APP_DEFINITIONS'][]> =>
+      fetch('/api/admin/statistics/getAppDefinitionsData', {
+        headers: {
+          Authorization: `Bearer ${keycloak.token}`,
+          'Content-Type': 'application/json',
+        },
+        method: 'POST',
+        body: JSON.stringify({ graphInfo: 'averageConsumption' }),
       }).then((res) => {
         if (!res.ok) {
           toast.error('There was an error getting global usage statistics. Please try again later.');
@@ -51,43 +91,34 @@ const GlobalAppDefUsageGraph = () => {
       <Line
         datasetIdKey='global-cpu-usage-table'
         data={{
-          labels: queryGlobalUsageTable.data.map((row) => dayjs(row.ts).format('lll')),
+          labels: queryTopTenAppDefsWithMostConsumption.data.map((row) => row.name),
           datasets: [
             {
-              label: 'Top 10 Usage',
+              label: 'Top 10 App Definitions with Most Resource Consumption',
               borderColor: 'rgb(0, 0, 255)',
-              data: queryGlobalUsageTable.data.map((row, i) => {
-                let currentValue;
-                let nextValue;
-                let lastValue;
-
-                const currentValueMatch :any = row.cpu.match(/(\d*)(\D*)/);
-                if (currentValueMatch) {
-                  currentValue = (Number(currentValueMatch[1]) * 0.000000001).toFixed(3);
-                }
-                if (i === 0) {
-                  return currentValue;
-                } else if (i === queryGlobalUsageTable.data.length - 1) {
-                  return currentValue;
-                }
-
-                const nextValueMatch :any = queryGlobalUsageTable.data[i + 1].cpu.match(/(\d*)(\D*)/);
-                if (nextValueMatch) {
-                  nextValue = (Number(nextValueMatch[1]) * 0.000000001).toFixed(3);
-                }
-
-                const lastValueMatch = queryGlobalUsageTable.data[i - 1].cpu.match(/(\d*)(\D*)/);
-                if (lastValueMatch) {
-                  lastValue = (Number(lastValueMatch[1]) * 0.000000001).toFixed(3);
-                }
-
-                if (nextValue !== currentValue) {
-                  return currentValue;
-                } else if (lastValue === currentValue) {
-                  return null;
-                } else {
-                  return currentValue;
-                }
+              data: queryTopTenAppDefsWithMostConsumption.data.map((row, i) => {
+                console.log(row);
+                // THIS PARTTT
+                // THIS CONFUSED ME, it is hard to show. I get top 10 app defs, i think it shouldnt be point graph it can be table like structure. Will be changed!!!
+                return row;
+              }),
+              tension: 0,
+              spanGaps: true,
+            }
+          ],
+        }}
+      />
+      <Line
+        datasetIdKey='global-appdefs-usage-table'
+        data={{
+          labels: queryTopTenAppDefsWithMostPopular.data.map((row) => dayjs(row.ts).format('lll')),
+          datasets: [
+            {
+              label: "theia-cloud-demo", // I DONT KNOW HOW TO GIVE DYNAMIC LABELS HERE, I WANT TO UPDATE IT WITH EVERY ROWS NAME FIELD
+              borderColor: 'rgb(75, 192, 192)',
+              data: queryTopTenAppDefsWithMostPopular.data.map((row, i) => {
+                // console.log(row);
+                return row.wscount;
               }),
               tension: 0,
               spanGaps: true,
@@ -96,96 +127,30 @@ const GlobalAppDefUsageGraph = () => {
         }}
       />
       <Line
-        datasetIdKey='global-memory-usage-table'
+        datasetIdKey='global-appdefs-usage-table'
         data={{
-          labels: queryGlobalUsageTable.data.map((row) => dayjs(row.ts).format('lll')),
+          labels: queryTopTenAppDefsWithAverageConsumption.data.map((row) => dayjs(row.ts).format('lll')),
           datasets: [
             {
-              label: 'Frequency of Usage',
+              label: 'Average Memory Consumption of an App Definition', // I ALSO CANT TELL HERE WHICH APP DEF NAME HELPPPP
               borderColor: 'rgb(75, 192, 192)',
-              data: queryGlobalUsageTable.data.map((row, i) => {
-                let currentValue;
-                let nextValue;
-                let lastValue;
-
-                const currentValueMatch = row.memory.match(/(\d*)(\D*)/);
-                if (currentValueMatch) {
-                  currentValue = Math.ceil(Number(currentValueMatch[1]) * 0.001024);
-                }
-                if (i === 0) {
-                  return currentValue;
-                } else if (i === queryGlobalUsageTable.data.length - 1) {
-                  return currentValue;
-                }
-
-                const nextValueMatch = queryGlobalUsageTable.data[i + 1].memory.match(/(\d*)(\D*)/);
-                if (nextValueMatch) {
-                  nextValue = Math.ceil(Number(nextValueMatch[1]) * 0.001024);
-                }
-
-                const lastValueMatch = queryGlobalUsageTable.data[i - 1].memory.match(/(\d*)(\D*)/);
-                if (lastValueMatch) {
-                  lastValue = Math.ceil(Number(lastValueMatch[1]) * 0.001024);
-                }
-
-                if (nextValue !== currentValue) {
-                  return currentValue;
-                } else if (lastValue === currentValue) {
-                  return null;
-                } else {
-                  return currentValue;
-                }
+              data: queryTopTenAppDefsWithAverageConsumption.data.map((row, i) => {
+                // console.log(row);
+                return row.averagememory;
               }),
               tension: 0,
               spanGaps: true,
             },
-          ],
-        }}
-      />
-      <Line
-        datasetIdKey='global-memory-usage-table'
-        data={{
-          labels: queryGlobalUsageTable.data.map((row) => dayjs(row.ts).format('lll')),
-          datasets: [
             {
-              label: 'Average Usage',
-              borderColor: 'rgb(75, 192, 192)',
-              data: queryGlobalUsageTable.data.map((row, i) => {
-                let currentValue;
-                let nextValue;
-                let lastValue;
-
-                const currentValueMatch = row.memory.match(/(\d*)(\D*)/);
-                if (currentValueMatch) {
-                  currentValue = Math.ceil(Number(currentValueMatch[1]) * 0.001024);
-                }
-                if (i === 0) {
-                  return currentValue;
-                } else if (i === queryGlobalUsageTable.data.length - 1) {
-                  return currentValue;
-                }
-
-                const nextValueMatch = queryGlobalUsageTable.data[i + 1].memory.match(/(\d*)(\D*)/);
-                if (nextValueMatch) {
-                  nextValue = Math.ceil(Number(nextValueMatch[1]) * 0.001024);
-                }
-
-                const lastValueMatch = queryGlobalUsageTable.data[i - 1].memory.match(/(\d*)(\D*)/);
-                if (lastValueMatch) {
-                  lastValue = Math.ceil(Number(lastValueMatch[1]) * 0.001024);
-                }
-
-                if (nextValue !== currentValue) {
-                  return currentValue;
-                } else if (lastValue === currentValue) {
-                  return null;
-                } else {
-                  return currentValue;
-                }
-              }),
-              tension: 0,
-              spanGaps: true,
-            },
+                label: 'Average CPU Consumption of an App Definition',
+                borderColor: 'rgb(75, 192, 100)',
+                data: queryTopTenAppDefsWithAverageConsumption.data.map((row, i) => {
+                  // console.log(row);
+                  return row.averagecpu;
+                }),
+                tension: 0,
+                spanGaps: true,
+              }
           ],
         }}
       />
