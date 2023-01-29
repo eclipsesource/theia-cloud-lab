@@ -59,7 +59,7 @@ const Workspaces = () => {
       {
         queryKey: ['user/appdefinitions'],
         queryFn: async (): Promise<UserSessionCRData[]> =>
-          fetch('/api/user/appdefinitions', {
+          fetch('/api/user/appDefinitions', {
             headers: {
               Authorization: `Bearer ${keycloak.token}`,
             },
