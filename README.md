@@ -2,23 +2,25 @@
 
 ## Getting Started
 
-First, install dependencies:
+### Install Dependencies:
+
+Run the following command at project root folder to install all the dependencies:
 
 ```bash
 npm install
 ```
 
-Then, run the development server:
+### Set Environment Variables:
 
-```bash
-npm run dev
+Next.js uses environment variables to store sensitive information. To get started, create a file named `.env.local` in the root folder of the project. This file is already added to `.gitignore` so it will not be pushed to the repo. In this file, add the following variables:
+
+```
+NEXT_PUBLIC_MINIKUBE_IP="192.168.49.2"
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Change the NEXT_PUBLIC_MINIKUBE_IP address to the IP address of your minikube cluster. You can get this by running `minikube ip` in your terminal.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
-
-### QuestDB
+### Initialize Database:
 
 We will be using QuestDB as our time-series database. This database is responsible for storing all the data that we will be collecting for statistics.
 
@@ -35,6 +37,19 @@ questdb/questdb:6.6.1
 Visit [http://localhost:9000](http://localhost:9000) to view the QuestDB console.
 
 To get started with QuestDB, head over to this link: https://questdb.io/docs/guide/
+Then, run the development server:
+
+### Start the Development Server:
+
+Run the following command at project root folder to start up the development server:
+
+```bash
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+
+The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
 
 ## Deployment
 
@@ -46,16 +61,6 @@ To get started with QuestDB, head over to this link: https://questdb.io/docs/gui
 4. Additionally, you can view your images created with `docker images`
 
 ## Development Dependencies
-
-### .env.local
-
-Next.js uses environment variables to store sensitive information. To get started, create a file named `.env.local` in the root folder of the project. This file is already added to `.gitignore` so it will not be pushed to the repo. In this file, add the following variables:
-
-```
-NEXT_PUBLIC_MINIKUBE_IP="192.168.49.2"
-```
-
-Change the NEXT_PUBLIC_MINIKUBE_IP address to the IP address of your minikube cluster. You can get this by running `minikube ip` in your terminal.
 
 ### Prettier
 

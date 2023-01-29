@@ -22,6 +22,7 @@ export default function App({ Component, pageProps }: AppProps) {
   });
   const [adminCreateSessionIsFetching, setAdminCreateSessionIsFetching] = useState(false);
   const [adminCreateWorkspaceIsFetching, setAdminCreateWorkspaceIsFetching] = useState(false);
+  const [adminEditWorkspaceIsFetching, setAdminEditWorkspaceIsFetching] = useState(false);
   const [userCreateWorkspaceIsFetching, setUserCreateWorkspaceIsFetching] = useState(false);
   const [userSwitchWorkspaceFromTo, setUserSwitchWorkspaceFromTo] = useState(['', '']);
 
@@ -121,6 +122,8 @@ export default function App({ Component, pageProps }: AppProps) {
               adminCreateWorkspaceIsFetching,
               setAdminCreateWorkspaceIsFetching,
               userCreateWorkspaceIsFetching,
+              setAdminEditWorkspaceIsFetching,
+              adminEditWorkspaceIsFetching,
               setUserCreateWorkspaceIsFetching,
               userSwitchWorkspaceFromTo,
               setUserSwitchWorkspaceFromTo,

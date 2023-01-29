@@ -76,7 +76,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
             );
           }
         } catch (error) {
-          console.log('No Table Found');
+          // No Table Found
         }
       }
 

@@ -5,6 +5,7 @@ import Collapsible from '../../components/Collapsible';
 import GlobalResourceUsageGraph from '../../components/Graphs/GlobalResourceUsageGraph';
 import GlobalWorkspacesGraph from '../../components/Graphs/GlobalWorkspacesGraph';
 import GlobalSessionsGraph from '../../components/Graphs/GlobalSessionsGraph';
+import GlobalAppDefUsageGraph from '../../components/Graphs/GlobalAppDefUsageGraph';
 import PerUserResourceUsageGraph from '../../components/Graphs/PerUserResourceUsageGraph';
 import TheiaButton from '../../components/TheiaButton';
 import { Switch } from '@mui/material';
@@ -15,6 +16,7 @@ const Statistics = () => {
   const [isSessionsExpanded, setIsSessionsExpanded] = useState(false);
   const [isWorkspacesExpanded, setIsWorkspacesExpanded] = useState(false);
   const [isResourcesExpanded, setIsResourcesExpanded] = useState(false);
+  const [isAppDefExpanded, setIsAppDefExpanded] = useState(false);
   const [isResourceUsagePerUserExpanded, setIsResourceUsagePerUserExpanded] = useState(false);
   const [isSortByCPUUsage, setIsSortByCPUUsage] = useState(true);
 
@@ -54,6 +56,15 @@ const Statistics = () => {
         }}
       >
         <GlobalResourceUsageGraph />
+      </Collapsible>
+      <Collapsible
+        title='App Definitions'
+        expanded={isAppDefExpanded}
+        onChange={(event, expanded) => {
+          setIsAppDefExpanded(expanded);
+        }}
+      >
+        <GlobalAppDefUsageGraph />
       </Collapsible>
       <Collapsible
         title='Resource Consumption Per User'

@@ -30,6 +30,8 @@ export const Context = createContext({
   setAdminCreateWorkspaceIsFetching: (() => undefined) as Dispatch<SetStateAction<boolean>>,
   userCreateWorkspaceIsFetching: false,
   setUserCreateWorkspaceIsFetching: (() => undefined) as Dispatch<SetStateAction<boolean>>,
+  setAdminEditWorkspaceIsFetching: (() => undefined) as Dispatch<SetStateAction<boolean>>,
+  adminEditWorkspaceIsFetching: false,
   userSwitchWorkspaceFromTo: [] as string[],
   setUserSwitchWorkspaceFromTo: (() => undefined) as Dispatch<SetStateAction<string[]>>,
 });
