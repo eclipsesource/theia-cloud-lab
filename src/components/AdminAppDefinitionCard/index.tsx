@@ -5,7 +5,7 @@ import OptionsIcon from '../icons/OptionsIcon';
 import OutsideClickHandler from '../OutsideClickHandler';
 import { useAutoAnimate } from '@formkit/auto-animate/react';
 import NewTabIcon from '../icons/NewTabIcon';
-import AdditionalOptionsContainer from './AdditionalOptionsContainer'
+import AdditionalOptionsContainer from './AdditionalOptionsContainer';
 import { AdminSessionCRData } from '../../../types/AdminSessionCRData';
 import { AdminAppDefinitionCRData } from '../../../types/AdminAppDefinitionCRData';
 import { useQuery } from '@tanstack/react-query';
@@ -14,10 +14,7 @@ import { toast } from 'react-toastify';
 
 export type AdminAppDefinitionCardProps = {
   adminAppDefinitionCRData: AdminAppDefinitionCRData;
-  //adminSessionCRData: AdminSessionCRData;
-
   refetch: () => void;
-
 };
 
 export default function AdminAppDefinitionCard(props: AdminAppDefinitionCardProps) {
@@ -29,8 +26,7 @@ export default function AdminAppDefinitionCard(props: AdminAppDefinitionCardProp
   });
 
   const deleteAdminAppDefinitionResult = useQuery({
-    
-    queryKey: [`admin/appDefinitions/${props.adminAppDefinitionCRData.name}}`],
+    queryKey: [`admin/appDefinitions/delete/${props.adminAppDefinitionCRData.name}}`],
     queryFn: () =>
       fetch('/api/admin/appDefinitions', {
         headers: {
@@ -38,7 +34,7 @@ export default function AdminAppDefinitionCard(props: AdminAppDefinitionCardProp
           'Content-Type': 'application/json',
         },
         method: 'DELETE',
-        body: JSON.stringify({ toBeDeletedAppDefinition: [props.adminAppDefinitionCRData.name] }),
+        body: JSON.stringify({ toBeDeletedAppDefinition: props.adminAppDefinitionCRData.name }),
       }).then((res) => {
         if (!res.ok) {
           toast.error('There was an error deleting app definitions. Please try again later.');
@@ -53,40 +49,14 @@ export default function AdminAppDefinitionCard(props: AdminAppDefinitionCardProp
     retry: false,
   });
 
-  const editAdminAppDefinitionResult = useQuery({
-    queryKey: [`admin/appDefinitions/${props.adminAppDefinitionCRData.name}}`],
-    queryFn: () =>
-      fetch('/api/admin/appDefinitions', {
-        headers: {
-          Authorization: `Bearer ${keycloak.token}`,
-          'Content-Type': 'application/json',
-        },
-        method: 'PATCH',
-        body: JSON.stringify({ toBeEditedAppDefinition: props.adminAppDefinitionCRData.name }),
-      }).then((res) => {
-        if (!res.ok) {
-          toast.error('There was an error editing app definitions. Please try again later.');
-        }
-        return res;
-      }),
-    enabled: false,
-    onSettled: () => {
-      props.refetch();
-    },
-    staleTime: Infinity,
-    retry: false,
-  });
-
   return (
     <div className='flex flex-col p-4 w-full shadow-lg rounded-lg bg-gray-100 justify-between whitespace-pre-wrap hover:shadow-xl relative'>
-      {(editAdminAppDefinitionResult.isFetching || deleteAdminAppDefinitionResult.isFetching) && (
+      {deleteAdminAppDefinitionResult.isFetching && (
         <div className='absolute z-50 bg-gray-100 bg-opacity-75 w-full h-full top-0 left-0 rounded-lg'></div>
       )}
       <div className='flex justify-between'>
-      
-          <span className='text-lg font-medium'>{props.adminAppDefinitionCRData.name}</span>
-        
-      
+        <span className='text-lg font-medium'>{props.adminAppDefinitionCRData.name}</span>
+
         <OutsideClickHandler onClickOutside={() => setIsOptionsShown(false)}>
           <div
             ref={parent}
@@ -94,29 +64,22 @@ export default function AdminAppDefinitionCard(props: AdminAppDefinitionCardProp
           >
             <button
               onClick={() => setIsOptionsShown(!isOptionsShown)}
-              disabled={editAdminAppDefinitionResult.isFetching || deleteAdminAppDefinitionResult.isFetching}
+              disabled={deleteAdminAppDefinitionResult.isFetching}
             >
               <OptionsIcon
                 className={`w-7 h-7 rounded-full hover:bg-black hover:stroke-white ${
-                  (editAdminAppDefinitionResult.isFetching || deleteAdminAppDefinitionResult.isFetching) &&
-                  'animate-spin'
+                  deleteAdminAppDefinitionResult.isFetching && 'animate-spin'
                 }`}
               />
             </button>
-            {isOptionsShown &&
-              /*(props.adminAppDefinitionCRData ? (
-                <AdditionalOptionsContainer
-                  isRunning={true}
-                  closeAdditionalOptions={() => setIsOptionsShown(false)}
-                />
-              ) :*/ (
-                <AdditionalOptionsContainer
-                  isRunning={false}
-                  deleteAppDefinition={() => deleteAdminAppDefinitionResult.refetch()}
-                  editAppDefinition={() => editAdminAppDefinitionResult.refetch()}
-                  closeAdditionalOptions={() => setIsOptionsShown(false)}
-                />
-              )}
+            {isOptionsShown && (
+              <AdditionalOptionsContainer
+                deleteAppDefinition={() => deleteAdminAppDefinitionResult.refetch()}
+                closeAdditionalOptions={() => setIsOptionsShown(false)}
+                adminAppDefinitionCRData={props.adminAppDefinitionCRData}
+                refresh={() => props.refetch()}
+              />
+            )}
           </div>
         </OutsideClickHandler>
       </div>

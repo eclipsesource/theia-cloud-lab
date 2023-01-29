@@ -56,9 +56,6 @@ const AppDefinitions = () => {
           <AdminAppDefCard
             key={cardData.adminAppDefinitionCRData.name}
             {...cardData}
-            refetch={() => {
-              results[0].refetch();
-            }}
           />
         ));
       } else {
@@ -85,15 +82,14 @@ const AppDefinitions = () => {
               setModalContent({
                 function: AdminCreateAppDefinitionModalContent,
                 props: {
-                refresh: () => {
-                results[0].refetch();
+                  refresh: () => {
+                    results[0].refetch();
+                  },
+                  setIsModalOpen,
+                  keycloak,
                 },
-                setIsModalOpen,
-                keycloak,
-                },
-                });
-                setIsModalOpen(true);
-
+              });
+              setIsModalOpen(true);
             }}
             disabled={results[0].isFetching}
           />

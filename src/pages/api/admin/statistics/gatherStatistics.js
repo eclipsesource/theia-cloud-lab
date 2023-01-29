@@ -205,7 +205,7 @@ export default async function handler(req, res) {
             if (sessionCountObj[appDefName]) {
               sessionCount = sessionCountObj[appDefName].length;
             }
-            let metricsObj = getCPUConsumptionOfAnAppDefinition(appDefName, metrics);
+            let metricsObj = getCPUConsumptionOfAnAppDefinition(appDefName, metrics, sessionList);
             await questdbClient.query(`INSERT INTO '${globalAppDefs}' VALUES($1, $2, $3, $4, $5, $6);`, [
               dayjs().toISOString(),
               appDefName,
@@ -218,7 +218,7 @@ export default async function handler(req, res) {
 
           await questdbClient.query('COMMIT');
           await questdbClient.end();
-        }, 60000);
+        }, 5000);
         return res.status(200).json('Started fetching metrics at 1s interval');
       } else if (req.body['stop'] === true && loggingIntervalId !== undefined) {
         clearInterval(loggingIntervalId);
@@ -258,18 +258,23 @@ function getAppDefCountsAsObj(list) {
   return returnObj;
 }
 
-function getCPUConsumptionOfAnAppDefinition(appDefinition, metrics) {
+function getCPUConsumptionOfAnAppDefinition(appDefName, metrics, sessionList) {
   let metricsObj = {
     appDefCPU: 0,
     appDefMemory: 0,
   };
   metrics.items.forEach((element) => {
-    element.containers.forEach((ctn) => {
-      if (ctn.name === appDefinition) {
-        metricsObj.appDefCPU = metricsObj.appDefCPU + parseCPUInteger(ctn.usage.cpu);
-        metricsObj.appDefMemory = metricsObj.appDefMemory + parseMemoryInteger(ctn.usage.memory);
+    console.log('element', element);
+    for (const session of sessionList.body.items) {
+      console.log('session', session);
+      if (element.metadata?.name.includes(session.metadata.uid) && session.appDefinition === appDefName) {
+        console.log('matched');
+        element.containers.forEach((ctn) => {
+          metricsObj.appDefCPU = metricsObj.appDefCPU + parseCPUInteger(ctn.usage.cpu);
+          metricsObj.appDefMemory = metricsObj.appDefMemory + parseMemoryInteger(ctn.usage.memory);
+        });
       }
-    });
+    }
   });
   return metricsObj;
 }
