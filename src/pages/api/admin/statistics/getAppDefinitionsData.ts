@@ -3,15 +3,15 @@ import { Client } from 'pg';
 import { DB_TABLE_NAMES } from '../../../../../types/Database';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<any>) {
+  const questdbClient = new Client({
+    database: 'qdb',
+    host: '127.0.0.1',
+    password: 'quest',
+    port: 8812,
+    user: 'admin',
+  });
   if (req.method === 'POST' && req.body.graphInfo === 'topTenAppCPUConsumingDefs') {
     try {
-      const questdbClient = new Client({
-        database: 'qdb',
-        host: '127.0.0.1',
-        password: 'quest',
-        port: 8812,
-        user: 'admin',
-      });
       await questdbClient.connect();
       const data = await questdbClient.query(
         `SELECT name, MAX(totalcpu) AS max_cpu FROM '${DB_TABLE_NAMES.GLOBAL_APP_DEFINITIONS}' GROUP BY name ORDER BY max_cpu DESC LIMIT 10`
@@ -25,13 +25,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     }
   } else if (req.method === 'POST' && req.body.graphInfo === 'topTenAppMemoryConsumingDefs') {
     try {
-      const questdbClient = new Client({
-        database: 'qdb',
-        host: '127.0.0.1',
-        password: 'quest',
-        port: 8812,
-        user: 'admin',
-      });
       await questdbClient.connect();
       const data = await questdbClient.query(
         `SELECT name, MAX(totalmemory) AS max_mem FROM '${DB_TABLE_NAMES.GLOBAL_APP_DEFINITIONS}' GROUP BY name ORDER BY max_mem DESC LIMIT 10`
@@ -45,13 +38,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     }
   } else if (req.method === 'POST' && req.body.graphInfo === 'mostPopularAppDefs') {
     try {
-      const questdbClient = new Client({
-        database: 'qdb',
-        host: '127.0.0.1',
-        password: 'quest',
-        port: 8812,
-        user: 'admin',
-      });
       await questdbClient.connect();
       /*
         Gives the app definition with the most ws number for every minute (1 minute intervals)
@@ -73,13 +59,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
     }
   } else if (req.method === 'POST' && req.body.graphInfo === 'averageConsumption') {
     try {
-      const questdbClient = new Client({
-        database: 'qdb',
-        host: '127.0.0.1',
-        password: 'quest',
-        port: 8812,
-        user: 'admin',
-      });
       await questdbClient.connect();
 
       const data = await questdbClient.query(

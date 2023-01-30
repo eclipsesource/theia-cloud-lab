@@ -26,8 +26,8 @@ const GlobalAppDefUsageGraph = () => {
   // Registering the chart.js plugins
   ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend);
 
-  const queryTopTenAppDefsWithMostConsumption = useQuery({
-    queryKey: ['admin/statistics/appdefs/topTenAppDefs'],
+  const queryTopTenAppDefsWithMostCPUConsumption = useQuery({
+    queryKey: ['admin/statistics/appdefs/topTenAppCPUConsumingDefs'],
     queryFn: async (): Promise<DB_TABLE_ROW_TYPES['GLOBAL_APP_DEFINITIONS'][]> =>
       fetch('/api/admin/statistics/getAppDefinitionsData', {
         headers: {
@@ -35,7 +35,27 @@ const GlobalAppDefUsageGraph = () => {
           'Content-Type': 'application/json',
         },
         method: 'POST',
-        body: JSON.stringify({ graphInfo: 'topTenAppDefs' }),
+        body: JSON.stringify({ graphInfo: 'topTenAppCPUConsumingDefs' }),
+      }).then((res) => {
+        if (!res.ok) {
+          toast.error('There was an error getting global usage statistics. Please try again later.');
+        }
+        return res.json();
+      }),
+    initialData: [],
+    retry: false,
+    refetchInterval: 60000,
+  });
+  const queryTopTenAppDefsWithMostMemoryConsumption = useQuery({
+    queryKey: ['admin/statistics/appdefs/topTenAppMemoryConsumingDefs'],
+    queryFn: async (): Promise<DB_TABLE_ROW_TYPES['GLOBAL_APP_DEFINITIONS'][]> =>
+      fetch('/api/admin/statistics/getAppDefinitionsData', {
+        headers: {
+          Authorization: `Bearer ${keycloak.token}`,
+          'Content-Type': 'application/json',
+        },
+        method: 'POST',
+        body: JSON.stringify({ graphInfo: 'topTenAppMemoryConsumingDefs' }),
       }).then((res) => {
         if (!res.ok) {
           toast.error('There was an error getting global usage statistics. Please try again later.');
@@ -110,12 +130,10 @@ const GlobalAppDefUsageGraph = () => {
   //   }
   // };
 
-  console.log(queryTopTenAppDefsWithMostConsumption.data);
-
   return (
     <>
       <Bar
-        datasetIdKey='global-cpu-usage-table'
+        datasetIdKey='global-appdef-cpu-usage-table'
         options={{
           scales: {
             y: {
@@ -128,12 +146,40 @@ const GlobalAppDefUsageGraph = () => {
           },
         }}
         data={{
-          labels: queryTopTenAppDefsWithMostConsumption.data.map((row) => row.name),
+          labels: queryTopTenAppDefsWithMostCPUConsumption.data.map((row) => row.name),
           datasets: [
             {
-              label: 'Top 10 App Definitions with Most Resource Consumption',
-              data: queryTopTenAppDefsWithMostConsumption.data.map((row: any, i) => {
-                return row.max_sum / 10 ** 7;
+              label: 'Top 10 App Definitions with Most CPU Resource Consumption',
+              data: queryTopTenAppDefsWithMostCPUConsumption.data.map((row: any, i) => {
+                return row.max_cpu / 10 ** 7;
+              }),
+              backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(255, 159, 64, 0.2)', 'rgba(255, 205, 86, 0.2)'],
+              borderColor: ['rgb(255, 99, 132)', 'rgb(255, 159, 64)', 'rgb(255, 205, 86)'],
+              borderWidth: 1,
+            },
+          ],
+        }}
+      />
+      <Bar
+        datasetIdKey='global-appdef-memory-usage-table'
+        options={{
+          scales: {
+            y: {
+              ticks: {
+                callback: function (value, index, ticks) {
+                  return value + ' %';
+                },
+              },
+            },
+          },
+        }}
+        data={{
+          labels: queryTopTenAppDefsWithMostMemoryConsumption.data.map((row) => row.name),
+          datasets: [
+            {
+              label: 'Top 10 App Definitions with Most Memory Resource Consumption',
+              data: queryTopTenAppDefsWithMostMemoryConsumption.data.map((row: any, i) => {
+                return row.max_mem / 10 ** 7;
               }),
               backgroundColor: ['rgba(255, 99, 132, 0.2)', 'rgba(255, 159, 64, 0.2)', 'rgba(255, 205, 86, 0.2)'],
               borderColor: ['rgb(255, 99, 132)', 'rgb(255, 159, 64)', 'rgb(255, 205, 86)'],
@@ -186,7 +232,7 @@ const GlobalAppDefUsageGraph = () => {
         }}
       />
       <Line
-        datasetIdKey='global-appdefs-usage-table'
+        datasetIdKey='global-appdefs-usage-table-2'
         data={{
           labels: queryTopTenAppDefsWithAverageConsumption.data.map((row) => dayjs(row.ts).format('lll')),
           datasets: [
