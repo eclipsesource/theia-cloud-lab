@@ -48,6 +48,8 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
           limitsMemory: appDefMemoryLimits,
           limitsCpu: appDefCPULimit,
           timeout: appDefTimeout,
+          minInstances: appDefMinInstance,
+          maxInstances: appDefMaxInstance
         }),
       }).then((res) => {
         if (!res.ok) {
@@ -58,6 +60,7 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
     enabled: false,
     onSettled: () => {
       props.setIsModalOpen(false);
+      props.refetch();
     },
     staleTime: Infinity,
     retry: false,

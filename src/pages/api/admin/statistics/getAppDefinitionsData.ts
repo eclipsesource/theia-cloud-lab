@@ -3,7 +3,7 @@ import { Client } from 'pg';
 import { DB_TABLE_NAMES } from '../../../../../types/Database';
 
 export default async function handler(req: NextApiRequest, res: NextApiResponse<any>) {
-  if (req.method === 'POST' && req.body.graphInfo === 'topTenAppDefs') {
+  if (req.method === 'POST' && req.body.graphInfo === 'topTenAppCPUConsumingDefs') {
     try {
       const questdbClient = new Client({
         database: 'qdb',
@@ -14,7 +14,27 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       });
       await questdbClient.connect();
       const data = await questdbClient.query(
-        `SELECT name, MAX(totalcpu + totalmemory) AS max_sum FROM '${DB_TABLE_NAMES.GLOBAL_APP_DEFINITIONS}' GROUP BY name ORDER BY max_sum DESC LIMIT 10`
+        `SELECT name, MAX(totalcpu) AS max_cpu FROM '${DB_TABLE_NAMES.GLOBAL_APP_DEFINITIONS}' GROUP BY name ORDER BY max_cpu DESC LIMIT 10`
+      );
+      await questdbClient.end();
+
+      return res.status(200).send(data.rows);
+    } catch (error) {
+      console.log(error);
+      return res.status(500).send([]);
+    }
+  } else if (req.method === 'POST' && req.body.graphInfo === 'topTenAppMemoryConsumingDefs') {
+    try {
+      const questdbClient = new Client({
+        database: 'qdb',
+        host: '127.0.0.1',
+        password: 'quest',
+        port: 8812,
+        user: 'admin',
+      });
+      await questdbClient.connect();
+      const data = await questdbClient.query(
+        `SELECT name, MAX(totalmemory) AS max_mem FROM '${DB_TABLE_NAMES.GLOBAL_APP_DEFINITIONS}' GROUP BY name ORDER BY max_mem DESC LIMIT 10`
       );
       await questdbClient.end();
 

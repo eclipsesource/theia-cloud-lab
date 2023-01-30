@@ -253,7 +253,9 @@ export class KubernetesClient {
     requestsMemory: string,
     limitsMemory: string,
     limitsCpu: string,
-    timeout: number
+    timeout: number,
+    minInstances: number,
+    maxInstances: number
     // ingressname: string, ?
   ): Promise<any> {
     // create clients
@@ -267,6 +269,18 @@ export class KubernetesClient {
       this.pluralAD,
       appDefName
     );
+    if (typeof port !== 'number') {
+      port = Number(port);
+    }
+    if (typeof timeout !== 'number') {
+      timeout = Number(timeout);
+    }
+    if (typeof minInstances !== 'number') {
+      minInstances = Number(minInstances);
+    }
+    if (typeof maxInstances !== 'number') {
+      maxInstances = Number(maxInstances);
+    }
     const newBody = objToFound.body;
     newBody.spec.image = image;
     newBody.spec.port = port;
@@ -275,6 +289,8 @@ export class KubernetesClient {
     newBody.spec.limitsMemory = limitsMemory;
     newBody.spec.limitsCpu = limitsCpu;
     newBody.spec.timeout.limit = timeout;
+    newBody.spec.minInstances = minInstances;
+    newBody.spec.maxInstances = maxInstances;
 
     const options = { headers: { 'Content-type': 'application/merge-patch+json' } };
     // edit the cr

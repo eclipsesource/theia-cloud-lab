@@ -264,11 +264,8 @@ function getCPUConsumptionOfAnAppDefinition(appDefName, metrics, sessionList) {
     appDefMemory: 0,
   };
   metrics.items.forEach((element) => {
-    console.log('element', element);
     for (const session of sessionList.body.items) {
-      console.log('session', session);
       if (element.metadata?.name.includes(session.metadata.uid) && session.appDefinition === appDefName) {
-        console.log('matched');
         element.containers.forEach((ctn) => {
           metricsObj.appDefCPU = metricsObj.appDefCPU + parseCPUInteger(ctn.usage.cpu);
           metricsObj.appDefMemory = metricsObj.appDefMemory + parseMemoryInteger(ctn.usage.memory);
