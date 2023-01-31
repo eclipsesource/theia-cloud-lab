@@ -21,7 +21,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
       return res.status(200).send(data.rows);
     } catch (error) {
-      console.log(error);
       return res.status(500).send([]);
     }
   } else if (req.method === 'GET' && req.query.graphInfo === 'topTenAppMemoryConsumingDefs') {
@@ -34,7 +33,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
 
       return res.status(200).send(data.rows);
     } catch (error) {
-      console.log(error);
       return res.status(500).send([]);
     }
   } else if (req.method === 'GET' && req.query.graphInfo === 'mostPopularAppDefs') {
@@ -45,17 +43,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       */
       const data = await questdbClient.query(
         `WITH cte AS (
-            SELECT DATE_TRUNC('minute', ts) as minute_ts, name, wscount, ROW_NUMBER() OVER (PARTITION BY DATE_TRUNC('minute', ts) ORDER BY wscount DESC) as row_num
+            SELECT DATE_TRUNC('minute', ts) as ts_min, name, wscount, ROW_NUMBER() OVER (PARTITION BY DATE_TRUNC('minute', ts) ORDER BY wscount DESC) as row_num
             FROM  '${DB_TABLE_NAMES.GLOBAL_APP_DEFINITIONS}' )
-            SELECT minute_ts, name, wscount
+            SELECT ts_min, name, wscount
             FROM cte
             WHERE row_num = 1
-            ORDER BY minute_ts DESC`
+            ORDER BY ts_min ASC`
       );
       await questdbClient.end();
       return res.status(200).send(data.rows);
     } catch (error) {
-      console.log(error);
       return res.status(500).send([]);
     }
   } else if (req.method === 'GET' && req.query.graphInfo === 'averageCPUConsumption') {
@@ -67,7 +64,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       await Promise.all(
         appDefsList.body.items.map(async (item: any) => {
           const data = await questdbClient.query(
-            `SELECT ts, name, wscount, sessioncount, totalcpu,
+            `SELECT DISTINCT DATE_TRUNC('minute', ts) as ts_min, name, wscount, sessioncount, totalcpu,
             CASE
             WHEN sessioncount = 0 THEN 0
             ELSE totalcpu/sessioncount
@@ -81,7 +78,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       await questdbClient.end();
       return res.status(200).send(returnObj);
     } catch (error) {
-      console.log(error);
       return res.status(500).send([]);
     }
   } else if (req.method === 'GET' && req.query.graphInfo === 'averageMemoryConsumption') {
@@ -89,12 +85,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       const k8sService = new KubernetesClient();
       const appDefsList = await k8sService.getAppDefinitionsList();
       const returnObj: any = {};
-      // const returnArr:any = []
       await questdbClient.connect();
       await Promise.all(
         appDefsList.body.items.map(async (item: any) => {
           const data = await questdbClient.query(
-            `SELECT ts, name, wscount, sessioncount, totalmemory,
+            `SELECT DISTINCT DATE_TRUNC('minute', ts) as ts_min, name, wscount, sessioncount, totalmemory,
                 CASE
                   WHEN sessioncount = 0 THEN 0
                   ELSE totalmemory/sessioncount
@@ -103,14 +98,11 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
                 WHERE name = '${item.metadata?.name}'`
           );
           returnObj[item.metadata?.name] = data.rows;
-          // returnArr.push(data.rows)
-          // console.log(returnArr)
         })
       );
       await questdbClient.end();
       return res.status(200).send(returnObj);
     } catch (error) {
-      console.log(error);
       return res.status(500).send([]);
     }
   } else if (req.method === 'POST' && req.query.graphInfo === 'tableData') {
@@ -132,15 +124,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
         SELECT name as id, active_time, total_cpu, total_mem, coalesce(total_cpu / active_time, 0) as avg_cpu_over_time, coalesce(total_mem / active_time, 0) as avg_mem_over_time
         FROM first_query`
       );
-      
+
       await questdbClient.end();
       return res.status(200).send(data.rows);
     } catch (error) {
-        console.log(error)
+      return res.status(500).send([]);
+    }
+  } else if (req.method === 'GET' && req.query.graphInfo === 'timelogs') {
+    try {
+      await questdbClient.connect();
+      const data = await questdbClient.query(`SELECT DISTINCT DATE_TRUNC('minute', ts) as ts_min FROM '${DB_TABLE_NAMES.GLOBAL_APP_DEFINITIONS}' ORDER BY ts_min ASC`);
+      await questdbClient.end();
+      return res.status(200).send(data.rows);
+    } catch (error) {
       return res.status(500).send([]);
     }
   } else {
     return res.status(405).send([]);
   }
 }
- 

@@ -27,7 +27,7 @@ type SessionRow = {
   total_cpu: string;
   avg_cpu_over_time: string;
   total_mem: string;
-  avg_mem_over_time:string;
+  avg_mem_over_time: string;
 };
 
 const GlobalAppDefUsageGraph = () => {
@@ -79,6 +79,26 @@ const GlobalAppDefUsageGraph = () => {
     queryKey: ['admin/statistics/appdefs/mostPopularAppDefs'],
     queryFn: async (): Promise<DB_TABLE_ROW_TYPES['GLOBAL_APP_DEFINITIONS'][]> =>
       fetch('/api/admin/statistics/getAppDefinitionsData?graphInfo=mostPopularAppDefs', {
+        headers: {
+          Authorization: `Bearer ${keycloak.token}`,
+          'Content-Type': 'application/json',
+        },
+        method: 'GET',
+      }).then((res) => {
+        if (!res.ok) {
+          toast.error('There was an error getting global usage statistics. Please try again later.');
+        }
+        return res.json();
+      }),
+    initialData: [],
+    retry: false,
+    refetchInterval: 60000,
+  });
+
+  const queryAllTimeLogs = useQuery({
+    queryKey: ['admin/statistics/appdefs/allTimeLogs'],
+    queryFn: async (): Promise<DB_TABLE_ROW_TYPES['GLOBAL_APP_DEFINITIONS'][]> =>
+      fetch('/api/admin/statistics/getAppDefinitionsData?graphInfo=timelogs', {
         headers: {
           Authorization: `Bearer ${keycloak.token}`,
           'Content-Type': 'application/json',
@@ -156,7 +176,7 @@ const GlobalAppDefUsageGraph = () => {
   });
 
   const cpuFormat = (cpu: string) => {
-    let formattedCpu = ((Number(cpu) / 10 ** 9) * (10 ** 2)).toFixed(3);
+    let formattedCpu = ((Number(cpu) / 10 ** 9) * 10 ** 2).toFixed(3);
     return formattedCpu;
   };
 
@@ -168,11 +188,14 @@ const GlobalAppDefUsageGraph = () => {
   const getDataSetsArray = () => {
     const returnArr = [];
 
-    for (const [key, value] of Object.entries(queryTopTenAppDefsWithAverageMemConsumption.data)) {
+    for (let [key, value] of Object.entries(queryTopTenAppDefsWithAverageMemConsumption.data)) {
+      value = addMissingDataForAvg(queryAllTimeLogs.data, value);
       let tmpObj = {
         label: key,
         borderColor: stringToColour(key),
         data: (value as any).map((each: any) => memoryFormat(each.averagememory)),
+        fill: false,
+        lineTension: 0.3,
       };
       returnArr.push(tmpObj);
     }
@@ -219,7 +242,7 @@ const GlobalAppDefUsageGraph = () => {
 
   const setTableData = (): SessionRow[] => {
     if (queryGetAppDefinitionsTableData.data && queryGetAppDefinitionsTableData.data.length > 0) {
-      let rows: SessionRow[] = []
+      let rows: SessionRow[] = [];
       for (const each of queryGetAppDefinitionsTableData.data) {
         const row: SessionRow = {
           id: each.id,
@@ -228,13 +251,44 @@ const GlobalAppDefUsageGraph = () => {
           total_mem: `${memoryFormat(each.total_mem)} MiB`,
           avg_cpu_over_time: `${cpuFormat(each.avg_cpu_over_time)}`,
           avg_mem_over_time: `${memoryFormat(each.avg_mem_over_time)}`,
-        }
-        rows.push(row)
+        };
+        rows.push(row);
       }
       return rows;
     }
-    return []
+    return [];
   };
+
+  function addMissingDataForAvg(timeArr: any[], dataArr: any) {
+    let dataMap = new Map();
+    dataArr.forEach((d: any) =>
+      dataMap.set(d.ts_min, {
+        ts_min: d.ts_min,
+        name: d.name,
+        wscount: d.wscount,
+        sessioncount: d.sessioncount,
+        totalmemory: d.totalmemory,
+        averagememory: d.averagememory,
+      })
+    );
+    timeArr.forEach((t) => {
+      if (!dataMap.has(t.ts_min)) {
+        dataMap.set(t.ts_min, {
+          ts_min: t.ts_min,
+          name: dataArr[0].name,
+          wscount: 0,
+          sessioncount: 0,
+          totalmemory: 0,
+          averagememory: 0,
+        });
+      }
+    });
+    return Array.from(dataMap.values());
+  }
+
+//   function getUniqueLabels(dataArr:any[]) {
+//     return Array.from(new Set(dataArr.map(d => d.name)));
+//   }
 
   return (
     <>
@@ -266,6 +320,7 @@ const GlobalAppDefUsageGraph = () => {
           ],
         }}
       />
+      <br />
       <Bar
         datasetIdKey='global-appdef-memory-usage-table'
         options={{
@@ -294,50 +349,27 @@ const GlobalAppDefUsageGraph = () => {
           ],
         }}
       />
-      {/* <Line
+      {/* <h4> Number of Workspace for the Most Popular App Definition per Minute</h4>
+      <Line
         datasetIdKey='global-appdefs-usage-table'
         data={{
-          labels: queryTopTenAppDefsWithMostPopular.data
-            .map((row: any) => dayjs(row.minute_ts).format('lll'))
-            .reverse(),
-          datasets: [
-            {
-              label: 'theia-cloud-demo',
-              data: queryTopTenAppDefsWithMostPopular.data.map((row, i) => {
-                if (row.name === 'theia-cloud-demo') {
-                  return row.wscount;
-                }
-              }),
-              tension: 0,
-              spanGaps: true,
-              borderColor: 'rgb(255, 99, 132)',
-            },
-            {
-              label: 'cdt-cloud-demo',
-              data: queryTopTenAppDefsWithMostPopular.data.map((row, i) => {
-                if (row.name === 'cdt-cloud-demo') {
-                  return row.wscount;
-                }
-              }),
-              tension: 0,
-              spanGaps: true,
-              borderColor: 'rgb(255, 159, 64)',
-            },
-            {
-              label: 'coffee-editor',
-              data: queryTopTenAppDefsWithMostPopular.data.map((row, i) => {
-                if (row.name === 'coffee-editor') {
-                  return row.wscount;
-                }
-              }),
-              tension: 0,
-              spanGaps: true,
-              borderColor: 'rgb(255, 205, 86)',
-            },
-          ],
+          labels: queryTopTenAppDefsWithMostPopular.data?.map((each: any) => dayjs(each.ts_min).format('lll')),
+          datasets: getUniqueLabels(queryTopTenAppDefsWithMostPopular.data).map(name => {
+            const filteredData =  queryTopTenAppDefsWithMostPopular.data.filter(d => d.name === name);
+            const datasetData = filteredData.map(d => d.wscount);
+            return {
+              label: name,
+              data: datasetData,
+              backgroundColor: "rgba(255, 99, 132, 0.2)",
+              borderColor: "rgba(255, 99, 132, 1)",
+              borderWidth: 1,
+              pointRadius: 5
+            };
+          })
         }}
       /> */}
-      <h4> </h4>
+      <br />
+      <h4> Average CPU Usage per App Definition</h4>
       <Line
         datasetIdKey='global-appdefs-usage-table-2'
         options={{
@@ -352,12 +384,12 @@ const GlobalAppDefUsageGraph = () => {
           },
         }}
         data={{
-          labels: queryTopTenAppDefsWithAverageCPUConsumption.data[Object.keys(queryTopTenAppDefsWithAverageMemConsumption.data)[0]]?.map((each: any) =>
-            dayjs(each.ts).format('lll')
-          ),
+          labels: queryAllTimeLogs.data?.map((each: any) => dayjs(each.ts_min).format('lll')),
           datasets: getDataSetsForCPU(),
         }}
       />
+      <br />
+      <h4> Average Memory Usage per App Definition</h4>
       <Line
         datasetIdKey='global-appdefs-usage-table-3'
         options={{
@@ -372,9 +404,7 @@ const GlobalAppDefUsageGraph = () => {
           },
         }}
         data={{
-          labels: queryTopTenAppDefsWithAverageMemConsumption.data[Object.keys(queryTopTenAppDefsWithAverageMemConsumption.data)[0]]?.map((each: any) =>
-            dayjs(each.ts).format('lll')
-          ),
+          labels: queryAllTimeLogs.data?.map((each: any) => dayjs(each.ts_min).format('lll')),
           datasets: getDataSetsArray(),
         }}
       />
