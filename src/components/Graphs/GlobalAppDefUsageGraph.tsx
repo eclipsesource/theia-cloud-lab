@@ -25,8 +25,8 @@ type SessionRow = {
   id: string;
   active_time: string;
   total_cpu: string;
-  total_mem: string;
   avg_cpu_over_time: string;
+  total_mem: string;
   avg_mem_over_time:string;
 };
 
@@ -209,12 +209,12 @@ const GlobalAppDefUsageGraph = () => {
   };
 
   const columns: GridColDef[] = [
-    { field: 'id', headerName: 'App Definition Name', width: 200 },
+    { field: 'id', headerName: 'App Definition Name', width: 240 },
     { field: 'active_time', headerName: 'Total Active Time (mins)', width: 200 },
     { field: 'total_cpu', headerName: 'Total CPU', width: 200 },
+    { field: 'avg_cpu_over_time', headerName: 'Average CPU Consumption Over Time', width: 270 },
     { field: 'total_mem', headerName: 'Total Memory', width: 200 },
-    { field: 'avg_cpu_over_time', headerName: 'Average CPU Consumption Over Time', width: 200 },
-    { field: 'avg_mem_over_time', headerName: 'Average Memory Consumption Over Time', width: 200 },
+    { field: 'avg_mem_over_time', headerName: 'Average Memory Consumption Over Time', width: 300 },
   ];
 
   const setTableData = (): SessionRow[] => {
@@ -226,8 +226,8 @@ const GlobalAppDefUsageGraph = () => {
           active_time: each.active_time,
           total_cpu: `${cpuFormat(each.total_cpu)} m`,
           total_mem: `${memoryFormat(each.total_mem)} MiB`,
-          avg_cpu_over_time: `${cpuFormat(each.avg_cpu_over_time)} m`,
-          avg_mem_over_time: `${memoryFormat(each.avg_mem_over_time)} MiB`,
+          avg_cpu_over_time: `${cpuFormat(each.avg_cpu_over_time)}`,
+          avg_mem_over_time: `${memoryFormat(each.avg_mem_over_time)}`,
         }
         rows.push(row)
       }
