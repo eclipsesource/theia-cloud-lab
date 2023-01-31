@@ -106,7 +106,7 @@ const AppDefinitions = () => {
       </div>
       <div
         ref={parent}
-        className='flex p-5 w-full h-[calc(100vh-5rem)] flex-col gap-6'
+        className='flex p-5 pb-16 w-full h-[calc(100vh-5rem)] flex-col gap-6 overflow-y-auto'
       >
         {renderAppDefinitionCards()}
       </div>

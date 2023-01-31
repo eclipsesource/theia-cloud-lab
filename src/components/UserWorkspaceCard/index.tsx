@@ -1,6 +1,6 @@
 'use client';
 
-import { useContext, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import AdditionalOptionsContainer from './AdditionalOptionsContainer';
 import NewTabIcon from '../icons/NewTabIcon';
 import OptionsIcon from '../icons/OptionsIcon';
@@ -23,7 +23,8 @@ export type UserWorkspaceCardProps = {
 };
 
 export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
-  const { keycloak, setModalContent, setIsModalOpen, userSwitchWorkspaceFromTo } = useContext(Context);
+  const { keycloak, setModalContent, setIsModalOpen, userSwitchWorkspaceFromTo, setUserCreateWorkspaceIsFetching } =
+    useContext(Context);
   const [isOptionsShown, setIsOptionsShown] = useState(false);
 
   // TODO: Uncomment when metrics are available
@@ -123,6 +124,11 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
     retry: false,
   });
 
+  useEffect(() => {
+    setUserCreateWorkspaceIsFetching(restartUserWorkspaceResult.isFetching);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [restartUserWorkspaceResult.isFetching]);
+
   return (
     <div className='flex flex-col p-4 w-full shadow-lg rounded-lg bg-gray-100 justify-between whitespace-pre-wrap hover:shadow-xl relative'>
       {(stopUserWorkspaceResult.isFetching ||
@@ -152,14 +158,18 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
               disabled={
                 stopUserWorkspaceResult.isFetching ||
                 deleteUserWorkspaceResult.isFetching ||
-                restartUserWorkspaceResult.isFetching
+                restartUserWorkspaceResult.isFetching ||
+                userSwitchWorkspaceFromTo[0] === props.userWorkspaceCRData.name ||
+                userSwitchWorkspaceFromTo[1] === props.userWorkspaceCRData.name
               }
             >
               <OptionsIcon
                 className={`w-7 h-7 rounded-full hover:bg-black hover:stroke-white ${
                   (stopUserWorkspaceResult.isFetching ||
                     deleteUserWorkspaceResult.isFetching ||
-                    restartUserWorkspaceResult.isFetching) &&
+                    restartUserWorkspaceResult.isFetching ||
+                    userSwitchWorkspaceFromTo[0] === props.userWorkspaceCRData.name ||
+                    userSwitchWorkspaceFromTo[1] === props.userWorkspaceCRData.name) &&
                   'animate-spin'
                 }`}
               />

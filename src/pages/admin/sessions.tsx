@@ -152,15 +152,15 @@ const Sessions = () => {
     }, */
     {
       field: 'cpuUsage',
-      headerName: 'CPU Usage',
+      headerName: 'CPU Usage (% of vCPU)',
       sortable: true,
-      width: 100,
+      width: 180,
     },
     {
       field: 'memoryUsage',
-      headerName: 'Memory Usage',
+      headerName: 'Memory Usage (MB)',
       sortable: true,
-      width: 120,
+      width: 150,
     },
   ];
 
@@ -197,8 +197,8 @@ const Sessions = () => {
                 url: session.url,
                 user: session.user,
                 workspace: session.workspace,
-                cpuUsage: '% ' + ((totalCpuUsage / 10 ** 9) * 10 ** 2).toFixed(3),
-                memoryUsage: (totalMemoryUsage / 1024).toFixed(3) + ' MiB',
+                cpuUsage: ((totalCpuUsage / 10 ** 9) * 10 ** 2).toFixed(3),
+                memoryUsage: (totalMemoryUsage * 0.001024).toFixed(3),
               };
               rows.push(row);
               break;

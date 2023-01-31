@@ -73,7 +73,7 @@ const GlobalResourceUsageGraph = () => {
           labels: queryGlobalUsageTable.data.map((row) => dayjs(row.ts).format('lll')),
           datasets: [
             {
-              label: 'CPU Usage (CPU)',
+              label: 'CPU Usage (in % of 1 vCPU)',
               borderColor: 'rgb(0, 0, 255)',
               data: queryGlobalUsageTable.data.map((row, i) => {
                 let currentValue;
@@ -121,7 +121,7 @@ const GlobalResourceUsageGraph = () => {
             y: {
               ticks: {
                 callback: function (value, index, ticks) {
-                  return value + ' MiB';
+                  return value + ' MB';
                 },
               },
             },
@@ -138,7 +138,7 @@ const GlobalResourceUsageGraph = () => {
           labels: queryGlobalUsageTable.data.map((row) => dayjs(row.ts).format('lll')),
           datasets: [
             {
-              label: 'Memory Usage (MB)',
+              label: 'Memory Usage (in Megabytes)',
               borderColor: 'rgb(75, 192, 192)',
               data: queryGlobalUsageTable.data.map((row, i) => {
                 let currentValue;

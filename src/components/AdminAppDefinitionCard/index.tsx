@@ -3,10 +3,7 @@
 import { useContext, useState } from 'react';
 import OptionsIcon from '../icons/OptionsIcon';
 import OutsideClickHandler from '../OutsideClickHandler';
-import { useAutoAnimate } from '@formkit/auto-animate/react';
-import NewTabIcon from '../icons/NewTabIcon';
 import AdditionalOptionsContainer from './AdditionalOptionsContainer';
-import { AdminSessionCRData } from '../../../types/AdminSessionCRData';
 import { AdminAppDefinitionCRData } from '../../../types/AdminAppDefinitionCRData';
 import { useQuery } from '@tanstack/react-query';
 import { Context } from '../../context/Context';
@@ -14,16 +11,13 @@ import { toast } from 'react-toastify';
 
 export type AdminAppDefinitionCardProps = {
   adminAppDefinitionCRData: AdminAppDefinitionCRData;
+  //adminSessionCRData: AdminSessionCRData;
   refetch: () => void;
 };
 
 export default function AdminAppDefinitionCard(props: AdminAppDefinitionCardProps) {
   const { keycloak } = useContext(Context);
   const [isOptionsShown, setIsOptionsShown] = useState(false);
-  const [parent, enableAnimations] = useAutoAnimate<HTMLDivElement>({
-    duration: 100,
-    easing: 'ease-in-out',
-  });
 
   const deleteAdminAppDefinitionResult = useQuery({
     queryKey: [`admin/appDefinitions/delete/${props.adminAppDefinitionCRData.name}}`],
@@ -58,10 +52,7 @@ export default function AdminAppDefinitionCard(props: AdminAppDefinitionCardProp
         <span className='text-lg font-medium'>{props.adminAppDefinitionCRData.name}</span>
 
         <OutsideClickHandler onClickOutside={() => setIsOptionsShown(false)}>
-          <div
-            ref={parent}
-            className='relative'
-          >
+          <div className='relative'>
             <button
               onClick={() => setIsOptionsShown(!isOptionsShown)}
               disabled={deleteAdminAppDefinitionResult.isFetching}
