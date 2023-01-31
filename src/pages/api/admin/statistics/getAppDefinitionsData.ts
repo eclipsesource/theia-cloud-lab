@@ -124,19 +124,23 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
       }
       await questdbClient.connect();
       const data = await questdbClient.query(
-        `SELECT name as id, SUM(wscount) as sum_ws, SUM(sessioncount) as sum_session, SUM(totalcpu) AS sum_cpu, SUM(totalmemory) AS sum_mem, 
-        SUM(totalcpu) / SUM(sessioncount) as relative_cpu, SUM(totalmemory)/SUM(sessioncount) as relative_memory 
-        FROM '${DB_TABLE_NAMES.GLOBAL_APP_DEFINITIONS}'
-        WHERE ts >= '${req.body.startDate}' AND ts <= '${req.body.endDate}'
-        GROUP BY id`
+        `WITH first_query AS (
+            SELECT name, SUM(sessioncount) as active_time, SUM(totalcpu) as total_cpu, SUM(totalmemory) as total_mem
+            FROM '${DB_TABLE_NAMES.GLOBAL_APP_DEFINITIONS}'
+            WHERE ts >= '${req.body.startDate}' AND ts <= '${req.body.endDate}'
+            GROUP BY name)
+        SELECT name as id, active_time, total_cpu, total_mem, coalesce(total_cpu / active_time, 0) as avg_cpu_over_time, coalesce(total_mem / active_time, 0) as avg_mem_over_time
+        FROM first_query`
       );
       
       await questdbClient.end();
       return res.status(200).send(data.rows);
     } catch (error) {
+        console.log(error)
       return res.status(500).send([]);
     }
   } else {
     return res.status(405).send([]);
   }
 }
+ 

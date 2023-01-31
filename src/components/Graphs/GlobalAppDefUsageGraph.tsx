@@ -23,12 +23,11 @@ dayjs.extend(localizedFormat);
 
 type SessionRow = {
   id: string;
-  sum_ws: string;
-  sum_session: string;
-  sum_cpu: string;
-  sum_mem: string;
-  relative_cpu: string;
-  relative_memory: string;
+  active_time: string;
+  total_cpu: string;
+  total_mem: string;
+  avg_cpu_over_time: string;
+  avg_mem_over_time:string;
 };
 
 const GlobalAppDefUsageGraph = () => {
@@ -210,13 +209,12 @@ const GlobalAppDefUsageGraph = () => {
   };
 
   const columns: GridColDef[] = [
-    { field: 'id', headerName: 'App Definition Name', width: 250 },
-    { field: 'sum_ws', headerName: 'Total Workspaces', width: 250 },
-    { field: 'sum_session', headerName: 'Total Session', width: 250 },
-    { field: 'sum_cpu', headerName: 'Total CPU', width: 250 },
-    { field: 'sum_mem', headerName: 'Total Memory', width: 250 },
-    { field: 'relative_cpu', headerName: 'Relative CPU', width: 250 },
-    { field: 'relative_memory', headerName: 'Relative Memory', width: 250 },
+    { field: 'id', headerName: 'App Definition Name', width: 200 },
+    { field: 'active_time', headerName: 'Total Active Time (mins)', width: 200 },
+    { field: 'total_cpu', headerName: 'Total CPU', width: 200 },
+    { field: 'total_mem', headerName: 'Total Memory', width: 200 },
+    { field: 'avg_cpu_over_time', headerName: 'Average CPU Consumption Over Time', width: 200 },
+    { field: 'avg_mem_over_time', headerName: 'Average Memory Consumption Over Time', width: 200 },
   ];
 
   const setTableData = (): SessionRow[] => {
@@ -225,12 +223,11 @@ const GlobalAppDefUsageGraph = () => {
       for (const each of queryGetAppDefinitionsTableData.data) {
         const row: SessionRow = {
           id: each.id,
-          sum_ws: each.sum_ws,
-          sum_session: each.sum_session,
-          sum_cpu: `${cpuFormat(each.sum_cpu)} %`,
-          sum_mem: `${memoryFormat(each.sum_mem)} MiB`,
-          relative_cpu: `${cpuFormat(each.relative_cpu)} MiB`,
-          relative_memory: `${memoryFormat(each.relative_memory)} MiB`,
+          active_time: each.active_time,
+          total_cpu: `${cpuFormat(each.total_cpu)} m`,
+          total_mem: `${memoryFormat(each.total_mem)} MiB`,
+          avg_cpu_over_time: `${cpuFormat(each.avg_cpu_over_time)} m`,
+          avg_mem_over_time: `${memoryFormat(each.avg_mem_over_time)} MiB`,
         }
         rows.push(row)
       }
