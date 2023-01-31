@@ -286,9 +286,9 @@ const GlobalAppDefUsageGraph = () => {
     return Array.from(dataMap.values());
   }
 
-//   function getUniqueLabels(dataArr:any[]) {
-//     return Array.from(new Set(dataArr.map(d => d.name)));
-//   }
+  //   function getUniqueLabels(dataArr:any[]) {
+  //     return Array.from(new Set(dataArr.map(d => d.name)));
+  //   }
 
   return (
     <>
@@ -408,7 +408,10 @@ const GlobalAppDefUsageGraph = () => {
           datasets: getDataSetsArray(),
         }}
       />
+
       <div style={{ height: '500px', width: '100%', marginTop: '40px' }}>
+        <h4> Average Consumption over Time(minute) </h4>
+        <br />
         <DataGrid
           sx={{ height: 'calc(100% - 5rem)', width: '100%', borderRadius: 0 }}
           rows={setTableData()}
