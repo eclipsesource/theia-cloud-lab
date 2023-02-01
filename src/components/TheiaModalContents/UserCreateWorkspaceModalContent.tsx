@@ -15,7 +15,7 @@ export type UserCreateWorkspaceModalContentProps = {
 };
 
 const UserCreateWorkspaceModalContent = (props: UserCreateWorkspaceModalContentProps) => {
-  const { setUserCreateWorkspaceIsFetching } = useContext(Context);
+  const { setUserCreateWorkspaceIsFetching, setModalContent } = useContext(Context);
   const [selectedAppDefinition, setSelectedAppDefinition] = useState('');
 
   const createUserWorkspaceResult = useQuery({
@@ -37,6 +37,10 @@ const UserCreateWorkspaceModalContent = (props: UserCreateWorkspaceModalContentP
     enabled: false,
     onSettled() {
       props.refresh();
+      setModalContent({
+        function: () => <></>,
+        props: { setIsModalOpen: () => {} },
+      });
     },
     staleTime: Infinity,
     retry: false,
@@ -67,9 +71,9 @@ const UserCreateWorkspaceModalContent = (props: UserCreateWorkspaceModalContentP
   }, [createUserWorkspaceResult.isFetching]);
 
   return (
-    <div className='w-full h-full flex flex-col gap-10 items-center'>
-      <div className='w-full flex items-center'>
-        <span className='font-bold mr-5'>App Definition:</span>
+    <div className='flex h-full w-full flex-col items-center gap-10'>
+      <div className='flex w-full items-center'>
+        <span className='mr-5 font-bold'>App Definition:</span>
         <TextField
           id='appDefinition-select'
           select
@@ -92,7 +96,7 @@ const UserCreateWorkspaceModalContent = (props: UserCreateWorkspaceModalContentP
           ))}
         </TextField>
       </div>
-      <div className='flex justify-between w-full'>
+      <div className='flex w-full justify-between'>
         <TheiaButton
           text='Cancel'
           icon={<CancelIcon />}

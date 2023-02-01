@@ -7,7 +7,6 @@ import CancelIcon from '../icons/CancelIcon';
 import { Context } from '../../context/Context';
 import Keycloak from 'keycloak-js';
 import CheckIcon from '../icons/CheckIcon';
-import InfoIcon from '../icons/InfoIcon';
 
 export type AdminCreateSessionModalContentProps = {
   refresh: () => void;
@@ -16,7 +15,7 @@ export type AdminCreateSessionModalContentProps = {
 };
 
 const AdminCreateSessionModalContent = (props: AdminCreateSessionModalContentProps) => {
-  const { setAdminCreateSessionIsFetching } = useContext(Context);
+  const { setAdminCreateSessionIsFetching, setModalContent } = useContext(Context);
   const [userId, setUserId] = useState('');
   const [selectedAppDefinition, setSelectedAppDefinition] = useState('');
 
@@ -42,7 +41,7 @@ const AdminCreateSessionModalContent = (props: AdminCreateSessionModalContentPro
   const createSessionResult = useQuery({
     queryKey: ['admin/createSession'],
     queryFn: () =>
-      fetch('/api/admin/sessions/', {
+      fetch('/api/admin/sessions', {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${props.keycloak.token}`,
@@ -58,6 +57,10 @@ const AdminCreateSessionModalContent = (props: AdminCreateSessionModalContentPro
     enabled: false,
     onSettled() {
       props.refresh();
+      setModalContent({
+        function: () => <></>,
+        props: { setIsModalOpen: () => {} },
+      });
     },
     staleTime: Infinity,
     retry: false,
@@ -69,10 +72,10 @@ const AdminCreateSessionModalContent = (props: AdminCreateSessionModalContentPro
   }, [createSessionResult.isFetching]);
 
   return (
-    <div className='w-full h-full flex flex-col gap-10 items-center'>
-      <div className='w-full h-full flex flex-col gap-3 justify-center'>
-        <div className='w-full flex items-center'>
-          <span className='font-bold mr-5 w-32'>User ID:</span>
+    <div className='flex h-full w-full flex-col items-center gap-10'>
+      <div className='flex h-full w-full flex-col justify-center gap-3'>
+        <div className='flex w-full items-center'>
+          <span className='mr-5 w-32 font-bold'>User ID:</span>
           <TextField
             variant='outlined'
             value={userId}
@@ -85,8 +88,8 @@ const AdminCreateSessionModalContent = (props: AdminCreateSessionModalContentPro
             placeholder='johndoe@example.com'
           />
         </div>
-        <div className='w-full flex items-center'>
-          <span className='font-bold mr-5 w-32'>App Definition:</span>
+        <div className='flex w-full items-center'>
+          <span className='mr-5 w-32 font-bold'>App Definition:</span>
           <TextField
             id='appDefinition-select'
             select
@@ -110,7 +113,7 @@ const AdminCreateSessionModalContent = (props: AdminCreateSessionModalContentPro
           </TextField>
         </div>
       </div>
-      <div className='flex justify-between w-full'>
+      <div className='flex w-full justify-between'>
         <TheiaButton
           text='Cancel'
           icon={<CancelIcon />}

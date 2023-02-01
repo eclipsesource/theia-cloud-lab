@@ -26,28 +26,28 @@ const SidebarMenu = ({ isSidebarClosed, setIsSidebarClosed }: Props) => {
   return (
     <>
       {isSidebarClosed ? (
-        <div className='w-6 flex justify-center shadow-xl	border-r-2 bg-slate-100 hover:bg-slate-300 transition duration-300 ease-in-out'>
+        <div className='flex w-6 justify-center border-r-2	bg-slate-100 shadow-xl transition duration-300 ease-in-out hover:bg-slate-300'>
           <button onClick={() => setIsSidebarClosed(false)}>
             <RightIcon />
           </button>
         </div>
       ) : (
         <Fade in={!isSidebarClosed}>
-          <div className='w-80 h-screen shadow-xl bg-slate-100 sticky py-2 px-4'>
-            <div className='flex justify-between items-center'>
-              <div className='flex items-center w-20'>
+          <div className='sticky h-screen w-80 bg-slate-100 py-2 px-4 shadow-xl'>
+            <div className='flex items-center justify-between'>
+              <div className='flex w-20 items-center'>
                 <TheiaSvg />
               </div>
               <span className='text-base text-gray-700'>{`${dashboardName} Dashboard`}</span>
               <button
-                className='w-12 h-12 flex justify-center items-center hover:bg-slate-300 rounded-md transition duration-300 ease-in-out'
+                className='flex h-12 w-12 items-center justify-center rounded-md transition duration-300 ease-in-out hover:bg-slate-300'
                 onClick={() => setIsSidebarClosed(true)}
               >
                 <LeftIcon />
               </button>
             </div>
 
-            <div className='flex flex-col gap-1 mt-2 relative'>
+            <div className='relative mt-2 flex flex-col gap-1'>
               {userType === 'admin' ? (
                 <>
                   <SidebarMenuButton

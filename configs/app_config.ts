@@ -1,6 +1,5 @@
-
 const appConfig = {
-  appId: 'asdfghjkl'
+  appId: 'asdfghjkl',
 };
 
 export default appConfig;

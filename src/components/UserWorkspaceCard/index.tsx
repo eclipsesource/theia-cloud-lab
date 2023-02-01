@@ -130,23 +130,23 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
   }, [restartUserWorkspaceResult.isFetching]);
 
   return (
-    <div className='flex flex-col p-4 w-full shadow-lg rounded-lg bg-gray-100 justify-between whitespace-pre-wrap hover:shadow-xl relative'>
+    <div className='relative flex w-full flex-col justify-between whitespace-pre-wrap rounded-lg bg-gray-100 p-4 shadow-lg hover:shadow-xl'>
       {(stopUserWorkspaceResult.isFetching ||
         deleteUserWorkspaceResult.isFetching ||
         restartUserWorkspaceResult.isFetching ||
         userSwitchWorkspaceFromTo[0] === props.userWorkspaceCRData.name ||
         userSwitchWorkspaceFromTo[1] === props.userWorkspaceCRData.name) && (
-        <div className='absolute z-50 bg-gray-100 bg-opacity-75 w-full h-full top-0 left-0 rounded-lg'></div>
+        <div className='absolute top-0 left-0 z-50 h-full w-full rounded-lg bg-gray-100 bg-opacity-75'></div>
       )}
       <div className='flex justify-between'>
         {props.userSessionCRData ? (
           <a
             href={'//' + props.userSessionCRData.url + '/'}
             target='_blank'
-            className='flex text-lg cursor-pointer font-medium h-fit w-fit hover:underline text-blue-500 items-center'
+            className='flex h-fit w-fit cursor-pointer items-center text-lg font-medium text-blue-500 hover:underline'
             rel='noreferrer'
           >
-            {props.userWorkspaceCRData.name} <NewTabIcon className='w-5 h-5' />
+            {props.userWorkspaceCRData.name} <NewTabIcon className='h-5 w-5' />
           </a>
         ) : (
           <span className='text-lg font-medium'>{props.userWorkspaceCRData.name}</span>
@@ -164,7 +164,7 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
               }
             >
               <OptionsIcon
-                className={`w-7 h-7 rounded-full hover:bg-black hover:stroke-white ${
+                className={`h-7 w-7 rounded-full hover:bg-black hover:stroke-white ${
                   (stopUserWorkspaceResult.isFetching ||
                     deleteUserWorkspaceResult.isFetching ||
                     restartUserWorkspaceResult.isFetching ||
@@ -211,7 +211,7 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
         </OutsideClickHandler>
       </div>
       <div className='flex flex-col flex-wrap justify-between'>
-        <div className='w-fit mt-1 mb-1'>
+        <div className='mt-1 mb-1 w-fit'>
           <span className='font-medium'>App Definition: </span>
           {props.userWorkspaceCRData.appDefinition}
         </div>

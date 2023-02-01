@@ -163,9 +163,9 @@ const Workspaces = () => {
 
   const WorkspacesTableHeader = () => {
     return (
-      <div className='flex py-4 px-5 shadow-sm h-20 items-center justify-between'>
+      <div className='flex h-20 items-center justify-between py-4 px-5 shadow-sm'>
         <span className='text-xl text-gray-600'>Workspaces</span>
-        <span className='flex gap-2 flex-wrap justify-end'>
+        <span className='flex flex-wrap justify-end gap-2'>
           <TheiaButton
             text='Create Workspace'
             icon={<PlusIcon />}
@@ -241,7 +241,7 @@ const Workspaces = () => {
             }
             icon={
               <RefreshIcon
-                className={`w-6 h-6 ${
+                className={`h-6 w-6 ${
                   (deleteWorkspacesResult.isFetching ||
                     adminCreateWorkspaceIsFetching ||
                     restartWorkspacesResult.isFetching ||

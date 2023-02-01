@@ -133,7 +133,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse<
   } else if (req.method === 'GET' && req.query.graphInfo === 'timelogs') {
     try {
       await questdbClient.connect();
-      const data = await questdbClient.query(`SELECT DISTINCT DATE_TRUNC('minute', ts) as ts_min FROM '${DB_TABLE_NAMES.GLOBAL_APP_DEFINITIONS}' ORDER BY ts_min ASC`);
+      const data = await questdbClient.query(
+        `SELECT DISTINCT DATE_TRUNC('minute', ts) as ts_min FROM '${DB_TABLE_NAMES.GLOBAL_APP_DEFINITIONS}' ORDER BY ts_min ASC`
+      );
       await questdbClient.end();
       return res.status(200).send(data.rows);
     } catch (error) {

@@ -125,20 +125,20 @@ const Workspaces = () => {
       ));
     } else if (results[0].isFetching || results[1].isFetching) {
       return (
-        <div className='flex justify-center items-center w-full h-full'>
+        <div className='flex h-full w-full items-center justify-center'>
           <CircularProgress />
         </div>
       );
     } else if (results[0].isError || results[1].isError || results[0].isRefetchError || results[1].isRefetchError) {
       return (
-        <div className='flex justify-center items-center w-full h-full'>
+        <div className='flex h-full w-full items-center justify-center'>
           <span className='text-gray-400'>There was an error fetching data. Please try again later.</span>
         </div>
       );
     } else {
       return (
-        <div className='flex justify-center items-center w-full h-full'>
-          <span className='text-gray-400 text-lg font-normal'>
+        <div className='flex h-full w-full items-center justify-center'>
+          <span className='text-lg font-normal text-gray-400'>
             You do not have any workspaces at the moment. You may create one using the button above.
           </span>
         </div>
@@ -147,10 +147,10 @@ const Workspaces = () => {
   };
 
   return (
-    <div className='w-full h-full'>
-      <div className='flex py-4 px-5 shadow-sm h-20 items-center justify-between'>
+    <div className='h-full w-full'>
+      <div className='flex h-20 items-center justify-between py-4 px-5 shadow-sm'>
         <span className='text-xl text-gray-600 '>Workspaces</span>
-        <span className='flex gap-2 flex-wrap justify-end'>
+        <span className='flex flex-wrap justify-end gap-2'>
           <TheiaButton
             text='Create Workspace'
             icon={<PlusIcon />}
@@ -175,7 +175,7 @@ const Workspaces = () => {
             text={results[0].isFetching || results[1].isFetching || userCreateWorkspaceIsFetching ? '' : 'Refresh'}
             icon={
               <RefreshIcon
-                className={`w-6 h-6 ${
+                className={`h-6 w-6 ${
                   (results[0].isFetching || results[1].isFetching || userCreateWorkspaceIsFetching) && 'animate-spin'
                 }`}
               />
@@ -190,7 +190,7 @@ const Workspaces = () => {
       </div>
       <div
         ref={parent}
-        className='flex p-5 pb-16 w-full h-[calc(100vh-5rem)] flex-col gap-6 overflow-y-auto'
+        className='flex h-[calc(100vh-5rem)] w-full flex-col gap-6 overflow-y-auto p-5 pb-16'
       >
         {renderWorkspaceCards()}
       </div>

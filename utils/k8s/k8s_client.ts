@@ -308,7 +308,13 @@ export class KubernetesClient {
     );
   }
 
-  async createSession(sessionName: string, workspaceName: string, appDefinition: string, url: string, userMail: string): Promise<any> {
+  async createSession(
+    sessionName: string,
+    workspaceName: string,
+    appDefinition: string,
+    url: string,
+    userMail: string
+  ): Promise<any> {
     // create clients
     const customObjectsApi = this.createCustomObjectsApiClient();
     // Session Object
@@ -326,7 +332,7 @@ export class KubernetesClient {
         name: `${sessionName}`,
         workspace: workspaceName,
         url: url,
-        user: userMail
+        user: userMail,
       },
     };
     // create session and bind with workspace

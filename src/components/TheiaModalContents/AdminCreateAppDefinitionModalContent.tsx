@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { MenuItem, TextField } from '@mui/material';
+import { TextField } from '@mui/material';
 import TheiaButton from '../TheiaButton';
 import CancelIcon from '../icons/CancelIcon';
 import { Context } from '../../context/Context';
@@ -15,11 +15,11 @@ export type AdminCreateApDefinitionModalContentProps = {
 };
 
 const AdminCreateAppDefinitionModalContent = (props: AdminCreateApDefinitionModalContentProps) => {
-  const { setAdminCreateWorkspaceIsFetching: setAdminCreateAppDefinitionIsFetching } = useContext(Context);
+  const { setAdminCreateAppDefinitionIsFetching, setModalContent } = useContext(Context);
   const [appDefName, setAppDefName] = useState('');
   const [appDefImage, setAppDefImage] = useState('');
 
-  const createWorkspacesResult = useQuery({
+  const createAppDefinitionResult = useQuery({
     queryKey: ['admin/createAppDefinition'],
     queryFn: () =>
       fetch('/api/admin/appDefinitions', {
@@ -38,21 +38,25 @@ const AdminCreateAppDefinitionModalContent = (props: AdminCreateApDefinitionModa
     enabled: false,
     onSettled() {
       props.refresh();
+      setModalContent({
+        function: () => <></>,
+        props: { setIsModalOpen: () => {} },
+      });
     },
     staleTime: Infinity,
     retry: false,
   });
 
   useEffect(() => {
-    setAdminCreateAppDefinitionIsFetching(createWorkspacesResult.isFetching);
+    setAdminCreateAppDefinitionIsFetching(createAppDefinitionResult.isFetching);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [createWorkspacesResult.isFetching]);
+  }, [createAppDefinitionResult.isFetching]);
 
   return (
-    <div className='w-full h-full flex flex-col gap-10 items-center'>
-      <div className='w-full h-full flex flex-col gap-3 justify-center'>
-        <div className='w-full flex items-center'>
-          <span className='font-bold mr-5 w-32'>App Definition Name:</span>
+    <div className='flex h-full w-full flex-col items-center gap-10'>
+      <div className='flex h-full w-full flex-col justify-center gap-3'>
+        <div className='flex w-full items-center'>
+          <span className='mr-5 w-32 font-bold'>App Definition Name:</span>
           <TextField
             variant='outlined'
             value={appDefName}
@@ -65,8 +69,8 @@ const AdminCreateAppDefinitionModalContent = (props: AdminCreateApDefinitionModa
             placeholder='Example Name'
           />
         </div>
-        <div className='w-full flex items-center'>
-          <span className='font-bold mr-5 w-32'>App Definition Image:</span>
+        <div className='flex w-full items-center'>
+          <span className='mr-5 w-32 font-bold'>App Definition Image:</span>
           <TextField
             variant='outlined'
             value={appDefImage}
@@ -80,7 +84,7 @@ const AdminCreateAppDefinitionModalContent = (props: AdminCreateApDefinitionModa
           />
         </div>
       </div>
-      <div className='flex justify-between w-full'>
+      <div className='flex w-full justify-between'>
         <TheiaButton
           text='Cancel'
           icon={<CancelIcon />}
@@ -93,7 +97,7 @@ const AdminCreateAppDefinitionModalContent = (props: AdminCreateApDefinitionModa
           text='Create AppDefinition'
           icon={<CheckIcon />}
           onClick={() => {
-            createWorkspacesResult.refetch();
+            createAppDefinitionResult.refetch();
             props.setIsModalOpen(false);
           }}
         />

@@ -3,7 +3,9 @@ import { TheiaServiceClient } from '../../../../../utils/theiaservice/theiaservi
 import type { NextApiRequest, NextApiResponse } from 'next';
 import appConfig from '../../../../../configs/app_config';
 
+// TODO: Remove this line when the certificate issue is fixed
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   // Theia Service Client
   const theiaService = new TheiaServiceClient(req.headers['x-access-token']);

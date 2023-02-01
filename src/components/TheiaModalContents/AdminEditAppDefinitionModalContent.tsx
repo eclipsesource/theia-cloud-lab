@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { MenuItem, TextField } from '@mui/material';
+import { TextField } from '@mui/material';
 import TheiaButton from '../TheiaButton';
 import CancelIcon from '../icons/CancelIcon';
 import { Context } from '../../context/Context';
@@ -18,7 +18,7 @@ export type AdminEditApDefinitionModalContentProps = {
 };
 
 const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalContentProps) => {
-  const { setAdminCreateWorkspaceIsFetching: setAdminEditAppDefinitionIsFetching } = useContext(Context);
+  const { setAdminEditAppDefinitionIsFetching, setModalContent, setAdminEditAppDefinitionName } = useContext(Context);
   const [appDefName, setAppDefName] = useState(props.adminAppDefinitionCRData.name);
   const [appDefImage, setAppDefImage] = useState(props.adminAppDefinitionCRData.image);
   const [appDefCPULimit, setAppDefCPULimit] = useState(props.adminAppDefinitionCRData.limitsCpu);
@@ -49,7 +49,7 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
           limitsCpu: appDefCPULimit,
           timeout: appDefTimeout,
           minInstances: appDefMinInstance,
-          maxInstances: appDefMaxInstance
+          maxInstances: appDefMaxInstance,
         }),
       }).then((res) => {
         if (!res.ok) {
@@ -59,8 +59,12 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
       }),
     enabled: false,
     onSettled: () => {
-      props.setIsModalOpen(false);
       props.refetch();
+      setModalContent({
+        function: () => <></>,
+        props: { setIsModalOpen: () => {} },
+      });
+      setAdminEditAppDefinitionName('');
     },
     staleTime: Infinity,
     retry: false,
@@ -72,10 +76,10 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
   }, [editAdminAppDefinitionResult.isFetching]);
 
   return (
-    <div className='w-full h-full flex flex-col gap-10 items-center'>
-      <div className='w-full h-full flex flex-col gap-3 justify-center'>
-        <div className='w-full flex items-center'>
-          <span className='font-bold mr-5 w-32'>App Definition Name:</span>
+    <div className='flex h-full w-full flex-col items-center gap-10'>
+      <div className='flex h-full w-full flex-col justify-center gap-3'>
+        <div className='flex w-full items-center'>
+          <span className='mr-5 w-32 font-bold'>App Definition Name:</span>
           <TextField
             variant='outlined'
             value={appDefName}
@@ -87,8 +91,8 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
             disabled
           />
         </div>
-        <div className='w-full flex items-center'>
-          <span className='font-bold mr-5 w-32'>App Definition Image:</span>
+        <div className='flex w-full items-center'>
+          <span className='mr-5 w-32 font-bold'>App Definition Image:</span>
           <TextField
             variant='outlined'
             value={appDefImage}
@@ -100,8 +104,8 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
             size='small'
           />
         </div>
-        <div className='w-full flex items-center'>
-          <span className='font-bold mr-5 w-32'>CPU Limits:</span>
+        <div className='flex w-full items-center'>
+          <span className='mr-5 w-32 font-bold'>CPU Limits:</span>
           <TextField
             variant='outlined'
             value={appDefCPULimit}
@@ -113,8 +117,8 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
             size='small'
           />
         </div>
-        <div className='w-full flex items-center'>
-          <span className='font-bold mr-5 w-32'>CPU Requests:</span>
+        <div className='flex w-full items-center'>
+          <span className='mr-5 w-32 font-bold'>CPU Requests:</span>
           <TextField
             variant='outlined'
             value={appDefCPURequest}
@@ -126,8 +130,8 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
             size='small'
           />
         </div>
-        <div className='w-full flex items-center'>
-          <span className='font-bold mr-5 w-32'>Memory Limits:</span>
+        <div className='flex w-full items-center'>
+          <span className='mr-5 w-32 font-bold'>Memory Limits:</span>
           <TextField
             variant='outlined'
             value={appDefMemoryLimits}
@@ -139,8 +143,8 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
             size='small'
           />
         </div>
-        <div className='w-full flex items-center'>
-          <span className='font-bold mr-5 w-32'>Memory Requests:</span>
+        <div className='flex w-full items-center'>
+          <span className='mr-5 w-32 font-bold'>Memory Requests:</span>
           <TextField
             variant='outlined'
             value={appDefMemoryRequests}
@@ -152,8 +156,8 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
             size='small'
           />
         </div>
-        <div className='w-full flex items-center'>
-          <span className='font-bold mr-5 w-32'>Port:</span>
+        <div className='flex w-full items-center'>
+          <span className='mr-5 w-32 font-bold'>Port:</span>
           <TextField
             variant='outlined'
             value={appDefPort}
@@ -165,8 +169,8 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
             size='small'
           />
         </div>
-        <div className='w-full flex items-center'>
-          <span className='font-bold mr-5 w-32'>Timeout:</span>
+        <div className='flex w-full items-center'>
+          <span className='mr-5 w-32 font-bold'>Timeout:</span>
           <TextField
             variant='outlined'
             value={appDefTimeout}
@@ -178,8 +182,8 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
             size='small'
           />
         </div>
-        <div className='w-full flex items-center'>
-          <span className='font-bold mr-5 w-32'>Max Instances:</span>
+        <div className='flex w-full items-center'>
+          <span className='mr-5 w-32 font-bold'>Max Instances:</span>
           <TextField
             variant='outlined'
             value={appDefMaxInstance}
@@ -191,8 +195,8 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
             size='small'
           />
         </div>
-        <div className='w-full flex items-center'>
-          <span className='font-bold mr-5 w-32'>Min Instances:</span>
+        <div className='flex w-full items-center'>
+          <span className='mr-5 w-32 font-bold'>Min Instances:</span>
           <TextField
             variant='outlined'
             value={appDefMinInstance}
@@ -205,7 +209,7 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
           />
         </div>
       </div>
-      <div className='flex justify-between w-full'>
+      <div className='flex w-full justify-between'>
         <TheiaButton
           text='Cancel'
           icon={<CancelIcon />}
@@ -218,18 +222,9 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
           text='Edit AppDefinition'
           icon={<CheckIcon />}
           onClick={() => {
-            console.log('edit app def', {
-              name: appDefName,
-              image: appDefImage,
-              port: appDefPort,
-              requestsCPU: appDefCPURequest,
-              requestsMemory: appDefMemoryRequests,
-              limitsMemory: appDefMemoryLimits,
-              limitsCpu: appDefCPULimit,
-              timeout: appDefTimeout,
-              action: 'update',
-            });
+            setAdminEditAppDefinitionName(appDefName);
             editAdminAppDefinitionResult.refetch();
+            props.setIsModalOpen(false);
           }}
         />
       </div>

@@ -121,10 +121,10 @@ const Sessions = () => {
           <a
             href={'//' + params.value}
             target='_blank'
-            className='flex text-xs cursor-pointer font-medium h-full w-full hover:underline text-blue-500 items-center'
+            className='flex h-full w-full cursor-pointer items-center text-xs font-medium text-blue-500 hover:underline'
             rel='noreferrer'
           >
-            <span className='w-60 truncate'>{params.value}</span> <NewTabIcon className='w-4 h-4' />
+            <span className='w-60 truncate'>{params.value}</span> <NewTabIcon className='h-4 w-4' />
           </a>
         );
       },
@@ -231,9 +231,9 @@ const Sessions = () => {
 
   const SessionsTableHeader = () => {
     return (
-      <div className='flex py-4 px-5 shadow-sm h-20 items-center justify-between'>
+      <div className='flex h-20 items-center justify-between py-4 px-5 shadow-sm'>
         <span className='text-xl text-gray-600'>Sessions</span>
-        <span className='flex gap-2 flex-wrap justify-end'>
+        <span className='flex flex-wrap justify-end gap-2'>
           <TheiaButton
             text='Create Session'
             icon={<PlusIcon />}
@@ -293,7 +293,7 @@ const Sessions = () => {
             }
             icon={
               <RefreshIcon
-                className={`w-6 h-6 ${
+                className={`h-6 w-6 ${
                   (fetchResults[0].isFetching ||
                     fetchResults[1].isFetching ||
                     adminCreateSessionIsFetching ||
