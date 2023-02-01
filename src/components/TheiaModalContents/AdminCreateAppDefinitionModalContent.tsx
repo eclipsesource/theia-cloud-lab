@@ -67,7 +67,7 @@ const AdminCreateAppDefinitionModalContent = (props: AdminCreateApDefinitionModa
             }}
             style={{ width: 200 }}
             size='small'
-            placeholder='johndoe@example.com'
+            placeholder='Example Name'
           />
         </div>
         <div className='flex w-full items-center'>
@@ -81,7 +81,7 @@ const AdminCreateAppDefinitionModalContent = (props: AdminCreateApDefinitionModa
             }}
             style={{ width: 200 }}
             size='small'
-            placeholder='johndoe@example.com'
+            placeholder='Example Image'
           />
         </div>
       </div>

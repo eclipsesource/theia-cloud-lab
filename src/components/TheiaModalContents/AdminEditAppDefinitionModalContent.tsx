@@ -19,19 +19,19 @@ export type AdminEditApDefinitionModalContentProps = {
 
 const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalContentProps) => {
   const { setAdminCreateWorkspaceIsFetching: setAdminEditAppDefinitionIsFetching } = useContext(Context);
-  const [appDefName, setAppDefName] = useState('');
-  const [appDefImage, setAppDefImage] = useState('');
-  const [appDefCPULimit, setAppDefCPULimit] = useState('');
-  const [appDefCPURequest, setAppDefCPURequest] = useState('');
-  const [appDefMemoryLimits, setAppappDefMemoryLimits] = useState('');
-  const [appDefMemoryRequests, setAppDefappDefMemoryRequests] = useState('');
-  const [appDefPort, setAppDefPort] = useState('');
-  const [appDefTimeout, setAppDefTimeout] = useState('');
-  const [appDefMaxInstance, setAppDefMaxInstance] = useState('');
-  const [appDefMinInstance, setAppDefMinInstance] = useState('');
+  const [appDefName, setAppDefName] = useState(props.adminAppDefinitionCRData.name);
+  const [appDefImage, setAppDefImage] = useState(props.adminAppDefinitionCRData.image);
+  const [appDefCPULimit, setAppDefCPULimit] = useState(props.adminAppDefinitionCRData.limitsCpu);
+  const [appDefCPURequest, setAppDefCPURequest] = useState(props.adminAppDefinitionCRData.requestsCpu);
+  const [appDefMemoryLimits, setAppDefMemoryLimits] = useState(props.adminAppDefinitionCRData.limitsMemory);
+  const [appDefMemoryRequests, setAppDefMemoryRequests] = useState(props.adminAppDefinitionCRData.requestsMemory);
+  const [appDefPort, setAppDefPort] = useState(String(props.adminAppDefinitionCRData.port));
+  const [appDefTimeout, setAppDefTimeout] = useState(String(props.adminAppDefinitionCRData.timeout));
+  const [appDefMaxInstance, setAppDefMaxInstance] = useState(props.adminAppDefinitionCRData.maxInstances);
+  const [appDefMinInstance, setAppDefMinInstance] = useState(props.adminAppDefinitionCRData.minInstances);
 
-  /*const editAdminAppDefinitionResult = useQuery({
-    queryKey: [`admin/appDefinitions/"coffee-editor"`], //${props.adminAppDefinitionCRData.name}
+  const editAdminAppDefinitionResult = useQuery({
+    queryKey: [`admin/appDefinitions/edit/${props.adminAppDefinitionCRData.name}`],
     queryFn: () =>
       fetch('/api/admin/appDefinitions', {
         headers: {
@@ -39,7 +39,18 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
           'Content-Type': 'application/json',
         },
         method: 'PATCH',
-        body: JSON.stringify({ appDefinition: props.adminAppDefinitionCRData.name }), //
+        body: JSON.stringify({
+          name: appDefName,
+          image: appDefImage,
+          port: appDefPort,
+          requestsCPU: appDefCPURequest,
+          requestsMemory: appDefMemoryRequests,
+          limitsMemory: appDefMemoryLimits,
+          limitsCpu: appDefCPULimit,
+          timeout: appDefTimeout,
+          minInstances: appDefMinInstance,
+          maxInstances: appDefMaxInstance,
+        }),
       }).then((res) => {
         if (!res.ok) {
           toast.error('There was an error restarting app definitions. Please try again later.');
@@ -48,6 +59,7 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
       }),
     enabled: false,
     onSettled: () => {
+      props.setIsModalOpen(false);
       props.refetch();
     },
     staleTime: Infinity,
@@ -57,7 +69,7 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
   useEffect(() => {
     setAdminEditAppDefinitionIsFetching(editAdminAppDefinitionResult.isFetching);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [editAdminAppDefinitionResult.isFetching]);*/
+  }, [editAdminAppDefinitionResult.isFetching]);
 
   return (
     <div className='flex h-full w-full flex-col items-center gap-10'>
@@ -67,13 +79,12 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
           <TextField
             variant='outlined'
             value={appDefName}
-            //onChange={(e) => setAppDefName(e.target.value)} // ?
             InputLabelProps={{
               shrink: true,
             }}
             style={{ width: 200 }}
             size='small'
-            placeholder='johndoe@example.com'
+            disabled
           />
         </div>
         <div className='flex w-full items-center'>
@@ -81,13 +92,12 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
           <TextField
             variant='outlined'
             value={appDefImage}
-            onChange={(e) => setAppDefImage(e.target.value)} // ?
+            onChange={(e) => setAppDefImage(e.target.value)}
             InputLabelProps={{
               shrink: true,
             }}
             style={{ width: 200 }}
             size='small'
-            placeholder='johndoe@example.com'
           />
         </div>
         <div className='flex w-full items-center'>
@@ -95,13 +105,12 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
           <TextField
             variant='outlined'
             value={appDefCPULimit}
-            onChange={(e) => setAppDefCPULimit(e.target.value)} // ?
+            onChange={(e) => setAppDefCPULimit(e.target.value)}
             InputLabelProps={{
               shrink: true,
             }}
             style={{ width: 200 }}
             size='small'
-            placeholder='johndoe@example.com'
           />
         </div>
         <div className='flex w-full items-center'>
@@ -109,13 +118,12 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
           <TextField
             variant='outlined'
             value={appDefCPURequest}
-            onChange={(e) => setAppDefCPURequest(e.target.value)} // ?
+            onChange={(e) => setAppDefCPURequest(e.target.value)}
             InputLabelProps={{
               shrink: true,
             }}
             style={{ width: 200 }}
             size='small'
-            placeholder='johndoe@example.com'
           />
         </div>
         <div className='flex w-full items-center'>
@@ -123,13 +131,12 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
           <TextField
             variant='outlined'
             value={appDefMemoryLimits}
-            onChange={(e) => setAppappDefMemoryLimits(e.target.value)} // ?
+            onChange={(e) => setAppDefMemoryLimits(e.target.value)}
             InputLabelProps={{
               shrink: true,
             }}
             style={{ width: 200 }}
             size='small'
-            placeholder='johndoe@example.com'
           />
         </div>
         <div className='flex w-full items-center'>
@@ -137,13 +144,12 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
           <TextField
             variant='outlined'
             value={appDefMemoryRequests}
-            onChange={(e) => setAppDefappDefMemoryRequests(e.target.value)} // ?
+            onChange={(e) => setAppDefMemoryRequests(e.target.value)} // ?
             InputLabelProps={{
               shrink: true,
             }}
             style={{ width: 200 }}
             size='small'
-            placeholder='johndoe@example.com'
           />
         </div>
         <div className='flex w-full items-center'>
@@ -157,7 +163,6 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
             }}
             style={{ width: 200 }}
             size='small'
-            placeholder='johndoe@example.com'
           />
         </div>
         <div className='flex w-full items-center'>
@@ -171,7 +176,6 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
             }}
             style={{ width: 200 }}
             size='small'
-            placeholder='johndoe@example.com'
           />
         </div>
         <div className='flex w-full items-center'>
@@ -185,7 +189,6 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
             }}
             style={{ width: 200 }}
             size='small'
-            placeholder='johndoe@example.com'
           />
         </div>
         <div className='flex w-full items-center'>
@@ -199,7 +202,6 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
             }}
             style={{ width: 200 }}
             size='small'
-            placeholder='johndoe@example.com'
           />
         </div>
       </div>
@@ -216,8 +218,18 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
           text='Edit AppDefinition'
           icon={<CheckIcon />}
           onClick={() => {
-            props.refetch();
-            props.setIsModalOpen(false);
+            console.log('edit app def', {
+              name: appDefName,
+              image: appDefImage,
+              port: appDefPort,
+              requestsCPU: appDefCPURequest,
+              requestsMemory: appDefMemoryRequests,
+              limitsMemory: appDefMemoryLimits,
+              limitsCpu: appDefCPULimit,
+              timeout: appDefTimeout,
+              action: 'update',
+            });
+            editAdminAppDefinitionResult.refetch();
           }}
         />
       </div>

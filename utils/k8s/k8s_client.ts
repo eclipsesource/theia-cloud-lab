@@ -6,6 +6,7 @@ import {
   V1CustomResourceDefinitionList,
   V1PersistentVolumeClaim,
   V1PersistentVolume,
+  Metrics,
 } from '@kubernetes/client-node';
 import http from 'http';
 import { CustomResourceObj } from './k8s_types';
@@ -52,6 +53,10 @@ export class KubernetesClient {
     return this.kc.makeApiClient(ApiextensionsV1Api);
   }
 
+  createMetricsApiClient(): Metrics {
+    return new Metrics(this.kc);
+  }
+
   async getWorkspaceList(): Promise<any> {
     const customObjectsApi = this.createCustomObjectsApiClient();
     const data = await customObjectsApi.listNamespacedCustomObject(
@@ -71,6 +76,12 @@ export class KubernetesClient {
       this.namespace,
       this.pluralAD
     );
+    return data;
+  }
+
+  async getPodMetrics(): Promise<any> {
+    const metricsClient = this.createMetricsApiClient();
+    const data = metricsClient.getPodMetrics(this.namespace);
     return data;
   }
 
@@ -242,7 +253,9 @@ export class KubernetesClient {
     requestsMemory: string,
     limitsMemory: string,
     limitsCpu: string,
-    timeout: number
+    timeout: number,
+    minInstances: number,
+    maxInstances: number
     // ingressname: string, ?
   ): Promise<any> {
     // create clients
@@ -256,6 +269,18 @@ export class KubernetesClient {
       this.pluralAD,
       appDefName
     );
+    if (typeof port !== 'number') {
+      port = Number(port);
+    }
+    if (typeof timeout !== 'number') {
+      timeout = Number(timeout);
+    }
+    if (typeof minInstances !== 'number') {
+      minInstances = Number(minInstances);
+    }
+    if (typeof maxInstances !== 'number') {
+      maxInstances = Number(maxInstances);
+    }
     const newBody = objToFound.body;
     newBody.spec.image = image;
     newBody.spec.port = port;
@@ -264,6 +289,8 @@ export class KubernetesClient {
     newBody.spec.limitsMemory = limitsMemory;
     newBody.spec.limitsCpu = limitsCpu;
     newBody.spec.timeout.limit = timeout;
+    newBody.spec.minInstances = minInstances;
+    newBody.spec.maxInstances = maxInstances;
 
     const options = { headers: { 'Content-type': 'application/merge-patch+json' } };
     // edit the cr
@@ -281,7 +308,13 @@ export class KubernetesClient {
     );
   }
 
-  async createSession(sessionName: string, workspaceName: string, appDefinition: string): Promise<any> {
+  async createSession(
+    sessionName: string,
+    workspaceName: string,
+    appDefinition: string,
+    url: string,
+    userMail: string
+  ): Promise<any> {
     // create clients
     const customObjectsApi = this.createCustomObjectsApiClient();
     // Session Object
@@ -298,6 +331,8 @@ export class KubernetesClient {
         namespace: 'theiacloud',
         name: `${sessionName}`,
         workspace: workspaceName,
+        url: url,
+        user: userMail,
       },
     };
     // create session and bind with workspace

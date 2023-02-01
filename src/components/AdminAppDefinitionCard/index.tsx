@@ -20,7 +20,7 @@ export default function AdminAppDefinitionCard(props: AdminAppDefinitionCardProp
   const [isOptionsShown, setIsOptionsShown] = useState(false);
 
   const deleteAdminAppDefinitionResult = useQuery({
-    queryKey: [`admin/appDefinitions/${props.adminAppDefinitionCRData.name}}`],
+    queryKey: [`admin/appDefinitions/delete/${props.adminAppDefinitionCRData.name}}`],
     queryFn: () =>
       fetch('/api/admin/appDefinitions', {
         headers: {
@@ -28,7 +28,7 @@ export default function AdminAppDefinitionCard(props: AdminAppDefinitionCardProp
           'Content-Type': 'application/json',
         },
         method: 'DELETE',
-        body: JSON.stringify({ toBeDeletedAppDefinition: [props.adminAppDefinitionCRData.name] }),
+        body: JSON.stringify({ toBeDeletedAppDefinition: props.adminAppDefinitionCRData.name }),
       }).then((res) => {
         if (!res.ok) {
           toast.error('There was an error deleting app definitions. Please try again later.');
@@ -43,33 +43,9 @@ export default function AdminAppDefinitionCard(props: AdminAppDefinitionCardProp
     retry: false,
   });
 
-  const editAdminAppDefinitionResult = useQuery({
-    queryKey: [`admin/appDefinitions/${props.adminAppDefinitionCRData.name}}`],
-    queryFn: () =>
-      fetch('/api/admin/appDefinitions', {
-        headers: {
-          Authorization: `Bearer ${keycloak.token}`,
-          'Content-Type': 'application/json',
-        },
-        method: 'PATCH',
-        body: JSON.stringify({ toBeEditedAppDefinition: props.adminAppDefinitionCRData.name }),
-      }).then((res) => {
-        if (!res.ok) {
-          toast.error('There was an error editing app definitions. Please try again later.');
-        }
-        return res;
-      }),
-    enabled: false,
-    onSettled: () => {
-      props.refetch();
-    },
-    staleTime: Infinity,
-    retry: false,
-  });
-
   return (
     <div className='relative flex w-full flex-col justify-between whitespace-pre-wrap rounded-lg bg-gray-100 p-4 shadow-lg hover:shadow-xl'>
-      {(editAdminAppDefinitionResult.isFetching || deleteAdminAppDefinitionResult.isFetching) && (
+      {deleteAdminAppDefinitionResult.isFetching && (
         <div className='absolute top-0 left-0 z-50 h-full w-full rounded-lg bg-gray-100 bg-opacity-75'></div>
       )}
       <div className='flex justify-between'>
@@ -79,26 +55,20 @@ export default function AdminAppDefinitionCard(props: AdminAppDefinitionCardProp
           <div className='relative'>
             <button
               onClick={() => setIsOptionsShown(!isOptionsShown)}
-              disabled={editAdminAppDefinitionResult.isFetching || deleteAdminAppDefinitionResult.isFetching}
+              disabled={deleteAdminAppDefinitionResult.isFetching}
             >
               <OptionsIcon
                 className={`h-7 w-7 rounded-full hover:bg-black hover:stroke-white ${
-                  (editAdminAppDefinitionResult.isFetching || deleteAdminAppDefinitionResult.isFetching) &&
-                  'animate-spin'
+                  deleteAdminAppDefinitionResult.isFetching && 'animate-spin'
                 }`}
               />
             </button>
             {isOptionsShown && (
-              /*(props.adminAppDefinitionCRData ? (
-                <AdditionalOptionsContainer
-                  isRunning={true}
-                  closeAdditionalOptions={() => setIsOptionsShown(false)}
-                />
-              ) :*/ <AdditionalOptionsContainer
-                isRunning={false}
+              <AdditionalOptionsContainer
                 deleteAppDefinition={() => deleteAdminAppDefinitionResult.refetch()}
-                editAppDefinition={() => editAdminAppDefinitionResult.refetch()}
                 closeAdditionalOptions={() => setIsOptionsShown(false)}
+                adminAppDefinitionCRData={props.adminAppDefinitionCRData}
+                refresh={() => props.refetch()}
               />
             )}
           </div>

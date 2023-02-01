@@ -112,7 +112,6 @@ export class TheiaServiceClient {
           ephemeral: false,
         })
       );
-      console.log('requestBase', requestBase);
       const response = await axios(requestBase);
       return response.data;
     } catch (error: any) {

@@ -28,6 +28,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       );
       return res.status(200).send(appDefsList.body.items);
     } catch (error: any) {
+      console.log(error);
       return res.status(500).send(error.message);
     }
     // Handle delete request
@@ -41,10 +42,13 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         req.body.requestsMemory, // '1000M',
         req.body.limitsMemory, // '1200M',
         req.body.limitsCpu, // 'limitsCpu',
-        req.body.timeout // 45 !!!INTEGER
+        req.body.timeout, // 45 !!!INTEGER
+        req.body.minInstances,
+        req.body.maxInstances
       );
       return res.status(200).send(patchedAppDef);
     } catch (error: any) {
+      console.log(error);
       return res.status(500).send(error.message);
     }
   } else if (req.method === 'POST') {
@@ -59,7 +63,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     }
   } else if (req.method === 'DELETE') {
     try {
-      const toBeDeletedAppDefinition = await k8sService.deleteAppDefinition(req.body.name);
+      const toBeDeletedAppDefinition = await k8sService.deleteAppDefinition(req.body.toBeDeletedAppDefinition);
       return res.status(204).send(toBeDeletedAppDefinition);
     } catch (error: any) {
       return res.status(500).send(error.message);

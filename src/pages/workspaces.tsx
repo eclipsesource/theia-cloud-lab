@@ -57,7 +57,7 @@ const Workspaces = () => {
         retry: false,
       },
       {
-        queryKey: ['user/appdefinitions'],
+        queryKey: ['user/appDefinitions'],
         queryFn: async (): Promise<UserSessionCRData[]> =>
           fetch('/api/user/appDefinitions', {
             headers: {
