@@ -5,7 +5,12 @@
     "dev": "node --require ./server-preload.js ./node_modules/.bin/next dev",
     "build": "next build",
     "start": "node --require ./server-preload.js ./node_modules/.bin/next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "prepare": "husky install"
+  },
+  "lint-staged": {
+    "*": "prettier --ignore-unknown --write",
+    "*.{js,jsx,ts,tsx}": "eslint"
   },
   "dependencies": {
     "@emotion/react": "^11.10.5",
@@ -44,6 +49,7 @@
     "autoprefixer": "^10.4.13",
     "eslint-config-prettier": "^8.6.0",
     "husky": "^8.0.3",
+    "lint-staged": "^13.1.0",
     "postcss": "^8.4.19",
     "prettier": "^2.7.1",
     "prettier-plugin-tailwindcss": "^0.2.2",
