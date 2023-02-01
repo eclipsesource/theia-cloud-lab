@@ -11,7 +11,7 @@ const SidebarMenuButton = (props: SidebarMenuButtonProps) => {
   return (
     <button
       className={
-        'w-full flex relative items-center px-6 h-12 overflow-hidden text-ellipsis whitespace-nowrap rounded hover:text-gray-900 hover:bg-slate-300 transition duration-300 ease-in-out cursor-pointer text-m text-gray-800'
+        'text-m relative flex h-12 w-full cursor-pointer items-center overflow-hidden text-ellipsis whitespace-nowrap rounded px-6 text-gray-800 transition duration-300 ease-in-out hover:bg-slate-300 hover:text-gray-900'
       }
       onClick={() => router.push(props.href)}
     >

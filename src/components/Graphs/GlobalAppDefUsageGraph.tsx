@@ -61,7 +61,7 @@ const GlobalAppDefUsageGraph = () => {
                 let nextValue;
                 let lastValue;
 
-                const currentValueMatch :any = row.cpu.match(/(\d*)(\D*)/);
+                const currentValueMatch: any = row.cpu.match(/(\d*)(\D*)/);
                 if (currentValueMatch) {
                   currentValue = (Number(currentValueMatch[1]) * 0.000000001).toFixed(3);
                 }
@@ -71,7 +71,7 @@ const GlobalAppDefUsageGraph = () => {
                   return currentValue;
                 }
 
-                const nextValueMatch :any = queryGlobalUsageTable.data[i + 1].cpu.match(/(\d*)(\D*)/);
+                const nextValueMatch: any = queryGlobalUsageTable.data[i + 1].cpu.match(/(\d*)(\D*)/);
                 if (nextValueMatch) {
                   nextValue = (Number(nextValueMatch[1]) * 0.000000001).toFixed(3);
                 }

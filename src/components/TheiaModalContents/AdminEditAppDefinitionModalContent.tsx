@@ -17,9 +17,8 @@ export type AdminEditApDefinitionModalContentProps = {
   refetch: () => void;
 };
 
-  
 const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalContentProps) => {
-  const {setAdminCreateWorkspaceIsFetching: setAdminEditAppDefinitionIsFetching } = useContext(Context);
+  const { setAdminCreateWorkspaceIsFetching: setAdminEditAppDefinitionIsFetching } = useContext(Context);
   const [appDefName, setAppDefName] = useState('');
   const [appDefImage, setAppDefImage] = useState('');
   const [appDefCPULimit, setAppDefCPULimit] = useState('');
@@ -61,10 +60,10 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
   }, [editAdminAppDefinitionResult.isFetching]);*/
 
   return (
-    <div className='w-full h-full flex flex-col gap-10 items-center'>
-      <div className='w-full h-full flex flex-col gap-3 justify-center'>
-        <div className='w-full flex items-center'>
-          <span className='font-bold mr-5 w-32'>App Definition Name:</span>
+    <div className='flex h-full w-full flex-col items-center gap-10'>
+      <div className='flex h-full w-full flex-col justify-center gap-3'>
+        <div className='flex w-full items-center'>
+          <span className='mr-5 w-32 font-bold'>App Definition Name:</span>
           <TextField
             variant='outlined'
             value={appDefName}
@@ -77,8 +76,8 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
             placeholder='johndoe@example.com'
           />
         </div>
-        <div className='w-full flex items-center'>
-          <span className='font-bold mr-5 w-32'>App Definition Image:</span>
+        <div className='flex w-full items-center'>
+          <span className='mr-5 w-32 font-bold'>App Definition Image:</span>
           <TextField
             variant='outlined'
             value={appDefImage}
@@ -91,8 +90,8 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
             placeholder='johndoe@example.com'
           />
         </div>
-        <div className='w-full flex items-center'>
-          <span className='font-bold mr-5 w-32'>CPU Limits:</span>
+        <div className='flex w-full items-center'>
+          <span className='mr-5 w-32 font-bold'>CPU Limits:</span>
           <TextField
             variant='outlined'
             value={appDefCPULimit}
@@ -105,8 +104,8 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
             placeholder='johndoe@example.com'
           />
         </div>
-        <div className='w-full flex items-center'>
-          <span className='font-bold mr-5 w-32'>CPU Requests:</span>
+        <div className='flex w-full items-center'>
+          <span className='mr-5 w-32 font-bold'>CPU Requests:</span>
           <TextField
             variant='outlined'
             value={appDefCPURequest}
@@ -119,8 +118,8 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
             placeholder='johndoe@example.com'
           />
         </div>
-        <div className='w-full flex items-center'>
-          <span className='font-bold mr-5 w-32'>Memory Limits:</span>
+        <div className='flex w-full items-center'>
+          <span className='mr-5 w-32 font-bold'>Memory Limits:</span>
           <TextField
             variant='outlined'
             value={appDefMemoryLimits}
@@ -133,8 +132,8 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
             placeholder='johndoe@example.com'
           />
         </div>
-        <div className='w-full flex items-center'>
-          <span className='font-bold mr-5 w-32'>Memory Requests:</span>
+        <div className='flex w-full items-center'>
+          <span className='mr-5 w-32 font-bold'>Memory Requests:</span>
           <TextField
             variant='outlined'
             value={appDefMemoryRequests}
@@ -147,8 +146,8 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
             placeholder='johndoe@example.com'
           />
         </div>
-        <div className='w-full flex items-center'>
-          <span className='font-bold mr-5 w-32'>Port:</span>
+        <div className='flex w-full items-center'>
+          <span className='mr-5 w-32 font-bold'>Port:</span>
           <TextField
             variant='outlined'
             value={appDefPort}
@@ -161,8 +160,8 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
             placeholder='johndoe@example.com'
           />
         </div>
-        <div className='w-full flex items-center'>
-          <span className='font-bold mr-5 w-32'>Timeout:</span>
+        <div className='flex w-full items-center'>
+          <span className='mr-5 w-32 font-bold'>Timeout:</span>
           <TextField
             variant='outlined'
             value={appDefTimeout}
@@ -175,8 +174,8 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
             placeholder='johndoe@example.com'
           />
         </div>
-        <div className='w-full flex items-center'>
-          <span className='font-bold mr-5 w-32'>Max Instances:</span>
+        <div className='flex w-full items-center'>
+          <span className='mr-5 w-32 font-bold'>Max Instances:</span>
           <TextField
             variant='outlined'
             value={appDefMaxInstance}
@@ -189,8 +188,8 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
             placeholder='johndoe@example.com'
           />
         </div>
-        <div className='w-full flex items-center'>
-          <span className='font-bold mr-5 w-32'>Min Instances:</span>
+        <div className='flex w-full items-center'>
+          <span className='mr-5 w-32 font-bold'>Min Instances:</span>
           <TextField
             variant='outlined'
             value={appDefMinInstance}
@@ -204,7 +203,7 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
           />
         </div>
       </div>
-      <div className='flex justify-between w-full'>
+      <div className='flex w-full justify-between'>
         <TheiaButton
           text='Cancel'
           icon={<CancelIcon />}

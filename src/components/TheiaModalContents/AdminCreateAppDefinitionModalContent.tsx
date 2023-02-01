@@ -49,10 +49,10 @@ const AdminCreateAppDefinitionModalContent = (props: AdminCreateApDefinitionModa
   }, [createWorkspacesResult.isFetching]);
 
   return (
-    <div className='w-full h-full flex flex-col gap-10 items-center'>
-      <div className='w-full h-full flex flex-col gap-3 justify-center'>
-        <div className='w-full flex items-center'>
-          <span className='font-bold mr-5 w-32'>App Definition Name:</span>
+    <div className='flex h-full w-full flex-col items-center gap-10'>
+      <div className='flex h-full w-full flex-col justify-center gap-3'>
+        <div className='flex w-full items-center'>
+          <span className='mr-5 w-32 font-bold'>App Definition Name:</span>
           <TextField
             variant='outlined'
             value={appDefName}
@@ -65,8 +65,8 @@ const AdminCreateAppDefinitionModalContent = (props: AdminCreateApDefinitionModa
             placeholder='johndoe@example.com'
           />
         </div>
-        <div className='w-full flex items-center'>
-          <span className='font-bold mr-5 w-32'>App Definition Image:</span>
+        <div className='flex w-full items-center'>
+          <span className='mr-5 w-32 font-bold'>App Definition Image:</span>
           <TextField
             variant='outlined'
             value={appDefImage}
@@ -80,7 +80,7 @@ const AdminCreateAppDefinitionModalContent = (props: AdminCreateApDefinitionModa
           />
         </div>
       </div>
-      <div className='flex justify-between w-full'>
+      <div className='flex w-full justify-between'>
         <TheiaButton
           text='Cancel'
           icon={<CancelIcon />}

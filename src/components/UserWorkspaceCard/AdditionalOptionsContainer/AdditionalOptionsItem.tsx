@@ -13,7 +13,7 @@ function AdditionalOptionsItem(props: AdditionalOptionsItemProps) {
       onClick={props.onClick}
       disabled={props.disabled}
     >
-      <span className='flex gap-2 h-full'>
+      <span className='flex h-full gap-2'>
         <span className='h-full w-6'>{props.icon && props.icon}</span>
         <span className='h-full'>{props.text}</span>
       </span>

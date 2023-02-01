@@ -18,21 +18,21 @@ function AdditionalOptions(props: AdditionalOptionProps) {
   const { setModalContent, setIsModalOpen, userCreateWorkspaceIsFetching } = useContext(Context);
 
   return (
-    <div className='flex items-center flex-col absolute h-auto w-52 top-0 right-8 z-10 bg-gray-100 shadow-lg rounded-lg border border-black border-solid p-1'>
+    <div className='absolute top-0 right-8 z-10 flex h-auto w-52 flex-col items-center rounded-lg border border-solid border-black bg-gray-100 p-1 shadow-lg'>
       {props.isRunning ? (
         <AdditionalOptionsItem
-          className='w-full h-8 hover:bg-gray-300 cursor-pointer p-1 rounded-md font-normal'
+          className='h-8 w-full cursor-pointer rounded-md p-1 font-normal hover:bg-gray-300'
           text='Stop Workspace'
           onClick={() => {
             props.stopUserWorkspace && props.stopUserWorkspace();
             props.closeAdditionalOptions();
           }}
-          icon={<StopIcon className='w-6 h-6' />}
+          icon={<StopIcon className='h-6 w-6' />}
         />
       ) : (
         <>
           <AdditionalOptionsItem
-            className='w-full h-8 hover:bg-gray-300 cursor-pointer p-1 rounded-md text-red-500 font-normal'
+            className='h-8 w-full cursor-pointer rounded-md p-1 font-normal text-red-500 hover:bg-gray-300'
             text='Delete Workspace'
             onClick={() => {
               setModalContent({
@@ -42,18 +42,18 @@ function AdditionalOptions(props: AdditionalOptionProps) {
               setIsModalOpen(true);
               props.closeAdditionalOptions();
             }}
-            icon={<DeleteIcon className='w-6 h-6 stroke-red-500' />}
+            icon={<DeleteIcon className='h-6 w-6 stroke-red-500' />}
           />
           <AdditionalOptionsItem
-            className={`w-full h-8 p-1 rounded-md font-normal ${
-              userCreateWorkspaceIsFetching ? 'text-gray-400' : 'hover:bg-gray-300 cursor-pointer'
+            className={`h-8 w-full rounded-md p-1 font-normal ${
+              userCreateWorkspaceIsFetching ? 'text-gray-400' : 'cursor-pointer hover:bg-gray-300'
             }`}
             text='Restart Workspace'
             onClick={() => {
               props.restartUserWorkspace && props.restartUserWorkspace();
               props.closeAdditionalOptions();
             }}
-            icon={<RefreshIcon className='w-6 h-6' />}
+            icon={<RefreshIcon className='h-6 w-6' />}
             disabled={userCreateWorkspaceIsFetching}
           />
         </>

@@ -29,7 +29,7 @@ const Statistics = () => {
   // }
 
   return (
-    <div className='p-5 flex gap-5 flex-col'>
+    <div className='flex flex-col gap-5 p-5'>
       <Collapsible
         title='Sessions'
         expanded={isSessionsExpanded}
@@ -74,7 +74,7 @@ const Statistics = () => {
         }}
       >
         <>
-          <div className='flex justify-end items-center'>
+          <div className='flex items-center justify-end'>
             <span className='text-gray-400'>Sort by CPU Usage</span>
             <Switch
               onChange={(e) => {

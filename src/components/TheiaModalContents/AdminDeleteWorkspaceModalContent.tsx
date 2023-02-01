@@ -13,8 +13,8 @@ export type AdminDeleteWorkspaceModalContentProps = {
 
 const AdminDeleteWorkspaceModalContent = (props: AdminDeleteWorkspaceModalContentProps) => {
   return (
-    <div className='w-full h-full flex flex-col gap-10 items-center'>
-      <ExclamationIcon className='w-16 h-16' />
+    <div className='flex h-full w-full flex-col items-center gap-10'>
+      <ExclamationIcon className='h-16 w-16' />
       <div className='w-full font-normal'>
         <div>
           You are trying to delete {props.selectedRows.length} workspace{props.selectedRows.length > 1 && 's'}. This
@@ -27,7 +27,7 @@ const AdminDeleteWorkspaceModalContent = (props: AdminDeleteWorkspaceModalConten
         </div>
         <div>Are you sure?</div>
       </div>
-      <div className='flex justify-between w-full'>
+      <div className='flex w-full justify-between'>
         <TheiaButton
           text='Cancel'
           icon={<CancelIcon />}
@@ -38,7 +38,7 @@ const AdminDeleteWorkspaceModalContent = (props: AdminDeleteWorkspaceModalConten
         <TheiaButton
           className='bg-red-500 hover:bg-red-700'
           text={props.selectedRows.length > 1 ? 'Delete Workspace' : 'Delete Workspaces'}
-          icon={<CheckIcon className='w-6 h-6 stroke-white' />}
+          icon={<CheckIcon className='h-6 w-6 stroke-white' />}
           onClick={() => {
             props.refetch();
             props.setIsModalOpen(false);

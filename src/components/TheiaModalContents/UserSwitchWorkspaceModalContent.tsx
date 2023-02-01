@@ -81,16 +81,16 @@ const UserSwitchWorkspaceModalContent = (props: UserSwitchWorkspaceModalContentP
   }, [querySwitchUserSession.isFetching, queryUserSessions.isFetching]);
 
   return (
-    <div className='w-full h-full flex flex-col gap-10 items-center'>
-      <ExclamationIcon className='w-16 h-16' />
+    <div className='flex h-full w-full flex-col items-center gap-10'>
+      <ExclamationIcon className='h-16 w-16' />
       <div className='w-full font-normal'>
         <div>
           You can only have 2 active workspaces at the same time. If you want to switch to another workspace, you need
           to stop one.
         </div>
       </div>
-      <div className='w-full flex items-center'>
-        <span className='font-bold mr-5'>Workspace to be stopped:</span>
+      <div className='flex w-full items-center'>
+        <span className='mr-5 font-bold'>Workspace to be stopped:</span>
         <TextField
           id='appDefinition-select'
           select
@@ -115,7 +115,7 @@ const UserSwitchWorkspaceModalContent = (props: UserSwitchWorkspaceModalContentP
           ))}
         </TextField>
       </div>
-      <div className='flex justify-between w-full'>
+      <div className='flex w-full justify-between'>
         <TheiaButton
           text='Cancel'
           icon={<CancelIcon />}

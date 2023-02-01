@@ -63,8 +63,8 @@ const AppDefinitions = () => {
         ));
       } else {
         return (
-          <div className='flex justify-center items-center w-full h-full'>
-            <span className='text-gray-400 text-lg font-normal'>
+          <div className='flex h-full w-full items-center justify-center'>
+            <span className='text-lg font-normal text-gray-400'>
               You do not have any workspaces at the moment. You may create one using the button above.
             </span>
           </div>
@@ -74,10 +74,10 @@ const AppDefinitions = () => {
   };
 
   return (
-    <div className='w-full h-full'>
-      <div className='flex py-4 px-5 shadow-sm h-20 items-center justify-between'>
+    <div className='h-full w-full'>
+      <div className='flex h-20 items-center justify-between py-4 px-5 shadow-sm'>
         <span className='text-xl text-gray-600 '>App Definitions</span>
-        <span className='flex gap-2 flex-wrap justify-end'>
+        <span className='flex flex-wrap justify-end gap-2'>
           <TheiaButton
             text='Create App Definition'
             icon={<PlusIcon />}
@@ -99,7 +99,7 @@ const AppDefinitions = () => {
           <TheiaButton
             className='lg:w-32'
             text={results[0].isFetching ? '' : 'Refresh'}
-            icon={<RefreshIcon className={`w-6 h-6 ${results[0].isFetching && 'animate-spin'}`} />}
+            icon={<RefreshIcon className={`h-6 w-6 ${results[0].isFetching && 'animate-spin'}`} />}
             onClick={() => {
               results[0].refetch();
             }}
@@ -109,7 +109,7 @@ const AppDefinitions = () => {
       </div>
       <div
         ref={parent}
-        className='flex p-5 pb-16 w-full h-[calc(100vh-5rem)] flex-col gap-6 overflow-y-auto'
+        className='flex h-[calc(100vh-5rem)] w-full flex-col gap-6 overflow-y-auto p-5 pb-16'
       >
         {renderAppDefinitionCards()}
       </div>

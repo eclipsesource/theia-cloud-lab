@@ -9,12 +9,12 @@ export type TheiaButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
 function TheiaButton({ text, icon, className, ...props }: TheiaButtonProps) {
   return (
     <button
-      className={`inline-flex items-center bg-blue-500 hover:bg-blue-700 disabled:bg-blue-300 text-white font-bold py-2 px-4 rounded shadow  ${className}`}
+      className={`inline-flex items-center rounded bg-blue-500 py-2 px-4 font-bold text-white shadow hover:bg-blue-700 disabled:bg-blue-300  ${className}`}
       {...props}
     >
-      <span className='flex gap-1 items-center justify-center w-full'>
+      <span className='flex w-full items-center justify-center gap-1'>
         {icon && icon}
-        {text !== '' && <span className='justify-center items-center hidden lg:flex'>{text}</span>}
+        {text !== '' && <span className='hidden items-center justify-center lg:flex'>{text}</span>}
       </span>
     </button>
   );

@@ -10,7 +10,7 @@ function PlusIcon(props: PlusIconProps) {
       viewBox='0 0 24 24'
       strokeWidth={1.5}
       stroke='currentColor'
-      className={props.className ? props.className : 'w-6 h-6'}
+      className={props.className ? props.className : 'h-6 w-6'}
     >
       <path
         strokeLinecap='round'

@@ -84,11 +84,11 @@ const Settings = () => {
 
   return (
     <>
-      <div className='flex py-4 px-5 shadow-sm h-20 items-center'>
+      <div className='flex h-20 items-center py-4 px-5 shadow-sm'>
         <span className='text-xl text-gray-600'>Settings</span>
       </div>
 
-      <div className='flex flex-col px-5 py-4 h-[calc(100vh-5rem)] w-full'>
+      <div className='flex h-[calc(100vh-5rem)] w-full flex-col px-5 py-4'>
         <div className='ml-5'>
           <div>
             <span className='mr-5'>Log cluster-wide metrics to database?</span>
