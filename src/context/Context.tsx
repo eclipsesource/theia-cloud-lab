@@ -4,6 +4,7 @@ import { createContext, Dispatch, SetStateAction } from 'react';
 import Keycloak from 'keycloak-js';
 import { WorkspaceRow } from '../pages/admin/workspaces';
 import { SessionRow } from '../pages/admin/sessions';
+import { AdminAppDefinitionCRData } from '../../types/AdminAppDefinitionCRData';
 
 export type ModalContent = {
   function: (props: any) => JSX.Element;
@@ -15,6 +16,7 @@ export type ModalContent = {
     selectedRows?: WorkspaceRow[] | SessionRow[];
     workspaceName?: string;
     appDefinition?: string;
+    adminAppDefinitionCRData?: AdminAppDefinitionCRData;
   };
 };
 

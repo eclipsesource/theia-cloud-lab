@@ -85,7 +85,7 @@ export default function App({ Component, pageProps }: AppProps) {
           } else {
             //TODO read username as well
             if (keycloakObj) {
-              console.log('keycloakObj', keycloakObj);
+              // console.log('keycloakObj', keycloakObj);
               setKeycloak(keycloakObj);
               setShouldRenderLayout(true);
               keycloakObj.resourceAccess && setUserType(keycloakObj.resourceAccess['theia-cloud'].roles[0]);

@@ -56,9 +56,6 @@ const AppDefinitions = () => {
           <AdminAppDefCard
             key={cardData.adminAppDefinitionCRData.name}
             {...cardData}
-            refetch={() => {
-              results[0].refetch();
-            }}
           />
         ));
       } else {

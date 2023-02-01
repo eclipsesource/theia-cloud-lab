@@ -45,6 +45,11 @@ const initDb = async () => {
   );
   console.log('Table GLOBAL WORKSPACES: ', isGlobalWorkspacesCreated.command);
 
+  const isGlobalAppDefinitionsCreated = await questdbClient.query(
+    `CREATE TABLE IF NOT EXISTS 'GLOBAL APP DEFINITIONS' (ts TIMESTAMP, name STRING, wscount INT, sessioncount INT, totalcpu INT, totalmemory INT) timestamp(ts) PARTITION BY DAY;`
+  );
+  console.log('Table GLOBAL APP DEFINITIONS: ', isGlobalAppDefinitionsCreated.command);
+
   const isGlobalWorkspaceListCreated = await questdbClient.query(
     `CREATE TABLE IF NOT EXISTS 'GLOBAL WORKSPACE LIST' (ts TIMESTAMP, name STRING, userId STRING, isDeleted BOOLEAN) timestamp(ts) PARTITION BY DAY;`
   );
