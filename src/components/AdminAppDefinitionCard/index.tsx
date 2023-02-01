@@ -16,7 +16,7 @@ export type AdminAppDefinitionCardProps = {
 };
 
 export default function AdminAppDefinitionCard(props: AdminAppDefinitionCardProps) {
-  const { keycloak } = useContext(Context);
+  const { keycloak, adminEditAppDefinitionName, adminEditAppDefinitionIsFetching } = useContext(Context);
   const [isOptionsShown, setIsOptionsShown] = useState(false);
 
   const deleteAdminAppDefinitionResult = useQuery({
@@ -45,7 +45,8 @@ export default function AdminAppDefinitionCard(props: AdminAppDefinitionCardProp
 
   return (
     <div className='relative flex w-full flex-col justify-between whitespace-pre-wrap rounded-lg bg-gray-100 p-4 shadow-lg hover:shadow-xl'>
-      {deleteAdminAppDefinitionResult.isFetching && (
+      {(deleteAdminAppDefinitionResult.isFetching ||
+        (adminEditAppDefinitionIsFetching && adminEditAppDefinitionName === props.adminAppDefinitionCRData.name)) && (
         <div className='absolute top-0 left-0 z-50 h-full w-full rounded-lg bg-gray-100 bg-opacity-75'></div>
       )}
       <div className='flex justify-between'>
@@ -59,7 +60,10 @@ export default function AdminAppDefinitionCard(props: AdminAppDefinitionCardProp
             >
               <OptionsIcon
                 className={`h-7 w-7 rounded-full hover:bg-black hover:stroke-white ${
-                  deleteAdminAppDefinitionResult.isFetching && 'animate-spin'
+                  (deleteAdminAppDefinitionResult.isFetching ||
+                    (adminEditAppDefinitionIsFetching &&
+                      adminEditAppDefinitionName === props.adminAppDefinitionCRData.name)) &&
+                  'animate-spin'
                 }`}
               />
             </button>

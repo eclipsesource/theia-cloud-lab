@@ -15,12 +15,11 @@ export type AdminCreateApDefinitionModalContentProps = {
 };
 
 const AdminCreateAppDefinitionModalContent = (props: AdminCreateApDefinitionModalContentProps) => {
-  const { setAdminCreateWorkspaceIsFetching: setAdminCreateAppDefinitionIsFetching, setModalContent } =
-    useContext(Context);
+  const { setAdminCreateAppDefinitionIsFetching, setModalContent } = useContext(Context);
   const [appDefName, setAppDefName] = useState('');
   const [appDefImage, setAppDefImage] = useState('');
 
-  const createWorkspacesResult = useQuery({
+  const createAppDefinitionResult = useQuery({
     queryKey: ['admin/createAppDefinition'],
     queryFn: () =>
       fetch('/api/admin/appDefinitions', {
@@ -49,9 +48,9 @@ const AdminCreateAppDefinitionModalContent = (props: AdminCreateApDefinitionModa
   });
 
   useEffect(() => {
-    setAdminCreateAppDefinitionIsFetching(createWorkspacesResult.isFetching);
+    setAdminCreateAppDefinitionIsFetching(createAppDefinitionResult.isFetching);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [createWorkspacesResult.isFetching]);
+  }, [createAppDefinitionResult.isFetching]);
 
   return (
     <div className='flex h-full w-full flex-col items-center gap-10'>
@@ -98,7 +97,7 @@ const AdminCreateAppDefinitionModalContent = (props: AdminCreateApDefinitionModa
           text='Create AppDefinition'
           icon={<CheckIcon />}
           onClick={() => {
-            createWorkspacesResult.refetch();
+            createAppDefinitionResult.refetch();
             props.setIsModalOpen(false);
           }}
         />

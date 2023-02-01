@@ -20,12 +20,16 @@ export default function App({ Component, pageProps }: AppProps) {
     function: () => <></>,
     props: { setIsModalOpen: () => {} },
   });
+  const [userCreateWorkspaceIsFetching, setUserCreateWorkspaceIsFetching] = useState(false);
+
   const [adminCreateSessionIsFetching, setAdminCreateSessionIsFetching] = useState(false);
   const [adminCreateWorkspaceIsFetching, setAdminCreateWorkspaceIsFetching] = useState(false);
-  const [adminEditWorkspaceIsFetching, setAdminEditWorkspaceIsFetching] = useState(false);
-  const [userCreateWorkspaceIsFetching, setUserCreateWorkspaceIsFetching] = useState(false);
-  const [userSwitchWorkspaceFromTo, setUserSwitchWorkspaceFromTo] = useState(['', '']);
+  const [adminCreateAppDefinitionIsFetching, setAdminCreateAppDefinitionIsFetching] = useState(false);
+  const [adminEditAppDefinitionIsFetching, setAdminEditAppDefinitionIsFetching] = useState(false);
 
+  const [adminEditAppDefinitionName, setAdminEditAppDefinitionName] = useState('');
+
+  const [userSwitchWorkspaceFromTo, setUserSwitchWorkspaceFromTo] = useState(['', '']);
   const [userType, setUserType] = useState('');
   const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
@@ -123,11 +127,15 @@ export default function App({ Component, pageProps }: AppProps) {
               adminCreateWorkspaceIsFetching,
               setAdminCreateWorkspaceIsFetching,
               userCreateWorkspaceIsFetching,
-              setAdminEditWorkspaceIsFetching,
-              adminEditWorkspaceIsFetching,
               setUserCreateWorkspaceIsFetching,
               userSwitchWorkspaceFromTo,
               setUserSwitchWorkspaceFromTo,
+              adminCreateAppDefinitionIsFetching,
+              setAdminCreateAppDefinitionIsFetching,
+              adminEditAppDefinitionIsFetching,
+              setAdminEditAppDefinitionIsFetching,
+              adminEditAppDefinitionName,
+              setAdminEditAppDefinitionName,
             }}
           >
             <TheiaModal />

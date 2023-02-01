@@ -11,7 +11,7 @@ import { AdminAppDefinitionCRData } from '../../../types/AdminAppDefinitionCRDat
 import AdminCreateAppDefinitionModalContent from '../../components/TheiaModalContents/AdminCreateAppDefinitionModalContent';
 
 const AppDefinitions = () => {
-  const { keycloak, setModalContent, setIsModalOpen } = useContext(Context);
+  const { keycloak, setModalContent, setIsModalOpen, adminCreateAppDefinitionIsFetching } = useContext(Context);
   const [parent, enableAnimations] = useAutoAnimate<HTMLDivElement>({
     duration: 100,
     easing: 'ease-in-out',
@@ -91,7 +91,7 @@ const AppDefinitions = () => {
               });
               setIsModalOpen(true);
             }}
-            disabled={results[0].isFetching}
+            disabled={results[0].isFetching || adminCreateAppDefinitionIsFetching}
           />
           <TheiaButton
             className='lg:w-32'
@@ -100,7 +100,7 @@ const AppDefinitions = () => {
             onClick={() => {
               results[0].refetch();
             }}
-            disabled={results[0].isFetching}
+            disabled={results[0].isFetching || adminCreateAppDefinitionIsFetching}
           />
         </span>
       </div>

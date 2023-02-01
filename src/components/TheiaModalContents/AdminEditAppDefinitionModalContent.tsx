@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { MenuItem, TextField } from '@mui/material';
+import { TextField } from '@mui/material';
 import TheiaButton from '../TheiaButton';
 import CancelIcon from '../icons/CancelIcon';
 import { Context } from '../../context/Context';
@@ -18,7 +18,7 @@ export type AdminEditApDefinitionModalContentProps = {
 };
 
 const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalContentProps) => {
-  const { setAdminCreateWorkspaceIsFetching: setAdminEditAppDefinitionIsFetching } = useContext(Context);
+  const { setAdminEditAppDefinitionIsFetching, setModalContent, setAdminEditAppDefinitionName } = useContext(Context);
   const [appDefName, setAppDefName] = useState(props.adminAppDefinitionCRData.name);
   const [appDefImage, setAppDefImage] = useState(props.adminAppDefinitionCRData.image);
   const [appDefCPULimit, setAppDefCPULimit] = useState(props.adminAppDefinitionCRData.limitsCpu);
@@ -59,8 +59,12 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
       }),
     enabled: false,
     onSettled: () => {
-      props.setIsModalOpen(false);
       props.refetch();
+      setModalContent({
+        function: () => <></>,
+        props: { setIsModalOpen: () => {} },
+      });
+      setAdminEditAppDefinitionName('');
     },
     staleTime: Infinity,
     retry: false,
@@ -218,18 +222,9 @@ const AdminEditAppDefinitionModalContent = (props: AdminEditApDefinitionModalCon
           text='Edit AppDefinition'
           icon={<CheckIcon />}
           onClick={() => {
-            console.log('edit app def', {
-              name: appDefName,
-              image: appDefImage,
-              port: appDefPort,
-              requestsCPU: appDefCPURequest,
-              requestsMemory: appDefMemoryRequests,
-              limitsMemory: appDefMemoryLimits,
-              limitsCpu: appDefCPULimit,
-              timeout: appDefTimeout,
-              action: 'update',
-            });
+            setAdminEditAppDefinitionName(appDefName);
             editAdminAppDefinitionResult.refetch();
+            props.setIsModalOpen(false);
           }}
         />
       </div>
