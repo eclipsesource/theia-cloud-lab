@@ -151,7 +151,6 @@ const Workspaces = () => {
       <div className='flex h-20 items-center justify-between py-4 px-5 shadow-sm'>
         <span className='text-xl text-gray-600 '>Workspaces</span>
         <span className='flex flex-wrap justify-end gap-2'>
-          <> </>
           <TheiaButton
             text='Create Workspace'
             icon={<PlusIcon />}
