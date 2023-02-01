@@ -16,6 +16,7 @@ export type SessionCRData = {
   workspace: string;
 };
 
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 export default async function handler(req: NextApiRequest, res: NextApiResponse<any>) {
   const theiaService = new TheiaServiceClient(req.headers['x-access-token']);
   const k8s = new KubernetesClient();
