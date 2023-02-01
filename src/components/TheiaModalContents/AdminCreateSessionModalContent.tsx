@@ -7,7 +7,6 @@ import CancelIcon from '../icons/CancelIcon';
 import { Context } from '../../context/Context';
 import Keycloak from 'keycloak-js';
 import CheckIcon from '../icons/CheckIcon';
-import InfoIcon from '../icons/InfoIcon';
 
 export type AdminCreateSessionModalContentProps = {
   refresh: () => void;
@@ -16,7 +15,7 @@ export type AdminCreateSessionModalContentProps = {
 };
 
 const AdminCreateSessionModalContent = (props: AdminCreateSessionModalContentProps) => {
-  const { setAdminCreateSessionIsFetching } = useContext(Context);
+  const { setAdminCreateSessionIsFetching, setModalContent } = useContext(Context);
   const [userId, setUserId] = useState('');
   const [selectedAppDefinition, setSelectedAppDefinition] = useState('');
 
@@ -42,7 +41,7 @@ const AdminCreateSessionModalContent = (props: AdminCreateSessionModalContentPro
   const createSessionResult = useQuery({
     queryKey: ['admin/createSession'],
     queryFn: () =>
-      fetch('/api/admin/sessions/', {
+      fetch('/api/admin/sessions', {
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${props.keycloak.token}`,
@@ -58,6 +57,10 @@ const AdminCreateSessionModalContent = (props: AdminCreateSessionModalContentPro
     enabled: false,
     onSettled() {
       props.refresh();
+      setModalContent({
+        function: () => <></>,
+        props: { setIsModalOpen: () => {} },
+      });
     },
     staleTime: Infinity,
     retry: false,

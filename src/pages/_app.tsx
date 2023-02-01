@@ -104,7 +104,8 @@ export default function App({ Component, pageProps }: AppProps) {
     } else if (userType === 'user') {
       router.push('/workspaces');
     }
-  }, [userType, router]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [userType]);
 
   return (
     <>

@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query';
 import { Dispatch, SetStateAction, useContext, useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
-import { MenuItem, TextField } from '@mui/material';
+import { TextField } from '@mui/material';
 import TheiaButton from '../TheiaButton';
 import CancelIcon from '../icons/CancelIcon';
 import { Context } from '../../context/Context';
@@ -15,7 +15,8 @@ export type AdminCreateApDefinitionModalContentProps = {
 };
 
 const AdminCreateAppDefinitionModalContent = (props: AdminCreateApDefinitionModalContentProps) => {
-  const { setAdminCreateWorkspaceIsFetching: setAdminCreateAppDefinitionIsFetching } = useContext(Context);
+  const { setAdminCreateWorkspaceIsFetching: setAdminCreateAppDefinitionIsFetching, setModalContent } =
+    useContext(Context);
   const [appDefName, setAppDefName] = useState('');
   const [appDefImage, setAppDefImage] = useState('');
 
@@ -38,6 +39,10 @@ const AdminCreateAppDefinitionModalContent = (props: AdminCreateApDefinitionModa
     enabled: false,
     onSettled() {
       props.refresh();
+      setModalContent({
+        function: () => <></>,
+        props: { setIsModalOpen: () => {} },
+      });
     },
     staleTime: Infinity,
     retry: false,

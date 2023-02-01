@@ -15,7 +15,7 @@ export type AdminCreateWorkspaceModalContentProps = {
 };
 
 const AdminCreateWorkspaceModalContent = (props: AdminCreateWorkspaceModalContentProps) => {
-  const { setAdminCreateWorkspaceIsFetching } = useContext(Context);
+  const { setAdminCreateWorkspaceIsFetching, setModalContent } = useContext(Context);
   const [userId, setUserId] = useState('');
   const [selectedAppDefinition, setSelectedAppDefinition] = useState('');
 
@@ -57,6 +57,10 @@ const AdminCreateWorkspaceModalContent = (props: AdminCreateWorkspaceModalConten
     enabled: false,
     onSettled() {
       props.refresh();
+      setModalContent({
+        function: () => <></>,
+        props: { setIsModalOpen: () => {} },
+      });
     },
     staleTime: Infinity,
     retry: false,

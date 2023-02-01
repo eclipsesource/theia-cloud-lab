@@ -15,7 +15,7 @@ export type UserCreateWorkspaceModalContentProps = {
 };
 
 const UserCreateWorkspaceModalContent = (props: UserCreateWorkspaceModalContentProps) => {
-  const { setUserCreateWorkspaceIsFetching } = useContext(Context);
+  const { setUserCreateWorkspaceIsFetching, setModalContent } = useContext(Context);
   const [selectedAppDefinition, setSelectedAppDefinition] = useState('');
 
   const createUserWorkspaceResult = useQuery({
@@ -37,6 +37,10 @@ const UserCreateWorkspaceModalContent = (props: UserCreateWorkspaceModalContentP
     enabled: false,
     onSettled() {
       props.refresh();
+      setModalContent({
+        function: () => <></>,
+        props: { setIsModalOpen: () => {} },
+      });
     },
     staleTime: Infinity,
     retry: false,
