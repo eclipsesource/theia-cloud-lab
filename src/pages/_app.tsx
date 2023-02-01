@@ -104,7 +104,7 @@ export default function App({ Component, pageProps }: AppProps) {
     } else if (userType === 'user') {
       router.push('/workspaces');
     }
-  }, [userType]);
+  }, [userType, router]);
 
   return (
     <>
