@@ -1,7 +1,6 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { AdminWorkspaceCRData } from '../../../../../types/AdminWorkspaceCRData';
 import appConfig from '../../../../../configs/app_config';
-import hostConfig from '../../../../../configs/ws_config';
 import { TheiaServiceClient } from '../../../../../utils/theiaservice/theiaservice_client';
 
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
