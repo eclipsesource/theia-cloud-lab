@@ -1,3 +1,4 @@
+import Head from 'next/head';
 import React, { useContext, useEffect, useState } from 'react';
 import { Context } from '../context/Context';
 import SidebarMenu from './SidebarMenu';
@@ -12,19 +13,24 @@ export default function Layout({ children }: any) {
   }, [keycloak, userType]);
 
   return (
-    <div className='flex'>
-      <SidebarMenu
-        isSidebarClosed={isSidebarClosed}
-        setIsSidebarClosed={setIsSidebarClosed}
-      />
-      <div className={`${isSidebarClosed ? 'w-[calc(100vw-1.5rem)]' : 'w-[calc(100vw-20rem)]'} h-screen`}>
-        <main
-          role='main'
-          className='h-full w-full overflow-y-auto'
-        >
-          {children}
-        </main>
+    <>
+      <Head>
+        <title>Theia.Cloud Dashboard</title>
+      </Head>
+      <div className='flex'>
+        <SidebarMenu
+          isSidebarClosed={isSidebarClosed}
+          setIsSidebarClosed={setIsSidebarClosed}
+        />
+        <div className={`${isSidebarClosed ? 'w-[calc(100vw-1.5rem)]' : 'w-[calc(100vw-20rem)]'} h-screen`}>
+          <main
+            role='main'
+            className='h-full w-full overflow-y-auto'
+          >
+            {children}
+          </main>
+        </div>
       </div>
-    </div>
+    </>
   );
 }
