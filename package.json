@@ -43,6 +43,7 @@
     "@types/pg": "^8.6.6",
     "autoprefixer": "^10.4.13",
     "eslint-config-prettier": "^8.6.0",
+    "husky": "^8.0.3",
     "postcss": "^8.4.19",
     "prettier": "^2.7.1",
     "prettier-plugin-tailwindcss": "^0.2.2",
