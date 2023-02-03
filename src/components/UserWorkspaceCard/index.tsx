@@ -130,7 +130,7 @@ export default function UserWorkspaceCard(props: UserWorkspaceCardProps) {
   }, [restartUserWorkspaceResult.isFetching]);
 
   return (
-    <div className='relative flex w-full flex-col justify-between whitespace-pre-wrap rounded-lg bg-gray-100 p-4 shadow-lg hover:shadow-xl'>
+    <div className='relative flex w-full flex-col justify-between whitespace-pre-wrap rounded-lg bg-gray-100 p-4 shadow-lg drop-shadow-lg hover:shadow-xl hover:drop-shadow-xl'>
       {(stopUserWorkspaceResult.isFetching ||
         deleteUserWorkspaceResult.isFetching ||
         restartUserWorkspaceResult.isFetching ||

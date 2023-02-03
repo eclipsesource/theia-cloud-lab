@@ -26,14 +26,14 @@ const SidebarMenu = ({ isSidebarClosed, setIsSidebarClosed }: Props) => {
   return (
     <>
       {isSidebarClosed ? (
-        <div className='flex w-6 justify-center border-r-2	bg-slate-100 shadow-xl transition duration-300 ease-in-out hover:bg-slate-300'>
+        <div className='flex w-6 justify-center border-r-2	bg-slate-100 shadow-lg drop-shadow-lg transition duration-300 ease-in-out hover:bg-slate-300'>
           <button onClick={() => setIsSidebarClosed(false)}>
             <RightIcon />
           </button>
         </div>
       ) : (
         <Fade in={!isSidebarClosed}>
-          <div className='sticky h-screen w-80 bg-slate-100 py-2 px-4 shadow-xl'>
+          <div className='sticky h-screen w-80 bg-slate-100 py-2 px-4 shadow-md drop-shadow-md'>
             <div className='flex items-center justify-between'>
               <div className='flex w-20 items-center'>
                 <TheiaSvg />

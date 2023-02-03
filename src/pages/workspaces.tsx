@@ -148,7 +148,7 @@ const Workspaces = () => {
 
   return (
     <div className='h-full w-full'>
-      <div className='flex h-20 items-center justify-between py-4 px-5 shadow-sm'>
+      <div className='flex h-20 items-center justify-between py-4 px-5 shadow-md drop-shadow-md'>
         <span className='text-xl text-gray-600 '>Workspaces</span>
         <span className='flex flex-wrap justify-end gap-2'>
           <TheiaButton

@@ -7,7 +7,6 @@ import GlobalWorkspacesGraph from '../../components/Graphs/GlobalWorkspacesGraph
 import GlobalSessionsGraph from '../../components/Graphs/GlobalSessionsGraph';
 import GlobalAppDefUsageGraph from '../../components/Graphs/GlobalAppDefUsageGraph';
 import PerUserResourceUsageGraph from '../../components/Graphs/PerUserResourceUsageGraph';
-import TheiaButton from '../../components/TheiaButton';
 import { Switch } from '@mui/material';
 
 dayjs.extend(localizedFormat);

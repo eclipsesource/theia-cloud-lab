@@ -44,7 +44,7 @@ export default function AdminAppDefinitionCard(props: AdminAppDefinitionCardProp
   });
 
   return (
-    <div className='relative flex w-full flex-col justify-between whitespace-pre-wrap rounded-lg bg-gray-100 p-4 shadow-lg hover:shadow-xl'>
+    <div className='relative flex w-full flex-col justify-between whitespace-pre-wrap rounded-lg bg-gray-100 p-4 shadow-lg drop-shadow-lg hover:shadow-xl hover:drop-shadow-xl'>
       {(deleteAdminAppDefinitionResult.isFetching ||
         (adminEditAppDefinitionIsFetching && adminEditAppDefinitionName === props.adminAppDefinitionCRData.name)) && (
         <div className='absolute top-0 left-0 z-50 h-full w-full rounded-lg bg-gray-100 bg-opacity-75'></div>

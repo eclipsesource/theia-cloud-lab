@@ -163,7 +163,7 @@ const Workspaces = () => {
 
   const WorkspacesTableHeader = () => {
     return (
-      <div className='flex h-20 items-center justify-between py-4 px-5 shadow-sm'>
+      <div className='flex h-20 items-center justify-between py-4 px-5 shadow-md drop-shadow-md'>
         <span className='text-xl text-gray-600'>Workspaces</span>
         <span className='flex flex-wrap justify-end gap-2'>
           <TheiaButton
@@ -272,7 +272,7 @@ const Workspaces = () => {
     <>
       <WorkspacesTableHeader />
       <DataGrid
-        sx={{ height: 'calc(100% - 5rem)', width: '100%', borderRadius: 0 }}
+        sx={{ height: 'calc(100% - 5rem)', width: '100%', borderRadius: 0, border: 0 }}
         rows={setTableData()}
         columns={columns}
         checkboxSelection
