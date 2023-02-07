@@ -37,7 +37,7 @@ export default function App({ Component, pageProps }: AppProps) {
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
-        refetchOnWindowFocus: true, // TODO(BORA): remove refetchOnWindowFocus for production
+        // refetchOnWindowFocus: false, // TODO(BORA): remove refetchOnWindowFocus for production
         cacheTime: 0,
       },
     },
@@ -155,6 +155,7 @@ export default function App({ Component, pageProps }: AppProps) {
             pauseOnHover
             theme='light'
           />
+          {/* <ReactQueryDevtools initialIsOpen={false} /> */}
         </QueryClientProvider>
       ) : (
         <></>
