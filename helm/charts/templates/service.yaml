@@ -6,6 +6,6 @@ metadata:
 spec:
   ports:
     - protocol: TCP
-      port: 8082
-      targetPort: 3000
-  type: ClusterIP
+      port: 80
+      targetPort: { { .Values.app.port } }
+  type: LoadBalancer
