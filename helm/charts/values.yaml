@@ -1,0 +1,11 @@
+deployName: dashboard-deploy
+serviceName: dashboard-service
+replicaCount: 1
+namespace: theiacloud
+different_images: 
+  - name: dashboard-app
+    image: sevvalekici/nextjs-docker
+    port: 3000
+  - name: stats-db
+    port: 9000
+    image: questdb/questdb:6.6.1

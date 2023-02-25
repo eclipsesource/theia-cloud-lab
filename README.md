@@ -60,6 +60,53 @@ The `pages/api` directory is mapped to `/api/*`. Files in this directory are tre
 3. Run your container locally for testing purposes: `docker run -p 3000:3000 nextjs-docker`
 4. Additionally, you can view your images created with `docker images`
 
+### Helm Deployment
+
+This section provides instructions for deploying a Helm chart to a Kubernetes cluster.
+
+### Prerequisites
+
+Before deploying a Helm chart, you must have the following:
+
+- A Kubernetes cluster
+- Helm installed on your local machine or server
+
+### Steps
+
+1. Update the Helm chart's values.yaml file to configure the application's settings. You can use a text editor or the `helm upgrade` command with the `--set` flag to update values:
+
+```bash
+$ helm upgrade --set <key>=<value> <release-name> ./helm/charts
+```
+
+2. Install the Helm chart with the following command:
+
+```bash
+$ helm install <release-name> ./helm/charts
+```
+
+Replace <release-name> with a unique name for the release. You can use helm list to view a list of deployed releases.
+
+3. Verify that the application is running by checking the status of the Kubernetes resources created by the Helm chart:
+
+```bash
+$ kubectl get all -n <namespace>
+```
+
+Replace <namespace> with the Kubernetes namespace where the resources were deployed.
+
+4. To upgrade the Helm chart with new settings or configurations, update the values in the values.yaml file and use the following command:
+
+```bash
+$ helm upgrade <release-name> ./helm/charts
+```
+
+5. To uninstall the Helm chart and remove all associated Kubernetes resources, use the following command:
+
+```bash
+$ helm uninstall <release-name>
+```
+
 ## Development Dependencies
 
 ### Prettier

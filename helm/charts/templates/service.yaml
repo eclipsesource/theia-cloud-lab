@@ -1,0 +1,11 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: dashboard-service
+  namespace: theiacloud
+spec:
+  ports:
+    - protocol: TCP
+      port: 8082
+      targetPort: 3000
+  type: ClusterIP

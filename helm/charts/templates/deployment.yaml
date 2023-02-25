@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.deployName }}
+  namespace: {{ .Values.namespace }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ .Values.serviceName }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ .Values.serviceName }}
+    spec:
+      containers:
+      {{- range $v := .Values.different_images }}
+      - name: {{ $v.name }} 
+        image: {{ $v.image }} 
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: {{ $v.port }} 
+      {{- end }}

@@ -1,0 +1,4 @@
+apiVersion: v2 # apps/v1
+name: helm-templates
+description: A Helm chart for spawning pods from images
+version: 0.1.0
